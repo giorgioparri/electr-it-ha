@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Tooling configuration only. This repository is a Home Assistant custom
+# integration, not an installable Python package: the version lives in
+# custom_components/electr_it_ha/manifest.json.
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+src = ["custom_components/electr_it_ha", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+    "UP",  # pyupgrade
+    "RUF", # ruff-specific rules
+]
+ignore = [
+    "E501", # line length is handled by the formatter
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests are plain scripts: they extend sys.path before importing the engine.
+"tests/*.py" = ["E402"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["engine"]
+
+[tool.ruff.format]
+quote-style = "double"
