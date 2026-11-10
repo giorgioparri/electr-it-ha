@@ -1,0 +1,9 @@
+{
+  "name": "electrITHA",
+  "content_in_root": false,
+  "render_readme": true,
+  "homeassistant": "2026.8.0",
+  "zip_release": true,
+  "filename": "electr_it_ha.zip",
+  "country": ["IT"]
+}
