@@ -36,7 +36,10 @@ def check(
 
 
 def ajo_september_2026() -> Bill:
-    """Ajo Energia: PUN Index GME by band, 10% losses, zero spread, 6 kW, resident."""
+    """Ajo Energia: PUN Index GME by band, 10% losses, zero spread, 6 kW, resident.
+
+    Losses are billed as extra kWh, rounded to the kWh in each band: the default.
+    """
     contract = Contract.from_dict(
         {
             "schema_version": 1,
@@ -83,7 +86,13 @@ def test_ajo() -> None:
 
 
 def enel_june_july_2026() -> Bill:
-    """Enel Energia, Enel Flex: PUN Index GME + alfa + CDispD, 5 kW, resident."""
+    """Enel Energia, Enel Flex: PUN x 1.10 + alfa + CDispD, 5 kW, resident.
+
+    The PUN below is the monthly average by band published by GME (source:
+    Gestore dei Mercati Energetici S.p.A.). The bill shows it already
+    multiplied by 1.10 for losses (0.138340 for June F1): Enel bills losses in
+    the price, not as extra kWh.
+    """
     contract = Contract.from_dict(
         {
             "schema_version": 1,
@@ -91,7 +100,12 @@ def enel_june_july_2026() -> Bill:
             "offer_name": "Enel Flex",
             "price_type": "indexed",
             "time_bands": "f1_f2_f3",
-            "index": {"name": "pun_index_gme", "period": "monthly", "coefficient": 1},
+            "index": {
+                "name": "pun_index_gme",
+                "period": "monthly",
+                "coefficient": D("1.10"),
+                "loss_method": "price",
+            },
             "energy_price": {"f1": D("0.0286"), "f2": D("0.0286"), "f3": D("0.011")},
             "dispatching": {
                 "mode": "cdispd",
@@ -106,14 +120,14 @@ def enel_june_july_2026() -> Bill:
         start=date(2026, 6, 1),
         end=date(2026, 6, 30),
         kwh={"f1": 79, "f2": 60, "f3": 90},
-        pun={"f1": D("0.138340"), "f2": D("0.166870"), "f3": D("0.139960")},
+        pun={"f1": D("0.12576"), "f2": D("0.15170"), "f3": D("0.12724")},
         cdispd=D("0.017139"),
     )
     july = Period(
         start=date(2026, 7, 1),
         end=date(2026, 7, 31),
         kwh={"f1": 53, "f2": 52, "f3": 67},
-        pun={"f1": D("0.169620"), "f2": D("0.186320"), "f3": D("0.167480")},
+        pun={"f1": D("0.15420"), "f2": D("0.16938"), "f3": D("0.15226")},
         cdispd=D("0.025043"),
     )
     return compute_bill(contract, Supply(resident=True, power_kw=D(5)), [june, july])
