@@ -96,7 +96,7 @@ Il contratto contiene solo ciò che decide il venditore. Tutto ciò che è regol
   "offer_code": null,
   "price_type": "indexed",
   "time_bands": "f1_f2_f3",
-  "index": {"name": "pun_index_gme", "period": "monthly", "coefficient": 1.0},
+  "index": {"name": "pun_index_gme", "period": "monthly", "coefficient": 1.10, "loss_method": "price"},
   "energy_price": {"f1": 0.0286, "f2": 0.0286, "f3": 0.011},
   "dispatching": {"mode": "cdispd", "fixed_value": null, "capacity_market": false},
   "disp_bt": true,
@@ -112,7 +112,8 @@ Il contratto contiene solo ciò che decide il venditore. Tutto ciò che è regol
 |---|---|
 | `price_type` | `indexed` (PUN più spread), `fixed` (prezzo fisso) o `regulated` (servizio di tutela) |
 | `time_bands` | `mono`, `f1_f23` o `f1_f2_f3` |
-| `index` | Solo per `indexed`. `coefficient` moltiplica il PUN: `1.10` per i contratti che fatturano le perdite di rete a parte (PUN × (1 + λ) con λ = 10%), `1.0` negli altri casi |
+| `index` | Solo per `indexed`. `coefficient` moltiplica il PUN per tenere conto delle perdite di rete: `1.10` quando il contratto dice che il PUN è maggiorato delle perdite (λ = 10%), `1.0` quando non lo è |
+| `index.loss_method` | Come compaiono le perdite in bolletta: `energy` (predefinito) aggiunge righe separate di kWh di perdita, arrotondati al kWh per fascia; `price` fattura il PUN già moltiplicato per il coefficiente. Se in bolletta il PUN è molto più alto della media GME, è `price` |
 | `energy_price` | €/kWh per fascia, perdite incluse, con chiavi `f0`, oppure `f1` e `f23`, oppure `f1`, `f2`, `f3`. Per `indexed` è lo spread; per `fixed` il prezzo pieno; assente per `regulated` |
 | `dispatching.mode` | `cdispd` (il CDispD mensile, passante), `regulated` (dispacciamento fatturato su kWh più perdite), `fixed` (un valore deciso dal venditore, in `fixed_value`), `included` (compreso nel prezzo dell'energia), `tutela` (servizio di tutela) |
 | `dispatching.capacity_market` | `true` se il capacity market è una voce a parte |
@@ -128,12 +129,12 @@ Il modello ricalca il tracciato con cui i venditori pubblicano le offerte sul Po
 
 | Nome | Serve quando |
 |---|---|
-| PUN per fascia | `price_type` è `indexed`: la media mensile del PUN Index GME per ogni fascia del contratto |
+| PUN per fascia | `price_type` è `indexed`: la media mensile del PUN Index GME per ogni fascia del contratto, come la pubblica il GME — non moltiplicata per le perdite, che applica il contratto |
 | Dispacciamento | `dispatching.mode` è `regulated` |
 | Capacity market | `dispatching.capacity_market` è `true` |
 | CDispD | `dispatching.mode` è `cdispd` |
 
-Cambiano ogni mese. Finché l'integrazione non li scarica da sola, collega ciascuno a un'entità che lo ha già nel tuo Home Assistant, oppure scrivi il valore dell'ultima bolletta e aggiornalo quando cambia.
+Cambiano ogni mese. Finché l'integrazione non li scarica da sola, collega ciascuno a un'entità che lo ha già nel tuo Home Assistant, oppure scrivi il valore dell'ultima bolletta e aggiornalo quando cambia. Alcune bollette riportano il PUN già moltiplicato per 1,10: in quel caso dividilo per 1,10 prima di inserirlo, altrimenti le perdite vengono contate due volte.
 
 ### Plancia Energia
 
@@ -150,7 +151,7 @@ Il calcolatore ricostruisce una bolletta: ogni componente è una riga, ogni riga
 | Bolletta | Risultato |
 |---|---|
 | Indicizzata al PUN per fascia, perdite 10%, dispacciamento regolato e capacity market, 6 kW | Imponibile, IVA e totale tornano al centesimo |
-| Indicizzata al PUN più spread più CDispD, due mesi a cavallo di un cambio di tariffa, 5 kW | Ogni sezione, IVA e totale tornano al centesimo |
+| Indicizzata al PUN con le perdite nel prezzo, più spread e CDispD, due mesi a cavallo di un cambio di tariffa, 5 kW | Ogni sezione, IVA e totale tornano al centesimo |
 | Servizio di tutela, bioraria, 3 kW, solo riepilogo | Ogni sezione entro un centesimo; accise non verificate |
 
 L'energia tra due letture di un contatore va alla fascia in vigore quando arriva la seconda lettura: con un contatore che aggiorna ogni pochi minuti l'errore è qualche minuto di consumo a ogni cambio di fascia.
