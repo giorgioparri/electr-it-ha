@@ -96,7 +96,7 @@ The contract holds only what the supplier decides. Everything regulated comes fr
   "offer_code": null,
   "price_type": "indexed",
   "time_bands": "f1_f2_f3",
-  "index": {"name": "pun_index_gme", "period": "monthly", "coefficient": 1.0},
+  "index": {"name": "pun_index_gme", "period": "monthly", "coefficient": 1.10, "loss_method": "price"},
   "energy_price": {"f1": 0.0286, "f2": 0.0286, "f3": 0.011},
   "dispatching": {"mode": "cdispd", "fixed_value": null, "capacity_market": false},
   "disp_bt": true,
@@ -112,7 +112,8 @@ The contract holds only what the supplier decides. Everything regulated comes fr
 |---|---|
 | `price_type` | `indexed` (PUN plus spread), `fixed`, or `regulated` (servizio di tutela) |
 | `time_bands` | `mono`, `f1_f23` or `f1_f2_f3` |
-| `index` | Only for `indexed`. `coefficient` multiplies the PUN: `1.10` for contracts that bill network losses on top (PUN × (1 + λ) with λ = 10%), `1.0` otherwise |
+| `index` | Only for `indexed`. `coefficient` multiplies the PUN to account for network losses: `1.10` when the contract says the PUN is increased by the losses (λ = 10%), `1.0` when it is not |
+| `index.loss_method` | How the losses show up on the bill: `energy` (default) adds separate lines of loss kWh, rounded to the kWh in each band; `price` bills the PUN already multiplied by the coefficient. If your bill lists a PUN much higher than the GME average, it is `price` |
 | `energy_price` | €/kWh by band, losses included, with keys `f0`, or `f1` and `f23`, or `f1`, `f2`, `f3`. For `indexed` it is the spread; for `fixed` the full price; absent for `regulated` |
 | `dispatching.mode` | `cdispd` (the monthly CDispD passed through), `regulated` (dispatching billed on kWh plus losses), `fixed` (a value set by the supplier, in `fixed_value`), `included` (inside the energy price), `tutela` (regulated service) |
 | `dispatching.capacity_market` | `true` when the capacity market is a separate line |
@@ -128,12 +129,12 @@ The model follows the layout that suppliers use to publish their offers on the A
 
 | Name | Needed when |
 |---|---|
-| PUN by band | `price_type` is `indexed`: the monthly average PUN Index GME for each band of the contract |
+| PUN by band | `price_type` is `indexed`: the monthly average PUN Index GME for each band of the contract, as GME publishes it — not multiplied by the losses, which the contract applies |
 | Dispatching | `dispatching.mode` is `regulated` |
 | Capacity market | `dispatching.capacity_market` is `true` |
 | CDispD | `dispatching.mode` is `cdispd` |
 
-They change every month. Until the integration fetches them by itself, point each one to an entity that already has it in your Home Assistant, or type the value from your latest bill and update it when it changes.
+They change every month. Until the integration fetches them by itself, point each one to an entity that already has it in your Home Assistant, or type the value from your latest bill and update it when it changes. Some bills print the PUN already multiplied by 1.10: in that case divide it by 1.10 before typing it, or the losses are counted twice.
 
 ### Energy dashboard
 
@@ -150,7 +151,7 @@ It is tested against real bills:
 | Bill | Result |
 |---|---|
 | Indexed to PUN by band, 10% losses, regulated dispatching and capacity market, 6 kW | Taxable amount, VAT and total match to the cent |
-| Indexed to PUN plus spread plus CDispD, two months across a tariff change, 5 kW | Every section, VAT and total match to the cent |
+| Indexed to PUN with losses in the price, plus spread and CDispD, two months across a tariff change, 5 kW | Every section, VAT and total match to the cent |
 | Regulated service, two bands, 3 kW, summary only | Each section within one cent; excise not checked |
 
 The energy between two readings of a meter goes to the time band in force when the second reading arrives: with a meter that reports every few minutes the error is a few minutes of consumption at each band change.

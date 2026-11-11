@@ -55,7 +55,12 @@ ENEL = Contract.from_dict(
         "supplier": "Enel Energia",
         "price_type": "indexed",
         "time_bands": "f1_f2_f3",
-        "index": {"name": "pun_index_gme", "period": "monthly", "coefficient": 1},
+        "index": {
+            "name": "pun_index_gme",
+            "period": "monthly",
+            "coefficient": D("1.10"),
+            "loss_method": "price",
+        },
         "energy_price": {"f1": D("0.0286"), "f2": D("0.0286"), "f3": D("0.011")},
         "dispatching": {
             "mode": "cdispd",
@@ -66,8 +71,10 @@ ENEL = Contract.from_dict(
         "fixed_fee_eur_year": 144,
     }
 )
+# July 2026 GME monthly averages by band (source: Gestore dei Mercati
+# Energetici S.p.A.); the bill shows them multiplied by 1.10.
 ENEL_JULY = Market(
-    pun={"f1": D("0.169620"), "f2": D("0.186320"), "f3": D("0.167480")},
+    pun={"f1": D("0.15420"), "f2": D("0.16938"), "f3": D("0.15226")},
     cdispd=D("0.025043"),
 )
 
@@ -113,13 +120,14 @@ def test_unit_price_ajo() -> None:
 
 
 def test_unit_price_enel() -> None:
-    """Enel Flex, July 2026: PUN + alfa + CDispD, no loss multiplier."""
+    """Enel Flex, July 2026: PUN x 1.10 + alfa + CDispD."""
     day = date(2026, 7, 15)
     supply = Supply(resident=True, power_kw=D(5))
+    # f1: (0.15420 x 1.10 + 0.0286 + 0.025043 + 0.070583) x 1.10
     for band, expected in (
         ("f1", "0.3232306"),
-        ("f2", "0.3416006"),
-        ("f3", "0.3015166"),
+        ("f2", "0.3415984"),
+        ("f3", "0.3015232"),
     ):
         price = unit_price(ENEL, supply, ENEL_JULY, day, band)
         check(f"Enel {band} total", price.total, expected)

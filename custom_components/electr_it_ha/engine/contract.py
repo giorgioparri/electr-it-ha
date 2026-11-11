@@ -48,6 +48,13 @@ class IndexPeriod(StrEnum):
     QUARTERLY = "quarterly"
 
 
+class LossMethod(StrEnum):
+    """How the supplier bills the network losses of the index coefficient."""
+
+    ENERGY = "energy"  # extra kWh, rounded to the kWh in each band, at the index
+    PRICE = "price"  # index price multiplied by the coefficient
+
+
 class DispatchingMode(StrEnum):
     """How dispatching costs are charged."""
 
@@ -110,6 +117,7 @@ class Index:
     name: IndexName
     period: IndexPeriod
     coefficient: Decimal
+    loss_method: LossMethod = LossMethod.ENERGY
 
 
 @dataclass(frozen=True, slots=True)
@@ -195,6 +203,7 @@ class Contract:
                 "name": self.index.name.value,
                 "period": self.index.period.value,
                 "coefficient": _number(self.index.coefficient),
+                "loss_method": self.index.loss_method.value,
             },
             "energy_price": None
             if self.energy_price is None
@@ -318,7 +327,9 @@ def _parse_index(value: Any, errors: list[str]) -> Index | None:
     """Parse the optional "index" object."""
     if value is None:
         return None
-    data = _mapping(value, "index", ("name", "period", "coefficient"), errors)
+    data = _mapping(
+        value, "index", ("name", "period", "coefficient", "loss_method"), errors
+    )
     if data is None:
         return None
     name = _enum(IndexName, data.get("name"), "index.name", errors)
@@ -327,9 +338,15 @@ def _parse_index(value: Any, errors: list[str]) -> Index | None:
     if coefficient is not None and coefficient <= 0:
         errors.append("index.coefficient: must be greater than zero")
         coefficient = None
-    if name is None or period is None or coefficient is None:
+    raw_method = data.get("loss_method")
+    loss_method = (
+        LossMethod.ENERGY
+        if raw_method is None
+        else _enum(LossMethod, raw_method, "index.loss_method", errors)
+    )
+    if name is None or period is None or coefficient is None or loss_method is None:
         return None
-    return Index(name, period, coefficient)
+    return Index(name, period, coefficient, loss_method)
 
 
 def _parse_energy_price(

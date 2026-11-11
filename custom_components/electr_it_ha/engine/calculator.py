@@ -23,10 +23,15 @@ from datetime import date, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from enum import StrEnum
 
-from .contract import BAND_KEYS, Contract, DispatchingMode, PriceType
+from .contract import BAND_KEYS, Contract, DispatchingMode, LossMethod, PriceType
 from .regulated import RATES, Component, Rate, rate, spans
 
 _CENT = Decimal("0.01")
+# Unit prices multiplied by a loss factor are rounded like the bills show them:
+# the index to the hundredth of EUR/MWh, as GME publishes it, the regulated
+# dispatching components to the millionth of EUR/kWh.
+_INDEX_PRICE_STEP = Decimal("0.00001")
+_DISPATCHING_PRICE_STEP = Decimal("0.000001")
 _ZERO = Decimal(0)
 
 # Standard network loss factor for low-voltage supplies, applied to the kWh
@@ -205,6 +210,11 @@ def _cents(value: Decimal) -> Decimal:
     return value.quantize(_CENT, ROUND_HALF_UP)
 
 
+def _round_price(value: Decimal, step: Decimal) -> Decimal:
+    """Round a unit price to `step`, half up."""
+    return value.quantize(step, ROUND_HALF_UP)
+
+
 def _loss_kwh(kwh: Decimal, factor: Decimal) -> Decimal:
     """Return the loss kWh for one band, rounded to the whole kWh as on bills."""
     return (kwh * factor).quantize(Decimal(1), ROUND_HALF_UP)
@@ -336,19 +346,41 @@ class _Builder:
         if contract.price_type is PriceType.INDEXED:
             assert contract.index is not None
             assert period.pun is not None
-            loss_factor = contract.index.coefficient - 1
-            for band in self.bands:
-                pun = period.pun[band]
-                self.add(
-                    f"index_{band}", sale, start, end, period.kwh[band], Unit.KWH, pun
-                )
-            for band in self.bands:
-                loss = _loss_kwh(Decimal(period.kwh[band]), loss_factor)
-                if loss:
+            index = contract.index
+            if index.loss_method is LossMethod.PRICE:
+                for band in self.bands:
+                    price = _round_price(
+                        period.pun[band] * index.coefficient, _INDEX_PRICE_STEP
+                    )
+                    self.add(
+                        f"index_{band}",
+                        sale,
+                        start,
+                        end,
+                        period.kwh[band],
+                        Unit.KWH,
+                        price,
+                    )
+            else:
+                loss_factor = index.coefficient - 1
+                for band in self.bands:
                     pun = period.pun[band]
                     self.add(
-                        f"index_loss_{band}", sale, start, end, loss, Unit.KWH, pun
+                        f"index_{band}",
+                        sale,
+                        start,
+                        end,
+                        period.kwh[band],
+                        Unit.KWH,
+                        pun,
                     )
+                for band in self.bands:
+                    loss = _loss_kwh(Decimal(period.kwh[band]), loss_factor)
+                    if loss:
+                        pun = period.pun[band]
+                        self.add(
+                            f"index_loss_{band}", sale, start, end, loss, Unit.KWH, pun
+                        )
             for band in self.bands:
                 spread = prices.get(band, _ZERO)
                 if spread:
@@ -380,30 +412,45 @@ class _Builder:
         sale = Category.SALE_ENERGY
         start, end = period.start, period.end
         total = self.total_kwh(period)
-        with_losses = total + sum(
-            (
-                _loss_kwh(Decimal(period.kwh[band]), STANDARD_LOSS_FACTOR)
-                for band in self.bands
-            ),
-            _ZERO,
+        in_price = (
+            contract.index is not None
+            and contract.index.loss_method is LossMethod.PRICE
         )
+        if in_price:
+            quantity = total
+        else:
+            quantity = total + sum(
+                (
+                    _loss_kwh(Decimal(period.kwh[band]), STANDARD_LOSS_FACTOR)
+                    for band in self.bands
+                ),
+                _ZERO,
+            )
+
+        def with_losses(price: Decimal) -> Decimal:
+            """Return the price billed per metered kWh under the loss method."""
+            if not in_price:
+                return price
+            return _round_price(
+                price * (1 + STANDARD_LOSS_FACTOR), _DISPATCHING_PRICE_STEP
+            )
+
         mode = contract.dispatching.mode
         if mode is DispatchingMode.CDISPD:
             assert period.cdispd is not None
             self.add("cdispd", sale, start, end, total, Unit.KWH, period.cdispd)
         elif mode is DispatchingMode.REGULATED:
             assert period.dispatching is not None
-            price = period.dispatching
-            self.add("dispatching", sale, start, end, with_losses, Unit.KWH, price)
+            price = with_losses(period.dispatching)
+            self.add("dispatching", sale, start, end, quantity, Unit.KWH, price)
         elif mode is DispatchingMode.FIXED:
             assert contract.dispatching.fixed_value is not None
-            price = contract.dispatching.fixed_value
-            self.add("dispatching", sale, start, end, with_losses, Unit.KWH, price)
+            price = with_losses(contract.dispatching.fixed_value)
+            self.add("dispatching", sale, start, end, quantity, Unit.KWH, price)
         if contract.dispatching.capacity_market:
             assert period.capacity is not None
-            self.add(
-                "capacity", sale, start, end, with_losses, Unit.KWH, period.capacity
-            )
+            price = with_losses(period.capacity)
+            self.add("capacity", sale, start, end, quantity, Unit.KWH, price)
         if contract.energy_fee_eur_kwh:
             price = contract.energy_fee_eur_kwh
             self.add("energy_fee", sale, start, end, total, Unit.KWH, price)
