@@ -1,6 +1,7 @@
 {
   "domain": "electr_it_ha",
   "name": "electrITHA",
+  "categories": ["energy.energy_prices"],
   "codeowners": ["@giorgioparri"],
   "config_flow": true,
   "documentation": "https://github.com/giorgioparri/electr-it-ha",
