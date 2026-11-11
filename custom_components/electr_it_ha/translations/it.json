@@ -1,0 +1,84 @@
+{
+  "config": {
+    "step": {
+      "contract": {
+        "title": "Contratto di fornitura",
+        "description": "Incolla il contratto in formato JSON. Contiene solo ciò che decide il venditore: prezzi, quote fisse, come viene fatturato il dispacciamento. Il README spiega il formato e come ricavarlo da una bolletta.\n\n{details}",
+        "data": {
+          "contract_json": "Contratto (JSON)"
+        }
+      },
+      "supply": {
+        "title": "Fornitura e contatori",
+        "description": "Questi dati non dipendono dal venditore. Li trovi su qualsiasi bolletta.",
+        "data": {
+          "resident": "Residente",
+          "power_kw": "Potenza impegnata",
+          "meters": "Contatori di prelievo dalla rete"
+        },
+        "data_description": {
+          "resident": "Decide la franchigia delle accise e la quota fissa degli oneri di sistema.",
+          "power_kw": "La potenza impegnata del contratto, in kW.",
+          "meters": "Uno o più sensori di energia cumulativi che misurano il prelievo dalla rete. I loro incrementi vengono sommati."
+        }
+      },
+      "market": {
+        "title": "Valori di mercato",
+        "description": "Il prezzo del tuo contratto dipende dai valori qui sotto, che cambiano ogni mese. Per ciascuno scegli un'entità oppure scrivi un valore fisso in €/kWh, non entrambi. Un'entità può essere in €/kWh o in €/MWh.",
+        "data": {
+          "pun_f0_entity": "PUN monorario: entità",
+          "pun_f0_value": "PUN monorario: valore fisso",
+          "pun_f1_entity": "PUN F1: entità",
+          "pun_f1_value": "PUN F1: valore fisso",
+          "pun_f2_entity": "PUN F2: entità",
+          "pun_f2_value": "PUN F2: valore fisso",
+          "pun_f3_entity": "PUN F3: entità",
+          "pun_f3_value": "PUN F3: valore fisso",
+          "pun_f23_entity": "PUN F23: entità",
+          "pun_f23_value": "PUN F23: valore fisso",
+          "dispatching_entity": "Dispacciamento: entità",
+          "dispatching_value": "Dispacciamento: valore fisso",
+          "capacity_entity": "Capacity market: entità",
+          "capacity_value": "Capacity market: valore fisso",
+          "cdispd_entity": "CDispD: entità",
+          "cdispd_value": "CDispD: valore fisso"
+        }
+      }
+    },
+    "error": {
+      "invalid_contract": "Il contratto non è valido. I problemi sono elencati qui sopra.",
+      "no_meters": "Scegli almeno un contatore.",
+      "entity_or_value": "Compila l'entità oppure il valore fisso, non entrambi."
+    },
+    "abort": {
+      "reconfigure_successful": "Configurazione aggiornata."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "unit_price": {
+        "name": "Prezzo del prossimo kWh"
+      },
+      "fixed_cost": {
+        "name": "Costo fisso giornaliero"
+      },
+      "month_cost": {
+        "name": "Costo del mese in corso"
+      },
+      "previous_month_cost": {
+        "name": "Costo del mese precedente"
+      },
+      "month_energy": {
+        "name": "Energia prelevata nel mese"
+      },
+      "time_band": {
+        "name": "Fascia oraria",
+        "state": {
+          "f1": "F1",
+          "f2": "F2",
+          "f3": "F3"
+        }
+      }
+    }
+  }
+}

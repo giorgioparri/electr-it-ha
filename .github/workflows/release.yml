@@ -1,0 +1,207 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  # Manual fallback: pick the tag under "Use workflow from" to (re)create its
+  # release, e.g. after a GitHub Actions outage swallowed the tag push event.
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version from tag
+        id: version
+        run: |
+          if [ "${{ github.ref_type }}" != "tag" ]; then
+            echo "::error::This workflow must run on a tag ref, got '${{ github.ref_name }}'."
+            exit 1
+          fi
+
+          # v0.1.0-beta.1 -> VERSION=0.1.0-beta.1, BASE_VERSION=0.1.0
+          VERSION="${GITHUB_REF_NAME#v}"
+          BASE_VERSION="${VERSION%%-*}"
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "base_version=$BASE_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Tag $GITHUB_REF_NAME -> version=$VERSION, base=$BASE_VERSION"
+
+      # The committed manifest.json has to carry the base version already.
+      # Patching it here without committing back would leave the repository
+      # claiming an older version to anyone installing from source or reading
+      # the file on main.
+      - name: Verify manifest.json matches the tag
+        env:
+          BASE_VERSION: ${{ steps.version.outputs.base_version }}
+        run: |
+          MANIFEST="custom_components/electr_it_ha/manifest.json"
+          MANIFEST_VERSION="$(python3 -c "import json;print(json.load(open('$MANIFEST'))['version'])")"
+          if [ "$MANIFEST_VERSION" != "$BASE_VERSION" ]; then
+            echo "::error::$MANIFEST says $MANIFEST_VERSION but the tag says $BASE_VERSION. Bump the manifest, commit, and re-tag."
+            exit 1
+          fi
+          echo "manifest.json version $MANIFEST_VERSION matches tag."
+      - name: Verify README links are absolute
+        run: |
+          # HACS renders the README through Home Assistant's markdown
+          # sanitiser: relative link targets are blanked (href="") and
+          # relative image sources come out as src="". Anchors (#section) are
+          # fine — they resolve within the rendered document.
+          bad=0
+          for f in README.md README.it.md; do
+            [ -f "$f" ] || continue
+            while read -r target; do
+              [ -n "$target" ] || continue
+              case "$target" in
+                http://*|https://*|\#*|mailto:*) ;;
+                *) echo "::error::$f: relative target '$target' will be blanked in HACS."; bad=1 ;;
+              esac
+            done < <(
+              { grep -oE '\]\([^)]+\)' "$f" | sed -e 's/^](//' -e 's/)$//'
+                grep -oE '(href|src)="[^"]*"' "$f" | sed -e 's/^[a-z]*="//' -e 's/"$//'
+              } | sort -u
+            )
+          done
+          [ "$bad" -eq 0 ] || exit 1
+          echo "README link targets OK."
+
+      # Pre-release tags only: stamp the suffix into the CI checkout so an
+      # installed beta identifies itself as one in Home Assistant's
+      # integration panel. Never committed — the repository keeps the base
+      # version, which is what the check above enforces.
+      - name: Stamp the pre-release suffix into manifest.json
+        if: steps.version.outputs.version != steps.version.outputs.base_version
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION}\"/" \
+            custom_components/electr_it_ha/manifest.json
+          grep '"version"' custom_components/electr_it_ha/manifest.json
+
+      - name: Extract release notes from CHANGELOG.md
+        env:
+          BASE_VERSION: ${{ steps.version.outputs.base_version }}
+        run: |
+          # Everything between "## [BASE_VERSION]" and the next "## [" heading
+          # or the block of link definitions at the end of the file.
+          awk -v ver="$BASE_VERSION" '
+            $0 ~ "^## \\[" ver "\\]" { found=1; next }
+            found && /^## \[/      { exit }
+            found && /^\[[^]]+\]:/ { exit }
+            found { print }
+          ' CHANGELOG.md > release_notes.md
+
+          # A pre-release tagged before the CHANGELOG section is renamed still
+          # has its content under [Unreleased]: fall back to it rather than
+          # publishing empty release notes.
+          if [ ! -s release_notes.md ]; then
+            awk '
+              /^## \[Unreleased\]/   { found=1; next }
+              found && /^## \[/      { exit }
+              found && /^\[[^]]+\]:/ { exit }
+              found { print }
+            ' CHANGELOG.md > release_notes.md
+          fi
+
+          # Trim trailing whitespace, then leading/trailing blank lines.
+          sed -i -e 's/[[:space:]]*$//' -e '/./,$!d' release_notes.md
+
+          # Unwrap hard-wrapped paragraphs. CHANGELOG.md is wrapped at ~80
+          # columns, which reads well in the repo because GitHub joins single
+          # newlines when rendering a .md file. Release bodies are rendered
+          # with hard line breaks instead, where every newline becomes a <br>,
+          # so the wrapping would show up as ragged mid-sentence breaks.
+          # Fold each block onto one line and let the browser wrap it.
+          awk '
+            function flush() { if (buf != "") { print buf; buf = "" } }
+            BEGIN { buf = ""; fence = 0 }
+            {
+              line = $0
+
+              # Fenced code blocks pass through untouched.
+              if (line ~ /^[[:space:]]*(```|~~~)/) { flush(); print line; fence = !fence; next }
+              if (fence)                          { flush(); print line; next }
+
+              # Blank line ends the current block.
+              if (line ~ /^[[:space:]]*$/) { flush(); print ""; next }
+
+              # Indented code at the start of a block passes through.
+              if (buf == "" && line ~ /^    [^[:space:]]/) { print line; next }
+
+              # A continuation line: indented, not a new list item, and with
+              # something to attach to. Fold it in with a single space.
+              if (buf != "" && line ~ /^[[:space:]]+[^[:space:]]/ &&
+                  line !~ /^[[:space:]]*([-*+]|[0-9]+\.)[[:space:]]/) {
+                sub(/^[[:space:]]+/, "", line)
+                buf = buf " " line
+                next
+              }
+
+              # Anything else starts a new block.
+              flush()
+              buf = line
+            }
+            END { flush() }
+          ' release_notes.md > release_notes.unwrapped && mv release_notes.unwrapped release_notes.md
+
+          echo "Release notes:"
+          cat release_notes.md
+
+      - name: Create release zip
+        run: |
+          # GPL-3.0 section 4: the license text travels with the code. HACS
+          # unpacks nothing but this archive, so a LICENSE left in the
+          # repository root never reaches an installed copy. Copied into the
+          # CI checkout only - the repository keeps a single LICENSE at its
+          # root.
+          cp LICENSE custom_components/electr_it_ha/
+          cd custom_components/electr_it_ha
+          zip -r "${GITHUB_WORKSPACE}/electr_it_ha.zip" . \
+            -x '*.pyc' -x '__pycache__/*'
+
+      - name: Verify zip layout
+        run: |
+          # HACS unpacks the zip straight into
+          # config/custom_components/electr_it_ha, so manifest.json has to
+          # sit at the root of the archive. A zip that kept the
+          # custom_components/ prefix installs one level too deep and the
+          # integration silently never loads.
+          if ! unzip -l electr_it_ha.zip | grep -qE " manifest\.json$"; then
+            echo "::error::manifest.json is not at the root of the zip."
+            unzip -l electr_it_ha.zip
+            exit 1
+          fi
+          if unzip -l electr_it_ha.zip | grep -q "custom_components/"; then
+            echo "::error::the zip must not contain the custom_components/ prefix."
+            unzip -l electr_it_ha.zip
+            exit 1
+          fi
+          if ! unzip -l electr_it_ha.zip | grep -qE " LICENSE$"; then
+            echo "::error::LICENSE is missing from the zip."
+            unzip -l electr_it_ha.zip
+            exit 1
+          fi
+          echo "Zip layout OK"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "electrITHA ${{ github.ref_name }}"
+          body_path: release_notes.md
+          draft: false
+          # Tags carrying a pre-release suffix (v0.1.0-beta.1) are published as
+          # pre-releases, so HACS only offers them to users who enabled
+          # "Show beta versions".
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: electr_it_ha.zip

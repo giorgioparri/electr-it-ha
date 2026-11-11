@@ -1,0 +1,39 @@
+name: Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Run test suite (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.13 is the version the conventions target; 3.14 is the one Home
+        # Assistant 2026.8, the minimum in hacs.json, runs on.
+        python-version: ["3.13", "3.14"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      # The engine is pure Python: the tests need nothing installed, not even
+      # Home Assistant.
+      - name: Run bill tests
+        run: python tests/test_bills.py
+      - name: Run time band tests
+        run: python tests/test_bands.py
+      - name: Run estimate tests
+        run: python tests/test_estimate.py
+      - name: Run market value tests
+        run: python tests/test_market.py
+      - name: Run counter tests
+        run: python tests/test_counters.py

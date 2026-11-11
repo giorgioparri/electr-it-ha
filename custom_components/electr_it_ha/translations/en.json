@@ -1,0 +1,84 @@
+{
+  "config": {
+    "step": {
+      "contract": {
+        "title": "Supply contract",
+        "description": "Paste the contract as JSON. It holds only what your supplier decides: prices, fees, how dispatching is billed. The README explains the format and how to get it from a bill.\n\n{details}",
+        "data": {
+          "contract_json": "Contract (JSON)"
+        }
+      },
+      "supply": {
+        "title": "Supply and meters",
+        "description": "These do not depend on the supplier. You find them on any bill.",
+        "data": {
+          "resident": "Resident (main home)",
+          "power_kw": "Committed power",
+          "meters": "Grid import meters"
+        },
+        "data_description": {
+          "resident": "Decides the excise allowance and the fixed system charge.",
+          "power_kw": "The contracted power (potenza impegnata), in kW.",
+          "meters": "One or more cumulative energy sensors that measure what you draw from the grid. Their increases are added together."
+        }
+      },
+      "market": {
+        "title": "Market values",
+        "description": "Your contract is priced with the values below, which change every month. For each one choose an entity or type a fixed number in €/kWh, not both. An entity may report €/kWh or €/MWh.",
+        "data": {
+          "pun_f0_entity": "PUN, single band: entity",
+          "pun_f0_value": "PUN, single band: fixed value",
+          "pun_f1_entity": "PUN F1: entity",
+          "pun_f1_value": "PUN F1: fixed value",
+          "pun_f2_entity": "PUN F2: entity",
+          "pun_f2_value": "PUN F2: fixed value",
+          "pun_f3_entity": "PUN F3: entity",
+          "pun_f3_value": "PUN F3: fixed value",
+          "pun_f23_entity": "PUN F23: entity",
+          "pun_f23_value": "PUN F23: fixed value",
+          "dispatching_entity": "Dispatching: entity",
+          "dispatching_value": "Dispatching: fixed value",
+          "capacity_entity": "Capacity market: entity",
+          "capacity_value": "Capacity market: fixed value",
+          "cdispd_entity": "CDispD: entity",
+          "cdispd_value": "CDispD: fixed value"
+        }
+      }
+    },
+    "error": {
+      "invalid_contract": "The contract is not valid. The problems are listed above.",
+      "no_meters": "Choose at least one meter.",
+      "entity_or_value": "Fill in either the entity or the fixed value, not both."
+    },
+    "abort": {
+      "reconfigure_successful": "Configuration updated."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "unit_price": {
+        "name": "Price of the next kWh"
+      },
+      "fixed_cost": {
+        "name": "Fixed cost per day"
+      },
+      "month_cost": {
+        "name": "Cost this month"
+      },
+      "previous_month_cost": {
+        "name": "Cost last month"
+      },
+      "month_energy": {
+        "name": "Grid energy this month"
+      },
+      "time_band": {
+        "name": "Time band",
+        "state": {
+          "f1": "F1",
+          "f2": "F2",
+          "f3": "F3"
+        }
+      }
+    }
+  }
+}
