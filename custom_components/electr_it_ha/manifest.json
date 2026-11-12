@@ -6,7 +6,7 @@
   "config_flow": true,
   "documentation": "https://github.com/giorgioparri/electr-it-ha",
   "integration_type": "service",
-  "iot_class": "calculated",
+  "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/giorgioparri/electr-it-ha/issues",
   "requirements": [],
   "version": "0.1.0"
