@@ -1,6 +1,14 @@
 {
   "config": {
     "step": {
+      "user": {
+        "title": "What to add",
+        "description": "A supply computes the cost of one contract. The GME account downloads the PUN for every supply, with your own GME credentials.",
+        "menu_options": {
+          "contract": "A supply",
+          "gme_account": "The GME account"
+        }
+      },
       "contract": {
         "title": "Supply contract",
         "description": "Paste the contract as JSON. It holds only what your supplier decides: prices, fees, how dispatching is billed. The README explains the format and how to get it from a bill.\n\n{details}",
@@ -24,7 +32,7 @@
       },
       "market": {
         "title": "Market values",
-        "description": "Your contract is priced with the values below, which change every month. For each one choose an entity or type a fixed number in €/kWh, not both. An entity may report €/kWh or €/MWh.",
+        "description": "Your contract is priced with the values below, which change every month. For each one choose an entity or type a fixed number in €/kWh, not both. An entity may report €/kWh or €/MWh. The sensors of the GME account, if you added it, are already filled in.",
         "data": {
           "pun_f0_entity": "PUN, single band: entity",
           "pun_f0_value": "PUN, single band: fixed value",
@@ -43,15 +51,35 @@
           "cdispd_entity": "CDispD: entity",
           "cdispd_value": "CDispD: fixed value"
         }
+      },
+      "gme_account": {
+        "title": "GME account",
+        "description": "The PUN is downloaded from the official GME API with your own credentials, which GME gives each user who registers at {url}. Data source: Gestore dei Mercati Energetici S.p.A.",
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        }
+      },
+      "reauth_confirm": {
+        "title": "GME account",
+        "description": "GME refused the saved credentials. Enter them again; if you lost them, ask GME (registration at {url}).",
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        }
       }
     },
     "error": {
       "invalid_contract": "The contract is not valid. The problems are listed above.",
       "no_meters": "Choose at least one meter.",
-      "entity_or_value": "Fill in either the entity or the fixed value, not both."
+      "entity_or_value": "Fill in either the entity or the fixed value, not both.",
+      "invalid_auth": "GME refused these credentials.",
+      "cannot_connect": "Cannot reach the GME API. Try again later."
     },
     "abort": {
-      "reconfigure_successful": "Configuration updated."
+      "reconfigure_successful": "Configuration updated.",
+      "already_configured": "The GME account is already configured.",
+      "reauth_successful": "Credentials updated."
     }
   },
   "entity": {
@@ -78,6 +106,36 @@
           "f2": "F2",
           "f3": "F3"
         }
+      },
+      "pun_f0_current": {
+        "name": "PUN single band this month"
+      },
+      "pun_f1_current": {
+        "name": "PUN F1 this month"
+      },
+      "pun_f2_current": {
+        "name": "PUN F2 this month"
+      },
+      "pun_f3_current": {
+        "name": "PUN F3 this month"
+      },
+      "pun_f23_current": {
+        "name": "PUN F23 this month"
+      },
+      "pun_f0_previous": {
+        "name": "PUN single band last month"
+      },
+      "pun_f1_previous": {
+        "name": "PUN F1 last month"
+      },
+      "pun_f2_previous": {
+        "name": "PUN F2 last month"
+      },
+      "pun_f3_previous": {
+        "name": "PUN F3 last month"
+      },
+      "pun_f23_previous": {
+        "name": "PUN F23 last month"
       }
     }
   }
