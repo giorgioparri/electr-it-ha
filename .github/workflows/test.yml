@@ -39,3 +39,5 @@ jobs:
         run: python tests/test_counters.py
       - name: Run PUN average tests
         run: python tests/test_pun.py
+      - name: Run GME API message tests
+        run: python tests/test_gme.py
