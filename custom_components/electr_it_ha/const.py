@@ -19,3 +19,18 @@ SAVE_DELAY_SECONDS = 60
 
 # How often prices and month-to-date cost are recomputed when no meter changes.
 UPDATE_INTERVAL_SECONDS = 60
+
+# Kinds of config entry. Entries without the key are supplies (version 0.1.0).
+CONF_ENTRY_TYPE = "entry_type"
+ENTRY_TYPE_SUPPLY = "supply"
+ENTRY_TYPE_GME = "gme_account"
+
+# The GME account: one per installation, shared by every supply.
+GME_UNIQUE_ID = "gme_account"
+GME_STORAGE_KEY = f"{DOMAIN}.gme_prices"
+# Day-ahead prices for tomorrow are published around 13:00 Italian time.
+GME_PUBLICATION_HOUR = 14
+GME_UPDATE_INTERVAL_MINUTES = 60
+GME_TIMEOUT_SECONDS = 60
+# Market sensors that report the month they refer to, as YYYY-MM.
+ATTR_MONTH = "month"
