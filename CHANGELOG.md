@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - One or more grid import meters in kWh, Wh or MWh: their increases are added together and split into F1, F2 and F3, Italian national holidays included.
 - Regulated values for every quarter of 2026 are built in: transport and metering, UC3 and UC6, ASOS and ARIM, DispBT, regulated service prices, excise and VAT. For a date outside 2026 the sensors become unknown and say why.
 - The bill calculator is tested against real bills: two match to the cent, a third within one cent per section.
+- The PUN by band can be downloaded from the official GME API with your own GME account, added once and shared by every supply: ten sensors with the average PUN of this month and last month, suggested in the config flow.
+- A month that ends is billed with the market values of that month: sensors that report their month, like those of the GME account, are used once they refer to it and are complete.
 - English and Italian.
 
 [Unreleased]: https://github.com/giorgioparri/electr-it-ha/compare/v0.1.0...HEAD

@@ -26,6 +26,7 @@ Un'integrazione per [Home Assistant](https://www.home-assistant.io/) che ti dice
 - **Solo clienti domestici in bassa tensione.** Residenti e non residenti, qualsiasi potenza impegnata.
 - **Non ancora applicati:** sconti, energia verde opzionale, prezzi validi per un periodo, scaglioni di consumo, fasce Peak/Off-Peak.
 - La **franchigia delle accise** per i residenti fino a 3 kW segue la legge (primi 150 kWh al mese esenti, ridotti oltre la soglia) ma non è ancora stata verificata su una bolletta con il dettaglio.
+- **Il PUN si può scaricare dal GME con il tuo account.** Le API ufficiali del GME sono gratuite ma personali: ogni utente si registra e riceve le sue credenziali, che non vanno condivise. Senza account puoi prendere il PUN da qualsiasi entità che hai già, oppure scriverlo a mano.
 - Progetto non ufficiale, non affiliato ad ARERA, GME, Acquirente Unico, Terna né ad alcun venditore.
 
 ---
@@ -37,6 +38,7 @@ Un'integrazione per [Home Assistant](https://www.home-assistant.io/) che ti dice
 - **Costo fisso giornaliero**: quanto costa la fornitura senza consumi
 - **Fasce F1 / F2 / F3** con le festività nazionali italiane, ed energia prelevata nel mese divisa per fascia
 - **Uno o più contatori**: gli incrementi di più sensori di energia cumulativi vengono sommati (forniture trifase, più punti di misura)
+- **PUN dal GME**: con un account GME la media mensile del PUN per fascia viene scaricata dalle API ufficiali, una volta per tutte le forniture, di solito una volta al giorno
 - **Qualsiasi contratto** che rientri nel modello, incollato in JSON e validato subito; riconfigurabile in ogni momento senza perdere i contatori del mese
 - Italiano e inglese
 
@@ -49,11 +51,13 @@ Ogni fornitura configurata è un dispositivo con sei sensori.
 | Prezzo del prossimo kWh | Costo di un kWh in più adesso, IVA inclusa. Attributi: fascia, vendita, rete, oneri di sistema, accise, IVA | EUR/kWh |
 | Costo fisso giornaliero | Quote fisse e di potenza di oggi, IVA inclusa | EUR/d |
 | Costo del mese in corso | La bolletta dal primo del mese a ora. Attributi: imponibile, IVA, subtotali per sezione | EUR |
-| Costo del mese precedente | La bolletta del mese concluso, calcolata al cambio di mese | EUR |
+| Costo del mese precedente | La bolletta del mese concluso, calcolata al cambio di mese. Mentre aspetta i valori di mercato di quel mese, l'attributo `waiting_for_market` è `true` | EUR |
 | Energia prelevata nel mese | kWh prelevati nel mese. Attributi: kWh in F1, F2, F3 | kWh |
 | Fascia oraria | La fascia in vigore: F1, F2 o F3 | — |
 
 Quando un valore non è calcolabile lo stato è sconosciuto e l'attributo `problems` dice che cosa manca.
+
+L'account GME è un dispositivo con dieci sensori: il PUN medio di F0 (monorario), F1, F2, F3 e F23, del mese in corso e del mese precedente, in EUR/kWh. Gli attributi dicono a quale mese (`month`) si riferisce il valore, quante ore copre (`hours`) su quelle del mese (`expected_hours`) e se è definitivo (`complete`). Nei primi giorni del mese una fascia può non avere ancora ore (di domenica non c'è F1): finché non ne ha, il sensore del mese in corso mostra il valore del mese precedente, e l'attributo `month` lo indica.
 
 ---
 
@@ -76,13 +80,25 @@ Richiede Home Assistant 2026.8.0 o successivo.
 
 ## Configurazione
 
-**Impostazioni → Dispositivi e servizi → Aggiungi integrazione → electrITHA.** Tre schermate:
+**Impostazioni → Dispositivi e servizi → Aggiungi integrazione → electrITHA.** La prima volta scegli cosa aggiungere: una fornitura o l'account GME. Quando l'account GME esiste, l'integrazione passa direttamente a una nuova fornitura.
+
+Una fornitura richiede tre schermate:
 
 1. **Contratto di fornitura**: incolla il contratto in JSON (vedi sotto). Viene validato subito e ogni problema è elencato.
 2. **Fornitura e contatori**: se sei residente, la potenza impegnata in kW, e uno o più sensori di energia cumulativi che misurano il prelievo dalla rete (kWh, Wh o MWh).
-3. **Valori di mercato**: solo quelli da cui dipende il prezzo del tuo contratto. Per ciascuno scegli un'entità oppure scrivi un valore fisso in €/kWh. Un'entità può essere in €/kWh o in €/MWh. La schermata viene saltata se il contratto non ne richiede.
+3. **Valori di mercato**: solo quelli da cui dipende il prezzo del tuo contratto. Per ciascuno scegli un'entità oppure scrivi un valore fisso in €/kWh. Un'entità può essere in €/kWh o in €/MWh. Se hai aggiunto l'account GME, i suoi sensori del PUN sono già indicati. La schermata viene saltata se il contratto non ne richiede.
 
 Per cambiare qualcosa in seguito usa **Riconfigura** sulla voce dell'integrazione: si riaprono le stesse schermate con i valori attuali.
+
+### L'account GME
+
+1. Registrati alle API del GME su [https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest](https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest) e segui le istruzioni del GME per accettare le condizioni d'uso. Il GME ti invia poi nome utente e password.
+2. Aggiungi di nuovo l'integrazione e scegli **L'account GME**. Le credenziali vengono controllate facendo il login.
+3. Aggiungi le forniture: i campi del PUN sono già compilati con i sensori dell'account GME. Per una fornitura configurata prima, apri **Riconfigura** e sceglili al posto dei valori che ha.
+
+La prima volta l'integrazione scarica il PUN del mese precedente e del mese in corso fino a oggi; poi solo i giorni che mancano, di solito una volta al giorno dopo le 14, quando il GME ha pubblicato i prezzi di domani. I prezzi restano nel tuo Home Assistant. Se in seguito il GME rifiuta le credenziali, Home Assistant ti chiede di inserirle di nuovo.
+
+Le condizioni d'uso delle API del GME consentono solo l'uso personale e chiedono di citare la fonte: ogni sensore dell'account GME riporta l'attribuzione *Source: Gestore dei Mercati Energetici S.p.A.*
 
 ### Il contratto
 
@@ -134,7 +150,9 @@ Il modello ricalca il tracciato con cui i venditori pubblicano le offerte sul Po
 | Capacity market | `dispatching.capacity_market` è `true` |
 | CDispD | `dispatching.mode` è `cdispd` |
 
-Cambiano ogni mese. Finché l'integrazione non li scarica da sola, collega ciascuno a un'entità che lo ha già nel tuo Home Assistant, oppure scrivi il valore dell'ultima bolletta e aggiornalo quando cambia. Alcune bollette riportano il PUN già moltiplicato per 1,10: in quel caso dividilo per 1,10 prima di inserirlo, altrimenti le perdite vengono contate due volte.
+Cambiano ogni mese. Per il PUN la fonte più semplice è l'account GME. Altrimenti collega ciascun valore a un'entità che lo ha già nel tuo Home Assistant (qualsiasi sensore con la media mensile per fascia, in €/kWh o €/MWh), oppure scrivi il valore dell'ultima bolletta e aggiornalo quando cambia. Dispacciamento, capacity market e CDispD non vengono ancora scaricati. Alcune bollette riportano il PUN già moltiplicato per 1,10: in quel caso dividilo per 1,10 prima di inserirlo, altrimenti le perdite vengono contate due volte.
+
+Al cambio di mese, il mese concluso viene fatturato con i valori di quel mese. Un'entità che indica il suo mese (`month`), come i sensori dell'account GME, viene usata solo quando si riferisce a quel mese ed è definitiva; per un sensore del mese in corso si usa il suo gemello del mese precedente. Le altre entità e i valori fissi vengono usati come sono in quel momento. Se dopo tre giorni i valori giusti mancano ancora, il mese viene fatturato con quelli disponibili e il log lo segnala.
 
 ### Plancia Energia
 
@@ -170,7 +188,7 @@ GPL-3.0-or-later — vedi [LICENSE](https://github.com/giorgioparri/electr-it-ha
 
 ## Avvertenza
 
-Questa è un'integrazione non ufficiale. I valori che mostra sono stime, utili a capire i propri consumi: l'unico importo dovuto è quello della bolletta del venditore. I valori regolati sono trascritti dalle pubblicazioni di ARERA; i corrispettivi approvati dall'Autorità risultano esclusivamente dai suoi provvedimenti.
+Questa è un'integrazione non ufficiale. I valori che mostra sono stime, utili a capire i propri consumi: l'unico importo dovuto è quello della bolletta del venditore. I valori regolati sono trascritti dalle pubblicazioni di ARERA; i corrispettivi approvati dall'Autorità risultano esclusivamente dai suoi provvedimenti. Dati del PUN scaricati con un account GME: fonte Gestore dei Mercati Energetici S.p.A.
 
 ## Ringraziamenti
 

@@ -26,6 +26,7 @@ A [Home Assistant](https://www.home-assistant.io/) integration that tells you wh
 - **Household customers in low voltage only.** Residents and non-residents, any committed power.
 - **Not applied yet:** discounts, optional green energy, time-limited prices, consumption tiers, Peak/Off-Peak bands.
 - The **excise allowance** for residents up to 3 kW follows the law (first 150 kWh per month exempt, reduced above the threshold) but has not been checked against a detailed bill yet.
+- **The PUN can be downloaded from GME with your own account.** GME's official API is free but personal: each user registers and gets their own credentials, which must not be shared. Without an account you can take the PUN from any entity you already have, or type it in.
 - Unofficial project, not affiliated with ARERA, GME, Acquirente Unico, Terna or any supplier.
 
 ---
@@ -37,6 +38,7 @@ A [Home Assistant](https://www.home-assistant.io/) integration that tells you wh
 - **Fixed cost per day**: what the supply costs with no consumption
 - **Time bands F1 / F2 / F3** with Italian national holidays, and energy drawn in the month split by band
 - **One or more meters**: the increases of several cumulative energy sensors are added together (three-phase supplies, more than one measuring point)
+- **PUN from GME**: with a GME account the monthly average PUN by band is downloaded from the official API, once for every supply, usually once a day
 - **Any contract** that fits the model, pasted as JSON and validated on the spot; reconfigurable at any time without losing the month's counters
 - English and Italian
 
@@ -49,11 +51,13 @@ Each configured supply is a device with six sensors.
 | Price of the next kWh | Cost of one more kWh right now, VAT included. Attributes: band, sale, network, system charges, excise, VAT | EUR/kWh |
 | Fixed cost per day | Fixed and power charges of today, VAT included | EUR/d |
 | Cost this month | The bill from the first of the month to now. Attributes: taxable, VAT, subtotals by section | EUR |
-| Cost last month | The bill of the month that ended, computed at the month change | EUR |
+| Cost last month | The bill of the month that ended, computed at the month change. While it waits for the market values of that month, the attribute `waiting_for_market` is `true` | EUR |
 | Grid energy this month | kWh drawn in the month. Attributes: kWh in F1, F2, F3 | kWh |
 | Time band | The band in force: F1, F2 or F3 | — |
 
 When a value cannot be computed its state is unknown and the `problems` attribute says what is missing.
+
+The GME account is a device with ten sensors: the average PUN of F0 (single band), F1, F2, F3 and F23, for this month and for last month, in EUR/kWh. Their attributes say which `month` the value refers to, how many `hours` it covers out of `expected_hours`, and whether it is `complete`. In the first days of a month a band may have no hours yet (no F1 on a Sunday): until it does, the sensor of this month shows last month's value, and its `month` attribute says so.
 
 ---
 
@@ -76,13 +80,25 @@ Requires Home Assistant 2026.8.0 or later.
 
 ## Configuration
 
-**Settings → Devices & services → Add integration → electrITHA.** Three screens:
+**Settings → Devices & services → Add integration → electrITHA.** The first time you choose what to add: a supply or the GME account. Once the GME account exists, the integration goes straight to a new supply.
+
+A supply takes three screens:
 
 1. **Supply contract** — paste the contract as JSON (see below). It is validated at once and every problem is listed.
 2. **Supply and meters** — whether you are a resident, the committed power in kW, and one or more cumulative energy sensors that measure what you draw from the grid (kWh, Wh or MWh).
-3. **Market values** — only the ones your contract is priced with. For each, choose an entity or type a fixed number in €/kWh. An entity may report €/kWh or €/MWh. This screen is skipped when the contract needs none.
+3. **Market values** — only the ones your contract is priced with. For each, choose an entity or type a fixed number in €/kWh. An entity may report €/kWh or €/MWh. The PUN sensors of the GME account, if you added it, are already filled in. This screen is skipped when the contract needs none.
 
 To change anything later use **Reconfigure** on the integration entry: the same screens open with the current values.
+
+### The GME account
+
+1. Register for the GME API at [https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest](https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest) and follow GME's instructions to accept its terms of use. GME then sends you a username and a password.
+2. Add the integration again and choose **The GME account**. The credentials are checked by logging in.
+3. Add your supplies: the PUN fields are already filled in with the sensors of the GME account. For a supply you configured before, open **Reconfigure** and choose them in place of the values it has.
+
+The first time, the integration downloads the PUN of last month and of this month so far; then only the days missing, usually once a day after 14:00, when GME has published tomorrow's prices. The prices are kept in your Home Assistant. If GME later refuses the credentials, Home Assistant asks you to enter them again.
+
+The terms of use of the GME API allow personal use only, and ask that the source be cited: every sensor of the GME account carries the attribution *Source: Gestore dei Mercati Energetici S.p.A.*
 
 ### The contract
 
@@ -134,7 +150,9 @@ The model follows the layout that suppliers use to publish their offers on the A
 | Capacity market | `dispatching.capacity_market` is `true` |
 | CDispD | `dispatching.mode` is `cdispd` |
 
-They change every month. Until the integration fetches them by itself, point each one to an entity that already has it in your Home Assistant, or type the value from your latest bill and update it when it changes. Some bills print the PUN already multiplied by 1.10: in that case divide it by 1.10 before typing it, or the losses are counted twice.
+They change every month. For the PUN the simplest source is the GME account. Otherwise point each value to an entity that already has it in your Home Assistant (any sensor with the monthly average by band, in €/kWh or €/MWh), or type the value from your latest bill and update it when it changes. Dispatching, capacity market and CDispD are not downloaded yet. Some bills print the PUN already multiplied by 1.10: in that case divide it by 1.10 before typing it, or the losses are counted twice.
+
+At the month change, last month is billed with the values of that month. An entity that reports its `month`, as the GME account sensors do, is used only once it refers to that month and is complete; for a sensor of this month, its last-month twin is used. Other entities and fixed numbers are used as they are at that moment. If the right values are still missing after three days, the month is billed with what is available and the log says so.
 
 ### Energy dashboard
 
@@ -170,7 +188,7 @@ GPL-3.0-or-later — see [LICENSE](https://github.com/giorgioparri/electr-it-ha/
 
 ## Disclaimer
 
-This is an unofficial integration. The figures it shows are estimates meant to help you understand your consumption: the only amount you owe is the one on your supplier's bill. Regulated values are transcribed from ARERA publications; the values approved by the Authority result only from its official acts.
+This is an unofficial integration. The figures it shows are estimates meant to help you understand your consumption: the only amount you owe is the one on your supplier's bill. Regulated values are transcribed from ARERA publications; the values approved by the Authority result only from its official acts. PUN data downloaded with a GME account: Source: Gestore dei Mercati Energetici S.p.A.
 
 ## Acknowledgments
 
