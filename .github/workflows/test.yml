@@ -37,3 +37,5 @@ jobs:
         run: python tests/test_market.py
       - name: Run counter tests
         run: python tests/test_counters.py
+      - name: Run PUN average tests
+        run: python tests/test_pun.py
