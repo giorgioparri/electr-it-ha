@@ -54,7 +54,7 @@
       },
       "gme_account": {
         "title": "Account GME",
-        "description": "Il PUN viene scaricato dalle API ufficiali del GME con le tue credenziali, che il GME rilascia a ogni utente che si registra su {url}. Fonte dei dati: Gestore dei Mercati Energetici S.p.A.",
+        "description": "Il PUN viene scaricato dalle API ufficiali del GME con le tue credenziali, che il GME rilascia a ogni utente che si registra su {url}. La password che il GME invia per email non si può usare direttamente: cambiala prima su {password_url}, poi inserisci qui la nuova. Il GME richiede di cambiarla di nuovo ogni 6 mesi; quando rifiuta la password salvata, Home Assistant ti chiederà di accedere di nuovo qui. Fonte dei dati: Gestore dei Mercati Energetici S.p.A.",
         "data": {
           "username": "Nome utente",
           "password": "Password"
@@ -62,7 +62,7 @@
       },
       "reauth_confirm": {
         "title": "Account GME",
-        "description": "Il GME ha rifiutato le credenziali salvate. Inseriscile di nuovo; se le hai perse, chiedile al GME (registrazione su {url}).",
+        "description": "Il GME ha rifiutato le credenziali salvate: molto probabilmente la password è scaduta (il GME la richiede ogni 6 mesi) oppure è stata cambiata volontariamente. Cambiala su {password_url} se non l'hai già fatto, poi inseriscila di nuovo. Se l'hai persa, recuperala dalla stessa pagina, oppure chiedi al GME (registrazione su {url}).",
         "data": {
           "username": "Nome utente",
           "password": "Password"

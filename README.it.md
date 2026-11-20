@@ -92,13 +92,16 @@ Per cambiare qualcosa in seguito usa **Riconfigura** sulla voce dell'integrazion
 
 ### L'account GME
 
-1. Registrati alle API del GME su [https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest](https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest) e segui le istruzioni del GME per accettare le condizioni d'uso. Il GME ti invia poi nome utente e password.
-2. Aggiungi di nuovo l'integrazione e scegli **L'account GME**. Le credenziali vengono controllate facendo il login.
-3. Aggiungi le forniture: i campi del PUN sono già compilati con i sensori dell'account GME. Per una fornitura configurata prima, apri **Riconfigura** e sceglili al posto dei valori che ha.
+1. Registrati alle API del GME su [https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest](https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest) e segui le istruzioni del GME per accettare le condizioni d'uso. Serve firmare un documento e rimandarlo al GME; vedi la nota sotto se la firma viene respinta. Il GME ti invia poi via email nome utente e una password temporanea.
+2. La password temporanea non si può usare così com'è: cambiala prima sul portale del GME dedicato, [https://api.mercatoelettrico.org/users/](https://api.mercatoelettrico.org/users/), poi usa la nuova nel passaggio successivo. Il GME richiede di cambiarla di nuovo ogni 6 mesi, senza preavviso: il segnale è la richiesta di riautenticazione descritta sotto.
+3. Aggiungi di nuovo l'integrazione e scegli **L'account GME**. Le credenziali vengono controllate facendo il login.
+4. Aggiungi le forniture: i campi del PUN sono già compilati con i sensori dell'account GME. Per una fornitura configurata prima, apri **Riconfigura** e sceglili al posto dei valori che ha.
 
-La prima volta l'integrazione scarica il PUN del mese precedente e del mese in corso fino a oggi; poi solo i giorni che mancano, di solito una volta al giorno dopo le 14, quando il GME ha pubblicato i prezzi di domani. I prezzi restano nel tuo Home Assistant. Se in seguito il GME rifiuta le credenziali, Home Assistant ti chiede di inserirle di nuovo.
+La prima volta l'integrazione scarica il PUN del mese precedente e del mese in corso fino a oggi; poi solo i giorni che mancano, di solito una volta al giorno dopo le 14, quando il GME ha pubblicato i prezzi di domani. I prezzi restano nel tuo Home Assistant. Se il GME rifiuta le credenziali salvate — la password è scaduta dopo 6 mesi, oppure è stata cambiata volontariamente — Home Assistant mostra una richiesta di riautenticazione in cui la cambi sul portale sopra e la inserisci di nuovo.
 
 Le condizioni d'uso delle API del GME consentono solo l'uso personale e chiedono di citare la fonte: ogni sensore dell'account GME riporta l'attribuzione *Source: Gestore dei Mercati Energetici S.p.A.*
+
+> **Una nota sulla registrazione.** La registrazione del GME chiede un documento di condizioni d'uso firmato, digitalmente o a mano con copia di un documento d'identità, inviato alla PEC dedicata del GME, `gme@pec.mercatoelettrico.org`, oppure, per chi non ha una PEC, al suo indirizzo di posta elettronica ordinaria dedicato allo scopo, `posta.gme@mercatoelettrico.org`. Una firma digitale che un lettore PDF segna come valida non è detto che basti: il GME può comunque respingerla se non è una firma qualificata (ad esempio CAdES/PAdES di un certificatore accreditato, del tipo che può produrre una Carta d'Identità Elettronica, CIE). Se succede, la risposta del GME indica il motivo e propone l'alternativa: rimandare con una firma digitale valida, oppure firmare a mano allegando un documento d'identità, in entrambi i casi a uno dei due indirizzi sopra. In pratica, la registrazione ha richiesto circa una settimana in tutto: la richiesta, una firma respinta, un nuovo invio, e le credenziali arrivate pochi giorni dopo.
 
 ### Il contratto
 

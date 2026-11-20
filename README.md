@@ -92,13 +92,16 @@ To change anything later use **Reconfigure** on the integration entry: the same 
 
 ### The GME account
 
-1. Register for the GME API at [https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest](https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest) and follow GME's instructions to accept its terms of use. GME then sends you a username and a password.
-2. Add the integration again and choose **The GME account**. The credentials are checked by logging in.
-3. Add your supplies: the PUN fields are already filled in with the sensors of the GME account. For a supply you configured before, open **Reconfigure** and choose them in place of the values it has.
+1. Register for the GME API at [https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest](https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest) and follow GME's instructions to accept its terms of use. This takes signing a document and sending it back to GME; see the note below if anything about the signature gets rejected. GME then emails you a username and a temporary password.
+2. The temporary password cannot be used as is: change it first at GME's own password portal, [https://api.mercatoelettrico.org/users/](https://api.mercatoelettrico.org/users/), then use the new one in the next step. GME requires changing the password again every 6 months, and gives no advance warning; the signal is the reauthentication prompt described below.
+3. Add the integration again and choose **The GME account**. The credentials are checked by logging in.
+4. Add your supplies: the PUN fields are already filled in with the sensors of the GME account. For a supply you configured before, open **Reconfigure** and choose them in place of the values it has.
 
-The first time, the integration downloads the PUN of last month and of this month so far; then only the days missing, usually once a day after 14:00, when GME has published tomorrow's prices. The prices are kept in your Home Assistant. If GME later refuses the credentials, Home Assistant asks you to enter them again.
+The first time, the integration downloads the PUN of last month and of this month so far; then only the days missing, usually once a day after 14:00, when GME has published tomorrow's prices. The prices are kept in your Home Assistant. If GME refuses the saved credentials — the password expired after 6 months, or was changed on purpose — Home Assistant shows a reauthentication prompt where you change it at the password portal above and enter it again.
 
 The terms of use of the GME API allow personal use only, and ask that the source be cited: every sensor of the GME account carries the attribution *Source: Gestore dei Mercati Energetici S.p.A.*
+
+> **A note on registration.** GME's registration asks for a signed terms-of-use document, digitally or on paper with an ID copy, sent to GME's dedicated certified-mail (PEC) address, `gme@pec.mercatoelettrico.org`, or, if you don't have a PEC, to its ordinary email address for this purpose, `posta.gme@mercatoelettrico.org`. A digital signature a PDF reader marks as valid is not necessarily enough: GME can still refuse it if it is not a qualified signature (for example CAdES/PAdES from an accredited certifier, of the kind an Italian electronic ID card, CIE, can produce). If that happens, GME's reply states the reason and offers the alternative: resend with a valid digital signature, or sign on paper with an ID copy, either way to one of the two addresses above. In practice, registration took about a week end to end: the request, one rejected signature, a resubmission, and the credentials arriving a few days later.
 
 ### The contract
 

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- The GME account screens explain that the temporary password GME emails cannot be used as is, link to GME's password portal to change it, and say that it must be renewed every 6 months; a reauthentication prompt is shown whenever GME refuses the saved password.
+
 ## [0.1.0] - 2026-11-10
 
 ### Added

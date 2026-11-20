@@ -57,6 +57,7 @@ GME_TITLE = "GME"
 GME_REGISTRATION_URL = (
     "https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest"
 )
+GME_PASSWORD_URL = "https://api.mercatoelettrico.org/users/"
 
 
 def _contract_schema() -> vol.Schema:
@@ -200,7 +201,10 @@ class ElectrIthaConfigFlow(ConfigFlow, domain=DOMAIN):
                 _gme_schema(), {CONF_USERNAME: self._previous.get(CONF_USERNAME)}
             ),
             errors=errors,
-            description_placeholders={"url": GME_REGISTRATION_URL},
+            description_placeholders={
+                "url": GME_REGISTRATION_URL,
+                "password_url": GME_PASSWORD_URL,
+            },
         )
 
     async def async_step_gme_account(
@@ -226,7 +230,10 @@ class ElectrIthaConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="gme_account",
             data_schema=self.add_suggested_values_to_schema(_gme_schema(), suggested),
             errors=errors,
-            description_placeholders={"url": GME_REGISTRATION_URL},
+            description_placeholders={
+                "url": GME_REGISTRATION_URL,
+                "password_url": GME_PASSWORD_URL,
+            },
         )
 
     async def _check_gme(self, user_input: dict[str, Any]) -> dict[str, str]:
