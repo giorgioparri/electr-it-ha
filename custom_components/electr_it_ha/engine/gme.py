@@ -43,6 +43,30 @@ class GmeAuthError(GmeError):
     """The login was refused."""
 
 
+_MISSING = object()
+
+
+def _field(answer: Mapping[str, Any], name: str, default: Any = None) -> Any:
+    """Return `answer[name]`, matching the key's case loosely.
+
+    GME's technical manual writes every field in PascalCase, but the Auth
+    endpoint answers in practice with lowercase keys (``success``, ``token``,
+    ``reason``) instead of the documented ``Success``/``Reason``. Reading
+    every GME answer this way is one rule that holds everywhere, rather than
+    a separate guess for each endpoint that happens to disagree with it.
+
+    `default` tells apart a key that is genuinely absent from one present
+    with a `null` value, which matters for `Price`: a cancelled auction
+    sends it as `null`, so the field being absent entirely is a different,
+    malformed row instead.
+    """
+    name = name.lower()
+    for key, value in answer.items():
+        if isinstance(key, str) and key.lower() == name:
+            return value
+    return default
+
+
 def auth_body(login: str, password: str) -> dict[str, str]:
     """Return the body of the authentication request."""
     return {"Login": login, "Password": password}
@@ -52,9 +76,9 @@ def token_from(answer: Any) -> str:
     """Return the JWT of a successful authentication."""
     if not isinstance(answer, Mapping):
         raise GmeAuthError("the authentication answer is not an object")
-    token = answer.get("token")
-    if answer.get("Success") is not True or not token:
-        reason = answer.get("Reason") or "no reason given"
+    token = _field(answer, "token")
+    if _field(answer, "success") is not True or not token:
+        reason = _field(answer, "reason") or "no reason given"
         raise GmeAuthError(f"login refused: {reason}")
     return str(token)
 
@@ -83,9 +107,9 @@ def _rows(answer: Any) -> list[Any]:
     """Unpack the list of rows carried by a data answer."""
     if not isinstance(answer, Mapping):
         raise GmeError("the data answer is not an object")
-    content = answer.get("ContentResponse")
+    content = _field(answer, "ContentResponse")
     if not content:
-        reason = answer.get("ResultRequest") or "no reason given"
+        reason = _field(answer, "ResultRequest") or "no reason given"
         raise GmeError(f"request failed: {reason}")
     try:
         archive = zipfile.ZipFile(io.BytesIO(base64.b64decode(content, validate=True)))
@@ -101,7 +125,9 @@ def _rows(answer: Any) -> list[Any]:
 
 
 def _price(row: Mapping[str, Any]) -> Decimal | None:
-    value = row["Price"]
+    value = _field(row, "Price", _MISSING)
+    if value is _MISSING:
+        raise KeyError("Price")
     if value is None:
         return None
     try:
@@ -118,15 +144,16 @@ def pun_prices(answer: Any, minutes: int = 60) -> list[tuple[datetime, Decimal]]
     """
     prices: list[tuple[datetime, Decimal]] = []
     for row in _rows(answer):
-        if not isinstance(row, Mapping) or row.get("Zone") != _PUN_ZONE:
+        if not isinstance(row, Mapping) or _field(row, "Zone") != _PUN_ZONE:
             continue
         try:
             price = _price(row)
             if price is None:
                 continue
-            flow = str(row["FlowDate"])
+            flow = str(_field(row, "FlowDate"))
             day = date(int(flow[:4]), int(flow[4:6]), int(flow[6:8]))
-            index = int(row["Hour"] if minutes == 60 else row["Period"])
+            field = "Hour" if minutes == 60 else "Period"
+            index = int(_field(row, field))
             prices.append((slot_start(day, index, minutes), price))
         except (KeyError, TypeError, ValueError, PunError) as err:
             raise GmeError(f"unreadable row {dict(row)}: {err}") from err

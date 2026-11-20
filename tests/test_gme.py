@@ -133,6 +133,11 @@ def test_auth() -> None:
     )
     raises("not an object", GmeAuthError, token_from, ["jwt"])
     check("an auth error is a GME error", issubclass(GmeAuthError, GmeError), True)
+    check(
+        "GME's real Auth answer uses lowercase keys, unlike its own manual",
+        token_from({"success": True, "token": "jwt", "reason": None}),
+        "jwt",
+    )
 
 
 def test_request() -> None:
@@ -210,6 +215,18 @@ def test_prices() -> None:
         [(slot_start(day, 33, 15), D(110)), (slot_start(day, 34, 15), D(111))],
     )
     check("an empty answer has no prices", pun_prices(response([])), [])
+
+    lowercase = {
+        "requestid": "synthetic",
+        "formattype": ".json.zip",
+        "resultrequest": "",
+        "contentresponse": packed(json.dumps([record("20261112", 5, "PUN", 50)]).encode()),
+    }
+    check(
+        "a data answer in lowercase keys reads the same",
+        pun_prices(lowercase),
+        [(slot_start(date(2026, 11, 12), 5), D(50))],
+    )
 
 
 def test_month() -> None:

@@ -15,6 +15,7 @@ in; the same screen serves reconfiguration and, when GME refuses them, reauth.
 """
 
 import json
+import logging
 from collections.abc import Mapping
 from typing import Any
 
@@ -47,6 +48,8 @@ from .engine.contract import Contract, ContractError
 from .engine.gme import GmeAuthError, GmeError
 from .engine.market import PUN_PREFIX, required_market_values
 from .gme_client import GmeClient
+
+_LOGGER = logging.getLogger(__name__)
 
 CONF_CONTRACT_JSON = "contract_json"
 ENTITY_SUFFIX = "_entity"
@@ -245,9 +248,11 @@ class ElectrIthaConfigFlow(ConfigFlow, domain=DOMAIN):
         )
         try:
             await client.async_login()
-        except GmeAuthError:
+        except GmeAuthError as err:
+            _LOGGER.debug("GME login refused: %s", err)
             return {"base": "invalid_auth"}
-        except GmeError:
+        except GmeError as err:
+            _LOGGER.debug("Could not reach the GME API: %s", err)
             return {"base": "cannot_connect"}
         return {}
 

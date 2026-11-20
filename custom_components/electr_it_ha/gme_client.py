@@ -5,6 +5,7 @@ The engine builds and reads the messages (engine.gme); this module only
 sends them, with the HTTP session of Home Assistant.
 """
 
+import logging
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Any
@@ -22,6 +23,8 @@ from .engine.gme import (
     pun_request,
     token_from,
 )
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class GmeConnectionError(GmeError):
@@ -64,6 +67,7 @@ class GmeClient:
     async def async_login(self) -> str:
         """Return a token; GmeAuthError when the credentials are refused."""
         answer = await self._post(AUTH_URL, auth_body(self._username, self._password))
+        _LOGGER.debug("GME auth answer: %r", answer)
         return token_from(answer)
 
     async def async_pun_prices(
