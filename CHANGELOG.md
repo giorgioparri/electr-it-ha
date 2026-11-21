@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Dispatching, capacity market and CDispD no longer need to be typed: when their field is left empty, the values published by Terna (every quarter) and ARERA (every month) are used. A workflow of the repository collects them once a day into `market_values.json` on the `market-data` branch; the integration downloads that file once a day, keeps the last good copy in Home Assistant, and ships a copy of its own.
+- While a month runs, a value not yet published for it is replaced by the last one published, and the figures are marked `estimated`.
+- A repair is shown when the published values cannot be downloaded for three days; it goes away by itself at the first download that works.
+- A month that ends waits up to 15 days for a published value of its own, since ARERA publishes the CDispD of a month only after it ends; then it is billed with the last one available.
+
 ### Changed
 
 - The GME account screens explain that the temporary password GME emails cannot be used as is, link to GME's password portal to change it, and say that it must be renewed every 6 months; a reauthentication prompt is shown whenever GME refuses the saved password.

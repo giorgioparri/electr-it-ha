@@ -27,6 +27,7 @@ Un'integrazione per [Home Assistant](https://www.home-assistant.io/) che ti dice
 - **Non ancora applicati:** sconti, energia verde opzionale, prezzi validi per un periodo, scaglioni di consumo, fasce Peak/Off-Peak.
 - La **franchigia delle accise** per i residenti fino a 3 kW segue la legge (primi 150 kWh al mese esenti, ridotti oltre la soglia) ma non è ancora stata verificata su una bolletta con il dettaglio.
 - **Il PUN si può scaricare dal GME con il tuo account.** Le API ufficiali del GME sono gratuite ma personali: ogni utente si registra e riceve le sue credenziali, che non vanno condivise. Senza account puoi prendere il PUN da qualsiasi entità che hai già, oppure scriverlo a mano.
+- **Dispacciamento, capacity market e CDispD vengono scaricati per te**, senza account: Terna pubblica i primi due ogni trimestre, ARERA il CDispD ogni mese. Vedi [Valori di mercato](#valori-di-mercato).
 - Progetto non ufficiale, non affiliato ad ARERA, GME, Acquirente Unico, Terna né ad alcun venditore.
 
 ---
@@ -39,6 +40,7 @@ Un'integrazione per [Home Assistant](https://www.home-assistant.io/) che ti dice
 - **Fasce F1 / F2 / F3** con le festività nazionali italiane, ed energia prelevata nel mese divisa per fascia
 - **Uno o più contatori**: gli incrementi di più sensori di energia cumulativi vengono sommati (forniture trifase, più punti di misura)
 - **PUN dal GME**: con un account GME la media mensile del PUN per fascia viene scaricata dalle API ufficiali, una volta per tutte le forniture, di solito una volta al giorno
+- **Dispacciamento, capacity market e CDispD** come li pubblicano Terna e ARERA, scaricati una volta al giorno senza account; l'ultima copia resta nel tuo Home Assistant
 - **Qualsiasi contratto** che rientri nel modello, incollato in JSON e validato subito; riconfigurabile in ogni momento senza perdere i contatori del mese
 - Italiano e inglese
 
@@ -86,7 +88,7 @@ Una fornitura richiede tre schermate:
 
 1. **Contratto di fornitura**: incolla il contratto in JSON (vedi sotto). Viene validato subito e ogni problema è elencato.
 2. **Fornitura e contatori**: se sei residente, la potenza impegnata in kW, e uno o più sensori di energia cumulativi che misurano il prelievo dalla rete (kWh, Wh o MWh).
-3. **Valori di mercato**: solo quelli da cui dipende il prezzo del tuo contratto. Per ciascuno scegli un'entità oppure scrivi un valore fisso in €/kWh. Un'entità può essere in €/kWh o in €/MWh. Se hai aggiunto l'account GME, i suoi sensori del PUN sono già indicati. La schermata viene saltata se il contratto non ne richiede.
+3. **Valori di mercato**: solo quelli da cui dipende il prezzo del tuo contratto. Per ciascuno scegli un'entità oppure scrivi un valore fisso in €/kWh. Un'entità può essere in €/kWh o in €/MWh. Se hai aggiunto l'account GME, i suoi sensori del PUN sono già indicati. Dispacciamento, capacity market e CDispD si possono lasciare vuoti: si usano i valori pubblicati. La schermata viene saltata se il contratto non ne richiede.
 
 Per cambiare qualcosa in seguito usa **Riconfigura** sulla voce dell'integrazione: si riaprono le stesse schermate con i valori attuali.
 
@@ -153,9 +155,21 @@ Il modello ricalca il tracciato con cui i venditori pubblicano le offerte sul Po
 | Capacity market | `dispatching.capacity_market` è `true` |
 | CDispD | `dispatching.mode` è `cdispd` |
 
-Cambiano ogni mese. Per il PUN la fonte più semplice è l'account GME. Altrimenti collega ciascun valore a un'entità che lo ha già nel tuo Home Assistant (qualsiasi sensore con la media mensile per fascia, in €/kWh o €/MWh), oppure scrivi il valore dell'ultima bolletta e aggiornalo quando cambia. Dispacciamento, capacity market e CDispD non vengono ancora scaricati. Alcune bollette riportano il PUN già moltiplicato per 1,10: in quel caso dividilo per 1,10 prima di inserirlo, altrimenti le perdite vengono contate due volte.
+Cambiano ogni mese. Per il PUN la fonte più semplice è l'account GME. Altrimenti collega ciascun valore a un'entità che lo ha già nel tuo Home Assistant (qualsiasi sensore con la media mensile per fascia, in €/kWh o €/MWh), oppure scrivi il valore dell'ultima bolletta e aggiornalo quando cambia. Alcune bollette riportano il PUN già moltiplicato per 1,10: in quel caso dividilo per 1,10 prima di inserirlo, altrimenti le perdite vengono contate due volte.
 
-Al cambio di mese, il mese concluso viene fatturato con i valori di quel mese. Un'entità che indica il suo mese (`month`), come i sensori dell'account GME, viene usata solo quando si riferisce a quel mese ed è definitiva; per un sensore del mese in corso si usa il suo gemello del mese precedente. Le altre entità e i valori fissi vengono usati come sono in quel momento. Se dopo tre giorni i valori giusti mancano ancora, il mese viene fatturato con quelli disponibili e il log lo segnala.
+Dispacciamento, capacity market e CDispD si possono lasciare vuoti: in quel caso l'integrazione usa i valori pubblicati da Terna e ARERA.
+
+| Valore | Pubblicato da | Quando |
+|---|---|---|
+| Dispacciamento | Terna: il corrispettivo di dispacciamento per i clienti domestici (TIDE) | Ogni trimestre, verso metà del mese precedente |
+| Capacity market | Terna: il corrispettivo unitario nelle ore fuori picco | Ogni trimestre, verso metà del mese precedente |
+| CDispD | ARERA: i corrispettivi del mercato libero per i clienti domestici | Ogni mese, dopo il mese a cui si riferisce |
+
+Un workflow di questo repository legge queste pubblicazioni una volta al giorno, le controlla e le tiene in `market_values.json` sul branch [`market-data`](https://github.com/giorgioparri/electr-it-ha/tree/market-data). L'integrazione scarica quel file una volta al giorno e conserva l'ultima copia valida nel tuo Home Assistant; ne include anche una sua, quindi funziona fin dal primo avvio. Tra le copie che ha, usa quella aggiornata più di recente.
+
+Durante il mese, un valore non ancora pubblicato per quel mese è sostituito dall'ultimo pubblicato, e i valori sono segnati come stimati (`estimated`). Se per tre giorni nessun download riesce, Home Assistant mostra una riparazione che dice da quando; sparisce da sola al primo download riuscito. Un'entità o un valore fisso che imposti tu prende il posto del valore pubblicato.
+
+Al cambio di mese, il mese concluso viene fatturato con i valori di quel mese. Un'entità che indica il suo mese (`month`), come i sensori dell'account GME, viene usata solo quando si riferisce a quel mese ed è definitiva; per un sensore del mese in corso si usa il suo gemello del mese precedente. Le altre entità e i valori fissi vengono usati come sono in quel momento. Se dopo tre giorni i valori giusti mancano ancora, il mese viene fatturato con quelli disponibili e il log lo segnala. Quando tra questi c'è un valore pubblicato l'attesa è di quindici giorni, perché ARERA pubblica il CDispD di un mese solo dopo la sua fine.
 
 ### Plancia Energia
 
@@ -191,7 +205,7 @@ GPL-3.0-or-later — vedi [LICENSE](https://github.com/giorgioparri/electr-it-ha
 
 ## Avvertenza
 
-Questa è un'integrazione non ufficiale. I valori che mostra sono stime, utili a capire i propri consumi: l'unico importo dovuto è quello della bolletta del venditore. I valori regolati sono trascritti dalle pubblicazioni di ARERA; i corrispettivi approvati dall'Autorità risultano esclusivamente dai suoi provvedimenti. Dati del PUN scaricati con un account GME: fonte Gestore dei Mercati Energetici S.p.A.
+Questa è un'integrazione non ufficiale. I valori che mostra sono stime, utili a capire i propri consumi: l'unico importo dovuto è quello della bolletta del venditore. I valori regolati sono trascritti dalle pubblicazioni di ARERA; i corrispettivi approvati dall'Autorità risultano esclusivamente dai suoi provvedimenti. Dati del PUN scaricati con un account GME: fonte Gestore dei Mercati Energetici S.p.A. Dispacciamento, capacity market e CDispD: valori pubblicati da Terna S.p.A. e da ARERA, questi ultimi riutilizzati con licenza [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.it); `market_values.json`, che li raccoglie, è distribuito con la stessa licenza.
 
 ## Ringraziamenti
 

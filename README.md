@@ -27,6 +27,7 @@ A [Home Assistant](https://www.home-assistant.io/) integration that tells you wh
 - **Not applied yet:** discounts, optional green energy, time-limited prices, consumption tiers, Peak/Off-Peak bands.
 - The **excise allowance** for residents up to 3 kW follows the law (first 150 kWh per month exempt, reduced above the threshold) but has not been checked against a detailed bill yet.
 - **The PUN can be downloaded from GME with your own account.** GME's official API is free but personal: each user registers and gets their own credentials, which must not be shared. Without an account you can take the PUN from any entity you already have, or type it in.
+- **Dispatching, capacity market and CDispD are downloaded for you**, with no account: Terna publishes the first two every quarter, ARERA the CDispD every month. See [Market values](#market-values).
 - Unofficial project, not affiliated with ARERA, GME, Acquirente Unico, Terna or any supplier.
 
 ---
@@ -39,6 +40,7 @@ A [Home Assistant](https://www.home-assistant.io/) integration that tells you wh
 - **Time bands F1 / F2 / F3** with Italian national holidays, and energy drawn in the month split by band
 - **One or more meters**: the increases of several cumulative energy sensors are added together (three-phase supplies, more than one measuring point)
 - **PUN from GME**: with a GME account the monthly average PUN by band is downloaded from the official API, once for every supply, usually once a day
+- **Dispatching, capacity market and CDispD** as Terna and ARERA publish them, downloaded once a day with no account; the last copy is kept in your Home Assistant
 - **Any contract** that fits the model, pasted as JSON and validated on the spot; reconfigurable at any time without losing the month's counters
 - English and Italian
 
@@ -86,7 +88,7 @@ A supply takes three screens:
 
 1. **Supply contract** — paste the contract as JSON (see below). It is validated at once and every problem is listed.
 2. **Supply and meters** — whether you are a resident, the committed power in kW, and one or more cumulative energy sensors that measure what you draw from the grid (kWh, Wh or MWh).
-3. **Market values** — only the ones your contract is priced with. For each, choose an entity or type a fixed number in €/kWh. An entity may report €/kWh or €/MWh. The PUN sensors of the GME account, if you added it, are already filled in. This screen is skipped when the contract needs none.
+3. **Market values** — only the ones your contract is priced with. For each, choose an entity or type a fixed number in €/kWh. An entity may report €/kWh or €/MWh. The PUN sensors of the GME account, if you added it, are already filled in. Dispatching, capacity market and CDispD can be left empty: the published values are used. This screen is skipped when the contract needs none.
 
 To change anything later use **Reconfigure** on the integration entry: the same screens open with the current values.
 
@@ -153,9 +155,21 @@ The model follows the layout that suppliers use to publish their offers on the A
 | Capacity market | `dispatching.capacity_market` is `true` |
 | CDispD | `dispatching.mode` is `cdispd` |
 
-They change every month. For the PUN the simplest source is the GME account. Otherwise point each value to an entity that already has it in your Home Assistant (any sensor with the monthly average by band, in €/kWh or €/MWh), or type the value from your latest bill and update it when it changes. Dispatching, capacity market and CDispD are not downloaded yet. Some bills print the PUN already multiplied by 1.10: in that case divide it by 1.10 before typing it, or the losses are counted twice.
+They change every month. For the PUN the simplest source is the GME account. Otherwise point each value to an entity that already has it in your Home Assistant (any sensor with the monthly average by band, in €/kWh or €/MWh), or type the value from your latest bill and update it when it changes. Some bills print the PUN already multiplied by 1.10: in that case divide it by 1.10 before typing it, or the losses are counted twice.
 
-At the month change, last month is billed with the values of that month. An entity that reports its `month`, as the GME account sensors do, is used only once it refers to that month and is complete; for a sensor of this month, its last-month twin is used. Other entities and fixed numbers are used as they are at that moment. If the right values are still missing after three days, the month is billed with what is available and the log says so.
+Dispatching, capacity market and CDispD can be left empty: the integration then uses the values Terna and ARERA publish.
+
+| Value | Published by | How often |
+|---|---|---|
+| Dispatching | Terna: the dispatching charge for household customers (TIDE) | Every quarter, around the middle of the month before |
+| Capacity market | Terna: the off-peak unit charge | Every quarter, around the middle of the month before |
+| CDispD | ARERA: the prices of the free market for household customers | Every month, after the month it refers to |
+
+A workflow of this repository reads these publications once a day, checks them and keeps them in `market_values.json` on the [`market-data`](https://github.com/giorgioparri/electr-it-ha/tree/market-data) branch. The integration downloads that file once a day and keeps the last good copy in your Home Assistant; it also ships a copy of its own, so it works from the first start. Of the copies it has, it uses the most recently updated.
+
+While a month runs, a value not yet published for it is replaced by the last one published, and the figures are marked `estimated`. If no download works for three days, Home Assistant shows a repair saying since when; it goes away by itself at the first download that works. An entity or a number you set takes the place of the published value.
+
+At the month change, last month is billed with the values of that month. An entity that reports its `month`, as the GME account sensors do, is used only once it refers to that month and is complete; for a sensor of this month, its last-month twin is used. Other entities and fixed numbers are used as they are at that moment. If the right values are still missing after three days, the month is billed with what is available and the log says so. When one of them is a published value the wait is fifteen days, because ARERA publishes the CDispD of a month only after it ends.
 
 ### Energy dashboard
 
@@ -191,7 +205,7 @@ GPL-3.0-or-later — see [LICENSE](https://github.com/giorgioparri/electr-it-ha/
 
 ## Disclaimer
 
-This is an unofficial integration. The figures it shows are estimates meant to help you understand your consumption: the only amount you owe is the one on your supplier's bill. Regulated values are transcribed from ARERA publications; the values approved by the Authority result only from its official acts. PUN data downloaded with a GME account: Source: Gestore dei Mercati Energetici S.p.A.
+This is an unofficial integration. The figures it shows are estimates meant to help you understand your consumption: the only amount you owe is the one on your supplier's bill. Regulated values are transcribed from ARERA publications; the values approved by the Authority result only from its official acts. PUN data downloaded with a GME account: Source: Gestore dei Mercati Energetici S.p.A. Dispatching, capacity market and CDispD: values published by Terna S.p.A. and by ARERA, the latter reused under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); `market_values.json`, which collects them, is distributed under the same licence.
 
 ## Acknowledgments
 
