@@ -27,6 +27,16 @@ from .engine.gme import (
 _LOGGER = logging.getLogger(__name__)
 
 
+def _without_token(answer: Any) -> Any:
+    """Return the answer with the token hidden, fit for a log users may share."""
+    if not isinstance(answer, dict):
+        return answer
+    return {
+        key: "<hidden>" if isinstance(key, str) and key.lower() == "token" else value
+        for key, value in answer.items()
+    }
+
+
 class GmeConnectionError(GmeError):
     """GME could not be reached, or answered with an HTTP error."""
 
@@ -67,7 +77,7 @@ class GmeClient:
     async def async_login(self) -> str:
         """Return a token; GmeAuthError when the credentials are refused."""
         answer = await self._post(AUTH_URL, auth_body(self._username, self._password))
-        _LOGGER.debug("GME auth answer: %r", answer)
+        _LOGGER.debug("GME auth answer: %r", _without_token(answer))
         return token_from(answer)
 
     async def async_pun_prices(
