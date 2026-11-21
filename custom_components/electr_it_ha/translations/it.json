@@ -32,7 +32,7 @@
       },
       "market": {
         "title": "Valori di mercato",
-        "description": "Il prezzo del tuo contratto dipende dai valori qui sotto, che cambiano ogni mese. Per ciascuno scegli un'entità oppure scrivi un valore fisso in €/kWh, non entrambi. Un'entità può essere in €/kWh o in €/MWh. Se hai aggiunto l'account GME, i suoi sensori sono già indicati.",
+        "description": "Il prezzo del tuo contratto dipende dai valori qui sotto, che cambiano ogni mese. Per ciascuno scegli un'entità oppure scrivi un valore fisso in €/kWh, non entrambi. Un'entità può essere in €/kWh o in €/MWh. Se hai aggiunto l'account GME, i suoi sensori sono già indicati. Lascia vuoti dispacciamento, capacity market e CDispD per usare i valori pubblicati da Terna e ARERA, scaricati una volta al giorno.",
         "data": {
           "pun_f0_entity": "PUN monorario: entità",
           "pun_f0_value": "PUN monorario: valore fisso",
@@ -137,6 +137,12 @@
       "pun_f23_previous": {
         "name": "PUN F23, mese precedente"
       }
+    }
+  },
+  "issues": {
+    "published_download_failed": {
+      "title": "electrITHA non riesce a scaricare i valori di mercato ufficiali",
+      "description": "Dal {since} electrITHA non riesce a scaricare da {url} i valori di dispacciamento, capacity market e CDispD pubblicati da Terna e ARERA. I costi sono calcolati con gli ultimi valori disponibili, aggiornati al {updated}: per un mese di cui mancano i valori si usano gli ultimi pubblicati. Verifica che Home Assistant raggiunga GitHub. Questo avviso sparisce da solo al primo download riuscito."
     }
   }
 }

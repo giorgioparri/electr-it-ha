@@ -34,3 +34,22 @@ GME_UPDATE_INTERVAL_MINUTES = 60
 GME_TIMEOUT_SECONDS = 60
 # Market sensors that report the month they refer to, as YYYY-MM.
 ATTR_MONTH = "month"
+
+# Market values published by Terna and ARERA (engine.published), shared by
+# every supply. A workflow of the repository keeps them on a branch of their
+# own; the integration ships a copy for when the download does not work.
+PUBLISHED_URL = (
+    "https://raw.githubusercontent.com/giorgioparri/electr-it-ha/"
+    "market-data/market_values.json"
+)
+PUBLISHED_FILE = "market_values.json"
+PUBLISHED_STORAGE_KEY = f"{DOMAIN}.market_values"
+PUBLISHED_REFRESH_HOURS = 24
+PUBLISHED_RETRY_MINUTES = 60
+PUBLISHED_TIMEOUT_SECONDS = 30
+# Days without a good download before a repair issue says so.
+PUBLISHED_STALE_DAYS = 3
+ISSUE_PUBLISHED_DOWNLOAD = "published_download_failed"
+# Days after the month change a month waits for an official value of its own,
+# which ARERA publishes only once the month is over.
+PUBLISHED_CLOSE_WAIT_DAYS = 15

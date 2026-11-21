@@ -14,6 +14,7 @@ from .const import CONF_ENTRY_TYPE, ENTRY_TYPE_GME
 from .coordinator import ElectrIthaCoordinator
 from .gme_client import GmeClient
 from .gme_coordinator import GmeCoordinator
+from .published_values import async_get_published
 
 PLATFORMS: list[Platform] = [Platform.SENSOR]
 
@@ -29,7 +30,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         )
         coordinator = GmeCoordinator(hass, entry, client)
     else:
-        coordinator = ElectrIthaCoordinator(hass, entry)
+        coordinator = ElectrIthaCoordinator(
+            hass, entry, await async_get_published(hass)
+        )
     await coordinator.async_setup()
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator

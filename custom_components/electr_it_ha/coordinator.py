@@ -12,6 +12,11 @@ and is complete; for a sensor of the running month, its twin of the month
 before is used. Other entities and fixed numbers are used as they are. If
 the values are still not there after a few days, the month is billed with
 what is available.
+
+Dispatching, capacity market and CDispD left without a source come from the
+values published by Terna and ARERA (published_values). ARERA publishes the
+CDispD of a month only after it ends: until then the running month uses the
+last one published, and a month that ended waits longer for its own.
 """
 
 import calendar
@@ -52,6 +57,7 @@ from .const import (
     CONF_POWER_KW,
     CONF_RESIDENT,
     DOMAIN,
+    PUBLISHED_CLOSE_WAIT_DAYS,
     SAVE_DELAY_SECONDS,
     STORAGE_KEY_PREFIX,
     STORAGE_VERSION,
@@ -68,8 +74,11 @@ from .engine.estimate import (
     month_to_date,
     unit_price,
 )
-from .engine.market import build_market, to_eur_per_kwh
+from .engine.market import build_market, required_market_values, to_eur_per_kwh
+from .engine.published import NAMES as PUBLISHED_NAMES
+from .engine.published import month_bounds
 from .engine.regulated import RegulatedDataError
+from .published_values import PublishedValues
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -139,7 +148,12 @@ class ElectrIthaCoordinator(DataUpdateCoordinator[ElectrIthaData]):
 
     config_entry: ElectrIthaConfigEntry
 
-    def __init__(self, hass: HomeAssistant, entry: ElectrIthaConfigEntry) -> None:
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        entry: ElectrIthaConfigEntry,
+        published: PublishedValues,
+    ) -> None:
         """Read the configuration; nothing is loaded or subscribed yet."""
         super().__init__(
             hass,
@@ -155,6 +169,13 @@ class ElectrIthaCoordinator(DataUpdateCoordinator[ElectrIthaData]):
         )
         self._meters: list[str] = list(entry.data[CONF_METERS])
         self._market_sources: dict[str, str | float] = dict(entry.data[CONF_MARKET])
+        # Values the contract needs and the user left to the published ones.
+        self._published = published
+        self._published_names = tuple(
+            name
+            for name in required_market_values(self.contract)
+            if name in PUBLISHED_NAMES and name not in self._market_sources
+        )
         self._store: Store[dict[str, Any]] = Store(
             hass, STORAGE_VERSION, f"{STORAGE_KEY_PREFIX}.{entry.entry_id}"
         )
@@ -246,14 +267,18 @@ class ElectrIthaCoordinator(DataUpdateCoordinator[ElectrIthaData]):
         if ended is None:
             return
         waited = now.astimezone(ITALY).date() - self._counters.current.month
-        values, ready = self._read_values(ended.month)
-        if not ready and waited < timedelta(days=CLOSE_WAIT_DAYS):
+        values, pending = self._read_values(ended.month)
+        wait_days = CLOSE_WAIT_DAYS
+        if any(name in self._published_names for name in pending):
+            wait_days = PUBLISHED_CLOSE_WAIT_DAYS
+        if pending and waited < timedelta(days=wait_days):
             return
-        if not ready:
+        if pending:
             _LOGGER.warning(
-                "Billing %s with the market values available: some never "
+                "Billing %s with the market values available: %s never "
                 "reported that month",
                 f"{ended.month:%Y-%m}",
+                ", ".join(sorted(pending)),
             )
         self._closed_month = self._close(ended, values)
         self._store.async_delay_save(self._data_to_save, SAVE_DELAY_SECONDS)
@@ -283,18 +308,32 @@ class ElectrIthaCoordinator(DataUpdateCoordinator[ElectrIthaData]):
             return ClosedMonth(energy, None, None, str(err))
         return ClosedMonth(energy, bill.taxable, bill.vat)
 
-    def _market(self) -> Market:
-        """Read the market values for the running month."""
-        return build_market(self.contract, self._read_values(None)[0])
+    def _market(self, day: date) -> tuple[Market, set[str]]:
+        """Read the market values for the running month.
 
-    def _read_values(self, month: date | None) -> tuple[dict[str, Decimal], bool]:
+        Also return the published values that are not the month's own yet.
+        """
+        values, _ = self._read_values(None)
+        pending: set[str] = set()
+        for name in self._published_names:
+            published = self._published.month_value(name, day.replace(day=1))
+            if published is None:
+                pending.add(name)
+                published = self._published.latest_value(name, day)
+            if published is not None:
+                values[name] = published.eur_kwh
+        return build_market(self.contract, values), pending
+
+    def _read_values(self, month: date | None) -> tuple[dict[str, Decimal], set[str]]:
         """Read the market values from their entities or fixed numbers.
 
-        With a `month`, prefer states that report that month, and say whether
-        every entity that reports a month had it, complete.
+        With a `month`, prefer states that report that month, add the
+        published values of that month, and return the names of the values
+        that are not the month's own: their last known value stands in. The
+        published values of the running month are added by `_market`.
         """
         values: dict[str, Decimal] = {}
-        ready = True
+        pending: set[str] = set()
         for name, source in self._market_sources.items():
             if not isinstance(source, str):
                 values[name] = Decimal(str(source))
@@ -302,11 +341,21 @@ class ElectrIthaCoordinator(DataUpdateCoordinator[ElectrIthaData]):
             state = self.hass.states.get(source)
             if month is not None and state is not None:
                 state, found = self._state_for_month(source, state, month)
-                ready = ready and found
+                if not found:
+                    pending.add(name)
             value = self._state_value(state)
             if value is not None:
                 values[name] = value
-        return values, ready
+        if month is not None:
+            last_day = month_bounds(month.year, month.month)[1]
+            for name in self._published_names:
+                published = self._published.month_value(name, month)
+                if published is None:
+                    pending.add(name)
+                    published = self._published.latest_value(name, last_day)
+                if published is not None:
+                    values[name] = published.eur_kwh
+        return values, pending
 
     def _state_for_month(
         self, entity_id: str, state: State, month: date
@@ -370,8 +419,9 @@ class ElectrIthaCoordinator(DataUpdateCoordinator[ElectrIthaData]):
             fixed = fixed_cost_per_day(self.contract, self.supply, day)
         except RegulatedDataError as err:
             problems.append(str(err))
+        provisional: set[str] = set()
         try:
-            market = self._market()
+            market, provisional = self._market(day)
             price = unit_price(
                 self.contract,
                 self.supply,
@@ -400,7 +450,7 @@ class ElectrIthaCoordinator(DataUpdateCoordinator[ElectrIthaData]):
             month_bill=bill,
             closed_month=self._closed_month,
             pending_month=None if pending is None else pending.month,
-            estimated=bool(self._market_sources),
+            estimated=bool(self._market_sources) or bool(provisional),
             problems=tuple(problems),
         )
 

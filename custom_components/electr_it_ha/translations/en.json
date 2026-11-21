@@ -32,7 +32,7 @@
       },
       "market": {
         "title": "Market values",
-        "description": "Your contract is priced with the values below, which change every month. For each one choose an entity or type a fixed number in €/kWh, not both. An entity may report €/kWh or €/MWh. The sensors of the GME account, if you added it, are already filled in.",
+        "description": "Your contract is priced with the values below, which change every month. For each one choose an entity or type a fixed number in €/kWh, not both. An entity may report €/kWh or €/MWh. The sensors of the GME account, if you added it, are already filled in. Leave dispatching, capacity market and CDispD empty to use the values Terna and ARERA publish, downloaded once a day.",
         "data": {
           "pun_f0_entity": "PUN, single band: entity",
           "pun_f0_value": "PUN, single band: fixed value",
@@ -137,6 +137,12 @@
       "pun_f23_previous": {
         "name": "PUN F23 last month"
       }
+    }
+  },
+  "issues": {
+    "published_download_failed": {
+      "title": "electrITHA cannot download the official market values",
+      "description": "Since {since}, electrITHA has not managed to download the dispatching, capacity market and CDispD values that Terna and ARERA publish, from {url}. Costs are computed with the last values it has, updated on {updated}: a month whose own values are missing uses the latest published ones instead. Check that Home Assistant can reach GitHub. This message goes away by itself at the first download that works."
     }
   }
 }

@@ -7,8 +7,10 @@ A supply takes three screens, the same for first setup and reconfiguration:
 1. the contract, pasted as JSON and validated on the spot;
 2. the supply (resident, committed power) and the grid import meters;
 3. where each market value the contract needs comes from: an entity or a
-   fixed number. Skipped when the contract needs none. The sensors of the GME
-   account, when there is one, are suggested for the PUN.
+   fixed number. Dispatching, capacity market and CDispD can be left empty,
+   for the values Terna and ARERA publish. Skipped when the contract needs
+   none. The sensors of the GME account, when there is one, are suggested for
+   the PUN.
 
 The GME account takes the credentials GME gives each user, checked by logging
 in; the same screen serves reconfiguration and, when GME refuses them, reauth.
@@ -47,6 +49,7 @@ from .const import (
 from .engine.contract import Contract, ContractError
 from .engine.gme import GmeAuthError, GmeError
 from .engine.market import PUN_PREFIX, required_market_values
+from .engine.published import NAMES as PUBLISHED_NAMES
 from .gme_client import GmeClient
 
 _LOGGER = logging.getLogger(__name__)
@@ -327,7 +330,11 @@ class ElectrIthaConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_market(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Choose an entity or a fixed number for each market value needed."""
+        """Choose an entity or a fixed number for each market value needed.
+
+        Dispatching, capacity market and CDispD may be left empty: the values
+        published by Terna and ARERA are then used.
+        """
         assert self._contract is not None
         names = required_market_values(self._contract)
         if not names:
@@ -340,6 +347,8 @@ class ElectrIthaConfigFlow(ConfigFlow, domain=DOMAIN):
             for name in names:
                 entity = user_input.get(f"{name}{ENTITY_SUFFIX}")
                 value = user_input.get(f"{name}{VALUE_SUFFIX}")
+                if entity is None and value is None and name in PUBLISHED_NAMES:
+                    continue  # the published values
                 if (entity is None) == (value is None):
                     errors[f"{name}{ENTITY_SUFFIX}"] = "entity_or_value"
                 else:
