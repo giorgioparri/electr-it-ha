@@ -6,6 +6,30 @@
   "values": {
     "dispatching": [
       {
+        "from": "2025-01-01",
+        "to": "2025-03-31",
+        "eur_kwh": "0.008985",
+        "source": "Terna, 'AVVISO AGLI UdD Pubblicazione 1Q2025 - Agg 27-01-2025', published 2025-01-27, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-dispacciamento-ai-sensi-del-tide/2025/01/01/avviso-agli-udd-pubblicazione-1q2025---agg-27-01-2025.pdf"
+      },
+      {
+        "from": "2025-04-01",
+        "to": "2025-06-30",
+        "eur_kwh": "0.008948",
+        "source": "Terna, 'AVVISO AGLI UdD Pubblicazione 2Q2025', published 2025-03-20, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-dispacciamento-ai-sensi-del-tide/2025/04/01/avviso_udd_pubblicazione_2q2025.pdf"
+      },
+      {
+        "from": "2025-07-01",
+        "to": "2025-09-30",
+        "eur_kwh": "0.009800",
+        "source": "Terna, 'AVVISO AGLI UdD Pubblicazione 3Q2025', published 2025-06-15, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-dispacciamento-ai-sensi-del-tide/2025/07/01/avviso_udd_pubblicazione_3q2025.pdf"
+      },
+      {
+        "from": "2025-10-01",
+        "to": "2025-12-31",
+        "eur_kwh": "0.009800",
+        "source": "Terna, 'AVVISO AGLI UdD Pubblicazione 4Q2025', published 2025-09-15, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-dispacciamento-ai-sensi-del-tide/2025/10/01/avviso_udd_pubblicazione_4q2025.pdf"
+      },
+      {
         "from": "2026-01-01",
         "to": "2026-03-31",
         "eur_kwh": "0.010659",
@@ -31,6 +55,30 @@
       }
     ],
     "capacity": [
+      {
+        "from": "2025-01-01",
+        "to": "2025-03-31",
+        "eur_kwh": "0.002411",
+        "source": "Terna, 'Corrispettivi unitari a copertura degli oneri netti di approvvigionamento della capacità 1° trimestre 2025', published 2024-12-17, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-mercato-della-capacita/2025/01/01/2025-corrispettivi-cm--iqtr25_art-14-4-e-14-5-del-98-11.pdf"
+      },
+      {
+        "from": "2025-04-01",
+        "to": "2025-06-30",
+        "eur_kwh": "0.003654",
+        "source": "Terna, 'Corrispettivi unitari a copertura degli oneri netti di approvvigionamento della capacità 2° trimestre 2025', published 2025-03-20, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-mercato-della-capacita/2025/04/01/2025-corrispettivi-cm---iiqtr25_art-14-4-e-14-5-del-98-11.pdf"
+      },
+      {
+        "from": "2025-07-01",
+        "to": "2025-09-30",
+        "eur_kwh": "0.003631",
+        "source": "Terna, 'Corrispettivi unitari a copertura degli oneri netti di approvvigionamento della capacità 3° trimestre 2025', published 2025-06-13, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-mercato-della-capacita/2025/07/01/2025-corrispettivi-cm--iiiqtr25_art-14-4-e-14-5-del-98-11.pdf"
+      },
+      {
+        "from": "2025-10-01",
+        "to": "2025-12-31",
+        "eur_kwh": "0.004275",
+        "source": "Terna, 'Corrispettivi unitari a copertura degli oneri netti di approvvigionamento della capacità 4° trimestre 2025', published 2025-09-15, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-mercato-della-capacita/2025/10/01/2025-corrispettivi-cm--ivqtr25_art-14-4-e-14-5-del-98-11.pdf"
+      },
       {
         "from": "2026-01-01",
         "to": "2026-03-31",
