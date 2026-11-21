@@ -1,0 +1,159 @@
+name: "Bug Report (English)"
+description: Report a problem with the electrITHA integration
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Before you continue
+
+        Logs are essential — without them it is very hard to diagnose the problem. Please enable debug logging, reproduce the issue, and paste the relevant lines below.
+
+        **Never paste your GME username or password**, and remove from bills and logs anything that identifies you: name, address, POD, customer code.
+
+        **Note:** attachments sent via email reply to a GitHub issue notification are automatically stripped and deleted by GitHub — they will not reach this issue. Please attach files directly on github.com instead.
+
+  - type: checkboxes
+    id: confirm-scope
+    attributes:
+      label: Confirm this issue belongs here
+      options:
+        - label: >-
+            I am aware that giorgioparri is a grumpy maintainer, so it can happen that
+            my issue will be closed quickly when essential information is missing
+            (no logs, no description, no steps to reproduce, etc.).
+          required: true
+        - label: My Home Assistant version is up to date.
+          required: true
+        - label: >-
+            I have checked, via HACS' 3-dot menu → "Update Information" on this
+            integration, that I am running the **latest** released version.
+          required: true
+        - label: I have read the integration's README before opening this issue.
+          required: true
+        - label: >-
+            I have checked existing issues (including closed ones) to make sure
+            this isn't a duplicate.
+          required: true
+        - label: >-
+            I confirm this is genuinely an issue with the integration (not just a
+            question about how a feature works).
+          required: true
+        - label: |
+            I confirm that I did not actually read any of the points above and just checked them all. |
+            I didn't want to waste time on details, so I skipped reading or following any existing instructions. |
+            Instead, I'd like giorgioparri to spend their free time explaining things to me — that's what open source is for, right? |
+            I live by the motto: better to ask twice than think once. |
+            It's giorgioparri's own fault for offering open-source software and free support.
+
+  - type: input
+    id: integration_version
+    attributes:
+      label: Integration version
+      description: Found in Settings → Devices & services → electrITHA → three-dot menu → Integration information, or in CHANGELOG.md.
+      placeholder: "e.g. 0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home Assistant version
+      description: Found in Settings → About.
+      placeholder: "e.g. 2026.11.2"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: ha_installation
+    attributes:
+      label: Home Assistant installation type
+      options:
+        - Home Assistant OS
+        - Home Assistant Supervised
+        - Home Assistant Container
+        - Home Assistant Core
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the problem clearly. What did you do, what did you expect, what happened instead? If a figure is wrong, say which sensor, what it shows and what you expected.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to ...
+        2. Click on ...
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: |
+        Enable debug logging first — add this to `configuration.yaml`, restart HA, reproduce the issue, then paste the relevant lines here.
+        ```yaml
+        logger:
+          default: warning
+          logs:
+            custom_components.electr_it_ha: debug
+        ```
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: contract
+    attributes:
+      label: Supply contract
+      description: The contract JSON of the affected supply, as pasted in the integration. It holds only the supplier's prices, no personal data.
+      render: json
+    validations:
+      required: false
+
+  - type: textarea
+    id: attributes
+    attributes:
+      label: Sensor attributes
+      description: For a wrong or unknown value, the attributes of the sensor (Developer tools → States), including `problems` if present.
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: bill
+    attributes:
+      label: Bill comparison
+      description: If the cost differs from your bill, the lines of the bill for the same period (component, kWh, unit price, amount). Remove name, address, POD and customer code.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: configuration
+    attributes:
+      label: Configuration
+      description: How is the affected supply set up?
+      options:
+        - label: GME account added, PUN taken from its sensors
+        - label: PUN from another entity
+        - label: PUN typed as a fixed number
+        - label: Dispatching, capacity market or CDispD left empty (published values)
+        - label: Dispatching, capacity market or CDispD from an entity or a fixed number
+        - label: More than one meter
+        - label: More than one supply
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Anything else that might be relevant — meters, automations, Energy dashboard, other integrations, etc.
+    validations:
+      required: false
