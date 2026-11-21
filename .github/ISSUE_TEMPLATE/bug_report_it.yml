@@ -1,0 +1,161 @@
+name: "Segnalazione Bug (Italiano)"
+description: Segnala un problema con l'integrazione electrITHA
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Prima di continuare
+
+        I log sono essenziali — senza log è molto difficile diagnosticare il problema. Attiva il debug logging, riproduci il problema e incolla qui sotto le righe rilevanti.
+
+        **Non incollare mai nome utente e password del GME**, e togli da bollette e log tutto ciò che ti identifica: nome, indirizzo, POD, codice cliente.
+
+        **Nota:** gli allegati inviati rispondendo via email alla notifica di una issue GitHub vengono automaticamente rimossi da GitHub — non arriveranno alla issue. Allega i file direttamente su github.com.
+
+  - type: checkboxes
+    id: confirm-scope
+    attributes:
+      label: Conferma che la segnalazione è pertinente
+      options:
+        - label: >-
+            Sono consapevole che giorgioparri è un maintainer scorbutico, quindi può
+            capitare che la mia issue venga chiusa rapidamente se mancano
+            informazioni essenziali (nessun log, nessuna descrizione, nessun
+            passaggio per riprodurre il problema, ecc.).
+          required: true
+        - label: La mia versione di Home Assistant è aggiornata.
+          required: true
+        - label: >-
+            Ho verificato, tramite il menu a tre puntini di HACS → "Update
+            Information" su questa integrazione, di avere installata l'**ultima**
+            versione rilasciata.
+          required: true
+        - label: Ho letto il README dell'integrazione prima di aprire questa issue.
+          required: true
+        - label: >-
+            Ho controllato le issue esistenti (comprese quelle chiuse) per
+            assicurarmi che non sia un duplicato.
+          required: true
+        - label: >-
+            Confermo che questo è realmente un problema con l'integrazione (non
+            solo una domanda su come funziona una funzionalità).
+          required: true
+        - label: |
+            Confermo che in realtà non ho letto nessuno dei punti sopra e li ho semplicemente spuntati tutti. |
+            Non volevo perdere tempo sui dettagli, quindi ho saltato la lettura o il rispetto delle istruzioni esistenti. |
+            Preferirei che giorgioparri passasse il suo tempo libero a spiegarmi le cose — no perché l'open source è fatto apposta per questo, giusto? |
+            Vivo secondo il motto: meglio chiedere due volte che pensare una volta. |
+            È colpa di giorgioparri se offre software open source e supporto gratuito.
+
+  - type: input
+    id: integration_version
+    attributes:
+      label: Versione dell'integrazione
+      description: La trovi in Impostazioni → Dispositivi e servizi → electrITHA → menu a tre puntini → Informazioni sull'integrazione, oppure in CHANGELOG.md.
+      placeholder: "es. 0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: ha_version
+    attributes:
+      label: Versione di Home Assistant
+      description: La trovi in Impostazioni → Informazioni.
+      placeholder: "es. 2026.11.2"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: ha_installation
+    attributes:
+      label: Tipo di installazione Home Assistant
+      options:
+        - Home Assistant OS
+        - Home Assistant Supervised
+        - Home Assistant Container
+        - Home Assistant Core
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Cosa è successo?
+      description: Descrivi il problema chiaramente. Cosa hai fatto, cosa ti aspettavi, cosa è successo invece? Se un valore è sbagliato, indica quale sensore, cosa mostra e cosa ti aspettavi.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Passaggi per riprodurre il problema
+      placeholder: |
+        1. Vai su ...
+        2. Clicca su ...
+        3. Vedi l'errore
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log rilevanti
+      description: |
+        Attiva prima il debug logging — aggiungi questo a `configuration.yaml`, riavvia HA, riproduci il problema, poi incolla qui le righe rilevanti.
+        ```yaml
+        logger:
+          default: warning
+          logs:
+            custom_components.electr_it_ha: debug
+        ```
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: contract
+    attributes:
+      label: Contratto di fornitura
+      description: Il JSON del contratto della fornitura interessata, come incollato nell'integrazione. Contiene solo i prezzi del venditore, nessun dato personale.
+      render: json
+    validations:
+      required: false
+
+  - type: textarea
+    id: attributes
+    attributes:
+      label: Attributi del sensore
+      description: Per un valore sbagliato o sconosciuto, gli attributi del sensore (Strumenti per sviluppatori → Stati), compreso `problems` se presente.
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: bill
+    attributes:
+      label: Confronto con la bolletta
+      description: Se il costo è diverso dalla bolletta, le righe della bolletta per lo stesso periodo (componente, kWh, prezzo unitario, importo). Togli nome, indirizzo, POD e codice cliente.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: configuration
+    attributes:
+      label: Configurazione
+      description: Come è configurata la fornitura interessata?
+      options:
+        - label: Account GME aggiunto, PUN preso dai suoi sensori
+        - label: PUN da un'altra entità
+        - label: PUN scritto come valore fisso
+        - label: Dispacciamento, capacity market o CDispD lasciati vuoti (valori pubblicati)
+        - label: Dispacciamento, capacity market o CDispD da un'entità o un valore fisso
+        - label: Più di un contatore
+        - label: Più di una fornitura
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Contesto aggiuntivo
+      description: Qualsiasi altra cosa rilevante — contatori, automazioni, plancia Energia, altre integrazioni, ecc.
+    validations:
+      required: false

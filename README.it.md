@@ -26,6 +26,8 @@ Un'integrazione per [Home Assistant](https://www.home-assistant.io/) che ti dice
 - **Solo clienti domestici in bassa tensione.** Residenti e non residenti, qualsiasi potenza impegnata.
 - **Non ancora applicati:** sconti, energia verde opzionale, prezzi validi per un periodo, scaglioni di consumo, fasce Peak/Off-Peak.
 - La **franchigia delle accise** per i residenti fino a 3 kW segue la legge (primi 150 kWh al mese esenti, ridotti oltre la soglia) ma non è ancora stata verificata su una bolletta con il dettaglio.
+- **Il PUN si può scaricare dal GME con il tuo account.** Le API ufficiali del GME sono gratuite ma personali: ogni utente si registra e riceve le sue credenziali, che non vanno condivise. Senza account puoi prendere il PUN da qualsiasi entità che hai già, oppure scriverlo a mano.
+- **Dispacciamento, capacity market e CDispD vengono scaricati per te**, senza account: Terna pubblica i primi due ogni trimestre, ARERA il CDispD ogni mese. Vedi [Valori di mercato](#valori-di-mercato).
 - Progetto non ufficiale, non affiliato ad ARERA, GME, Acquirente Unico, Terna né ad alcun venditore.
 
 ---
@@ -37,6 +39,8 @@ Un'integrazione per [Home Assistant](https://www.home-assistant.io/) che ti dice
 - **Costo fisso giornaliero**: quanto costa la fornitura senza consumi
 - **Fasce F1 / F2 / F3** con le festività nazionali italiane, ed energia prelevata nel mese divisa per fascia
 - **Uno o più contatori**: gli incrementi di più sensori di energia cumulativi vengono sommati (forniture trifase, più punti di misura)
+- **PUN dal GME**: con un account GME la media mensile del PUN per fascia viene scaricata dalle API ufficiali, una volta per tutte le forniture, di solito una volta al giorno
+- **Dispacciamento, capacity market e CDispD** come li pubblicano Terna e ARERA, scaricati una volta al giorno senza account; l'ultima copia resta nel tuo Home Assistant
 - **Qualsiasi contratto** che rientri nel modello, incollato in JSON e validato subito; riconfigurabile in ogni momento senza perdere i contatori del mese
 - Italiano e inglese
 
@@ -49,11 +53,13 @@ Ogni fornitura configurata è un dispositivo con sei sensori.
 | Prezzo del prossimo kWh | Costo di un kWh in più adesso, IVA inclusa. Attributi: fascia, vendita, rete, oneri di sistema, accise, IVA | EUR/kWh |
 | Costo fisso giornaliero | Quote fisse e di potenza di oggi, IVA inclusa | EUR/d |
 | Costo del mese in corso | La bolletta dal primo del mese a ora. Attributi: imponibile, IVA, subtotali per sezione | EUR |
-| Costo del mese precedente | La bolletta del mese concluso, calcolata al cambio di mese | EUR |
+| Costo del mese precedente | La bolletta del mese concluso, calcolata al cambio di mese. Mentre aspetta i valori di mercato di quel mese, l'attributo `waiting_for_market` è `true` | EUR |
 | Energia prelevata nel mese | kWh prelevati nel mese. Attributi: kWh in F1, F2, F3 | kWh |
 | Fascia oraria | La fascia in vigore: F1, F2 o F3 | — |
 
 Quando un valore non è calcolabile lo stato è sconosciuto e l'attributo `problems` dice che cosa manca.
+
+L'account GME è un dispositivo con dieci sensori: il PUN medio di F0 (monorario), F1, F2, F3 e F23, del mese in corso e del mese precedente, in EUR/kWh. Gli attributi dicono a quale mese (`month`) si riferisce il valore, quante ore copre (`hours`) su quelle del mese (`expected_hours`) e se è definitivo (`complete`). Nei primi giorni del mese una fascia può non avere ancora ore (di domenica non c'è F1): finché non ne ha, il sensore del mese in corso mostra il valore del mese precedente, e l'attributo `month` lo indica.
 
 ---
 
@@ -76,13 +82,28 @@ Richiede Home Assistant 2026.8.0 o successivo.
 
 ## Configurazione
 
-**Impostazioni → Dispositivi e servizi → Aggiungi integrazione → electrITHA.** Tre schermate:
+**Impostazioni → Dispositivi e servizi → Aggiungi integrazione → electrITHA.** La prima volta scegli cosa aggiungere: una fornitura o l'account GME. Quando l'account GME esiste, l'integrazione passa direttamente a una nuova fornitura.
+
+Una fornitura richiede tre schermate:
 
 1. **Contratto di fornitura**: incolla il contratto in JSON (vedi sotto). Viene validato subito e ogni problema è elencato.
 2. **Fornitura e contatori**: se sei residente, la potenza impegnata in kW, e uno o più sensori di energia cumulativi che misurano il prelievo dalla rete (kWh, Wh o MWh).
-3. **Valori di mercato**: solo quelli da cui dipende il prezzo del tuo contratto. Per ciascuno scegli un'entità oppure scrivi un valore fisso in €/kWh. Un'entità può essere in €/kWh o in €/MWh. La schermata viene saltata se il contratto non ne richiede.
+3. **Valori di mercato**: solo quelli da cui dipende il prezzo del tuo contratto. Per ciascuno scegli un'entità oppure scrivi un valore fisso in €/kWh. Un'entità può essere in €/kWh o in €/MWh. Se hai aggiunto l'account GME, i suoi sensori del PUN sono già indicati. Dispacciamento, capacity market e CDispD si possono lasciare vuoti: si usano i valori pubblicati. La schermata viene saltata se il contratto non ne richiede.
 
 Per cambiare qualcosa in seguito usa **Riconfigura** sulla voce dell'integrazione: si riaprono le stesse schermate con i valori attuali.
+
+### L'account GME
+
+1. Registrati alle API del GME su [https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest](https://api.mercatoelettrico.org/users/RegistrationForm/RegistrationRequest) e segui le istruzioni del GME per accettare le condizioni d'uso. Serve firmare un documento e rimandarlo al GME; vedi la nota sotto se la firma viene respinta. Il GME ti invia poi via email nome utente e una password temporanea.
+2. La password temporanea non si può usare così com'è: cambiala prima sul portale del GME dedicato, [https://api.mercatoelettrico.org/users/](https://api.mercatoelettrico.org/users/), poi usa la nuova nel passaggio successivo. Il GME richiede di cambiarla di nuovo ogni 6 mesi, senza preavviso: il segnale è la richiesta di riautenticazione descritta sotto.
+3. Aggiungi di nuovo l'integrazione e scegli **L'account GME**. Le credenziali vengono controllate facendo il login.
+4. Aggiungi le forniture: i campi del PUN sono già compilati con i sensori dell'account GME. Per una fornitura configurata prima, apri **Riconfigura** e sceglili al posto dei valori che ha.
+
+La prima volta l'integrazione scarica il PUN del mese precedente e del mese in corso fino a oggi; poi solo i giorni che mancano, di solito una volta al giorno dopo le 14, quando il GME ha pubblicato i prezzi di domani. I prezzi restano nel tuo Home Assistant. Se il GME rifiuta le credenziali salvate — la password è scaduta dopo 6 mesi, oppure è stata cambiata volontariamente — Home Assistant mostra una richiesta di riautenticazione in cui la cambi sul portale sopra e la inserisci di nuovo.
+
+Le condizioni d'uso delle API del GME consentono solo l'uso personale e chiedono di citare la fonte: ogni sensore dell'account GME riporta l'attribuzione *Source: Gestore dei Mercati Energetici S.p.A.*
+
+> **Una nota sulla registrazione.** La registrazione del GME chiede un documento di condizioni d'uso firmato, digitalmente o a mano con copia di un documento d'identità, inviato alla PEC dedicata del GME, `gme@pec.mercatoelettrico.org`, oppure, per chi non ha una PEC, al suo indirizzo di posta elettronica ordinaria dedicato allo scopo, `posta.gme@mercatoelettrico.org`. Una firma digitale che un lettore PDF segna come valida non è detto che basti: il GME può comunque respingerla se non è una firma qualificata (ad esempio CAdES/PAdES di un certificatore accreditato, del tipo che può produrre una Carta d'Identità Elettronica, CIE). Se succede, la risposta del GME indica il motivo e propone l'alternativa: rimandare con una firma digitale valida, oppure firmare a mano allegando un documento d'identità, in entrambi i casi a uno dei due indirizzi sopra. In pratica, la registrazione ha richiesto circa una settimana in tutto: la richiesta, una firma respinta, un nuovo invio, e le credenziali arrivate pochi giorni dopo.
 
 ### Il contratto
 
@@ -134,7 +155,21 @@ Il modello ricalca il tracciato con cui i venditori pubblicano le offerte sul Po
 | Capacity market | `dispatching.capacity_market` è `true` |
 | CDispD | `dispatching.mode` è `cdispd` |
 
-Cambiano ogni mese. Finché l'integrazione non li scarica da sola, collega ciascuno a un'entità che lo ha già nel tuo Home Assistant, oppure scrivi il valore dell'ultima bolletta e aggiornalo quando cambia. Alcune bollette riportano il PUN già moltiplicato per 1,10: in quel caso dividilo per 1,10 prima di inserirlo, altrimenti le perdite vengono contate due volte.
+Cambiano ogni mese. Per il PUN la fonte più semplice è l'account GME. Altrimenti collega ciascun valore a un'entità che lo ha già nel tuo Home Assistant (qualsiasi sensore con la media mensile per fascia, in €/kWh o €/MWh), oppure scrivi il valore dell'ultima bolletta e aggiornalo quando cambia. Alcune bollette riportano il PUN già moltiplicato per 1,10: in quel caso dividilo per 1,10 prima di inserirlo, altrimenti le perdite vengono contate due volte.
+
+Dispacciamento, capacity market e CDispD si possono lasciare vuoti: in quel caso l'integrazione usa i valori pubblicati da Terna e ARERA.
+
+| Valore | Pubblicato da | Quando |
+|---|---|---|
+| Dispacciamento | Terna: il corrispettivo di dispacciamento per i clienti domestici (TIDE) | Ogni trimestre, verso metà del mese precedente |
+| Capacity market | Terna: il corrispettivo unitario nelle ore fuori picco | Ogni trimestre, verso metà del mese precedente |
+| CDispD | ARERA: i corrispettivi del mercato libero per i clienti domestici | Ogni mese, dopo il mese a cui si riferisce |
+
+Un workflow di questo repository legge queste pubblicazioni una volta al giorno, le controlla e le tiene in `market_values.json` sul branch [`market-data`](https://github.com/giorgioparri/electr-it-ha/tree/market-data). L'integrazione scarica quel file una volta al giorno e conserva l'ultima copia valida nel tuo Home Assistant; ne include anche una sua, quindi funziona fin dal primo avvio. Tra le copie che ha, usa quella aggiornata più di recente.
+
+Durante il mese, un valore non ancora pubblicato per quel mese è sostituito dall'ultimo pubblicato, e i valori sono segnati come stimati (`estimated`). Se per tre giorni nessun download riesce, Home Assistant mostra una riparazione che dice da quando; sparisce da sola al primo download riuscito. Un'entità o un valore fisso che imposti tu prende il posto del valore pubblicato.
+
+Al cambio di mese, il mese concluso viene fatturato con i valori di quel mese. Un'entità che indica il suo mese (`month`), come i sensori dell'account GME, viene usata solo quando si riferisce a quel mese ed è definitiva; per un sensore del mese in corso si usa il suo gemello del mese precedente. Le altre entità e i valori fissi vengono usati come sono in quel momento. Se dopo tre giorni i valori giusti mancano ancora, il mese viene fatturato con quelli disponibili e il log lo segnala. Quando tra questi c'è un valore pubblicato l'attesa è di quindici giorni, perché ARERA pubblica il CDispD di un mese solo dopo la sua fine.
 
 ### Plancia Energia
 
@@ -170,7 +205,7 @@ GPL-3.0-or-later — vedi [LICENSE](https://github.com/giorgioparri/electr-it-ha
 
 ## Avvertenza
 
-Questa è un'integrazione non ufficiale. I valori che mostra sono stime, utili a capire i propri consumi: l'unico importo dovuto è quello della bolletta del venditore. I valori regolati sono trascritti dalle pubblicazioni di ARERA; i corrispettivi approvati dall'Autorità risultano esclusivamente dai suoi provvedimenti.
+Questa è un'integrazione non ufficiale. I valori che mostra sono stime, utili a capire i propri consumi: l'unico importo dovuto è quello della bolletta del venditore. I valori regolati sono trascritti dalle pubblicazioni di ARERA; i corrispettivi approvati dall'Autorità risultano esclusivamente dai suoi provvedimenti. Dati del PUN scaricati con un account GME: fonte Gestore dei Mercati Energetici S.p.A. Dispacciamento, capacity market e CDispD: valori pubblicati da Terna S.p.A. e da ARERA, questi ultimi riutilizzati con licenza [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.it); `market_values.json`, che li raccoglie, è distribuito con la stessa licenza.
 
 ## Ringraziamenti
 

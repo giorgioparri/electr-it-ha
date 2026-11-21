@@ -1,6 +1,14 @@
 {
   "config": {
     "step": {
+      "user": {
+        "title": "What to add",
+        "description": "A supply computes the cost of one contract. The GME account downloads the PUN for every supply, with your own GME credentials.",
+        "menu_options": {
+          "contract": "A supply",
+          "gme_account": "The GME account"
+        }
+      },
       "contract": {
         "title": "Supply contract",
         "description": "Paste the contract as JSON. It holds only what your supplier decides: prices, fees, how dispatching is billed. The README explains the format and how to get it from a bill.\n\n{details}",
@@ -24,7 +32,7 @@
       },
       "market": {
         "title": "Market values",
-        "description": "Your contract is priced with the values below, which change every month. For each one choose an entity or type a fixed number in €/kWh, not both. An entity may report €/kWh or €/MWh.",
+        "description": "Your contract is priced with the values below, which change every month. For each one choose an entity or type a fixed number in €/kWh, not both. An entity may report €/kWh or €/MWh. The sensors of the GME account, if you added it, are already filled in. Leave dispatching, capacity market and CDispD empty to use the values Terna and ARERA publish, downloaded once a day.",
         "data": {
           "pun_f0_entity": "PUN, single band: entity",
           "pun_f0_value": "PUN, single band: fixed value",
@@ -43,15 +51,35 @@
           "cdispd_entity": "CDispD: entity",
           "cdispd_value": "CDispD: fixed value"
         }
+      },
+      "gme_account": {
+        "title": "GME account",
+        "description": "The PUN is downloaded from the official GME API with your own credentials, which GME gives each user who registers at {url}. The password GME sends by email cannot be used as is: change it first at {password_url}, then enter the new one below. GME requires changing it again every 6 months; when it refuses the saved password, Home Assistant will ask you to log in again here. Data source: Gestore dei Mercati Energetici S.p.A.",
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        }
+      },
+      "reauth_confirm": {
+        "title": "GME account",
+        "description": "GME refused the saved credentials: most likely the password expired (GME requires changing it every 6 months) or was changed on purpose. Change it at {password_url} if you have not already, then enter it again. If you lost it, recover it from the same page, or ask GME (registration at {url}).",
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        }
       }
     },
     "error": {
       "invalid_contract": "The contract is not valid. The problems are listed above.",
       "no_meters": "Choose at least one meter.",
-      "entity_or_value": "Fill in either the entity or the fixed value, not both."
+      "entity_or_value": "Fill in either the entity or the fixed value, not both.",
+      "invalid_auth": "GME refused these credentials.",
+      "cannot_connect": "Cannot reach the GME API. Try again later."
     },
     "abort": {
-      "reconfigure_successful": "Configuration updated."
+      "reconfigure_successful": "Configuration updated.",
+      "already_configured": "The GME account is already configured.",
+      "reauth_successful": "Credentials updated."
     }
   },
   "entity": {
@@ -78,7 +106,43 @@
           "f2": "F2",
           "f3": "F3"
         }
+      },
+      "pun_f0_current": {
+        "name": "PUN single band this month"
+      },
+      "pun_f1_current": {
+        "name": "PUN F1 this month"
+      },
+      "pun_f2_current": {
+        "name": "PUN F2 this month"
+      },
+      "pun_f3_current": {
+        "name": "PUN F3 this month"
+      },
+      "pun_f23_current": {
+        "name": "PUN F23 this month"
+      },
+      "pun_f0_previous": {
+        "name": "PUN single band last month"
+      },
+      "pun_f1_previous": {
+        "name": "PUN F1 last month"
+      },
+      "pun_f2_previous": {
+        "name": "PUN F2 last month"
+      },
+      "pun_f3_previous": {
+        "name": "PUN F3 last month"
+      },
+      "pun_f23_previous": {
+        "name": "PUN F23 last month"
       }
+    }
+  },
+  "issues": {
+    "published_download_failed": {
+      "title": "electrITHA cannot download the official market values",
+      "description": "Since {since}, electrITHA has not managed to download the dispatching, capacity market and CDispD values that Terna and ARERA publish, from {url}. Costs are computed with the last values it has, updated on {updated}: a month whose own values are missing uses the latest published ones instead. Check that Home Assistant can reach GitHub. This message goes away by itself at the first download that works."
     }
   }
 }

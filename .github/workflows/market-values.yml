@@ -1,0 +1,132 @@
+name: Market values
+
+# Once a day, read Terna's and ARERA's publications and keep
+# market_values.json up to date on the market-data branch, where the
+# integration downloads it from. main is protected and needs a PR, so the
+# data lives on a branch of its own that only this workflow writes.
+#
+# When something cannot be read, or a value is overdue, an issue is opened
+# (one at a time); it is closed by the first run that finds everything fine.
+
+on:
+  schedule:
+    - cron: "23 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: market-values
+  cancel-in-progress: false
+
+env:
+  DATA_BRANCH: market-data
+  ISSUE_TITLE: "Market values: the automatic update needs attention"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install pypdf
+        run: pip install "pypdf>=6,<7"
+
+      # The data branch is checked out next to the code. The first time it
+      # does not exist yet: it starts from the copy shipped with the
+      # integration, on a branch with no history of its own.
+      - name: Check out the data branch
+        run: |
+          if git ls-remote --exit-code --heads origin "$DATA_BRANCH" >/dev/null; then
+            git fetch --depth=1 origin "$DATA_BRANCH"
+            git worktree add data FETCH_HEAD
+          else
+            git worktree add --detach data
+            git -C data checkout --orphan "$DATA_BRANCH"
+            git -C data rm -rfq .
+            cp custom_components/electr_it_ha/market_values.json data/
+          fi
+
+      - name: Update the values
+        id: update
+        run: |
+          set +e
+          python tools/update_market_values.py --output data/market_values.json \
+            > changes.txt 2> errors.txt
+          status=$?
+          set -e
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          cat changes.txt errors.txt
+          {
+            echo "### Market values"
+            echo '```'
+            cat changes.txt errors.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Status 3 means the file was written but something is overdue: what
+      # was found is still worth publishing.
+      - name: Publish on the data branch
+        if: steps.update.outputs.status == '0' || steps.update.outputs.status == '3'
+        working-directory: data
+        run: |
+          git add market_values.json
+          if git diff --cached --quiet; then
+            echo "Nothing to publish."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          { echo "Update market values"; echo; cat ../changes.txt; } > ../message.txt
+          git commit -q -F ../message.txt
+          git push origin "HEAD:refs/heads/$DATA_BRANCH"
+
+      - name: Open an issue
+        if: steps.update.outputs.status != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          open=$(gh issue list --state open --search "in:title \"$ISSUE_TITLE\"" \
+            --json number,title --jq "map(select(.title == env.ISSUE_TITLE)) | .[0].number // empty")
+          if [ -n "$open" ]; then
+            echo "Issue #$open is already open."
+            exit 0
+          fi
+          {
+            echo "The daily update of \`market_values.json\` on the \`$DATA_BRANCH\` branch reported:"
+            echo
+            echo '```'
+            cat errors.txt
+            echo '```'
+            echo
+            echo "Run: $RUN_URL"
+            echo
+            echo "Exit status 1: nothing was written; 3: the file was written but a value is overdue."
+          } > body.md
+          gh issue create --title "$ISSUE_TITLE" --body-file body.md
+
+      - name: Close the issue
+        if: steps.update.outputs.status == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue list --state open --search "in:title \"$ISSUE_TITLE\"" \
+            --json number,title --jq "map(select(.title == env.ISSUE_TITLE)) | .[].number" |
+          while read -r number; do
+            gh issue close "$number" --comment "Fixed: the update runs cleanly again."
+          done
+
+      # A source that cannot be read is a failure worth seeing in Actions too;
+      # an overdue value is only an issue, the run itself went fine.
+      - name: Fail on unreadable sources
+        if: steps.update.outputs.status == '1'
+        run: exit 1

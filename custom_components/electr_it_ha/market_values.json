@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "updated": "2026-11-21",
+  "license": "CC-BY-SA-4.0",
+  "attribution": "Values published by ARERA (Autorità di Regolazione per Energia Reti e Ambiente), reused under CC BY-SA 4.0, and by Terna S.p.A. Collected by electrITHA; this file is distributed under the same licence.",
+  "values": {
+    "dispatching": [
+      {
+        "from": "2026-01-01",
+        "to": "2026-03-31",
+        "eur_kwh": "0.010659",
+        "source": "Terna, 'AVVISO AGLI UdD Pubblicazione 1Q2026_Aggiornamento 31 Dicembre 2025', published 2025-12-31, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-dispacciamento-ai-sensi-del-tide/2026/01/01/avviso-agli-udd-pubblicazione-1q2026_aggiornamento-31-dicembre-2025.pdf"
+      },
+      {
+        "from": "2026-04-01",
+        "to": "2026-06-30",
+        "eur_kwh": "0.010500",
+        "source": "Terna, 'AVVISO AGLI UdD Pubblicazione 2Q2026', published 2026-03-16, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-dispacciamento-ai-sensi-del-tide/2026/04/01/avviso_udd_pubblicazione_2q2026.pdf"
+      },
+      {
+        "from": "2026-07-01",
+        "to": "2026-09-30",
+        "eur_kwh": "0.010501",
+        "source": "Terna, 'AVVISO AGLI UdD Pubblicazione 3Q2026', published 2026-06-16, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-dispacciamento-ai-sensi-del-tide/2026/07/01/avviso_udd_pubblicazione_3q2026.pdf"
+      },
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "eur_kwh": "0.009888",
+        "source": "Terna, 'AVVISO AGLI UdD Pubblicazione 4Q2026', published 2026-09-17, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-dispacciamento-ai-sensi-del-tide/2026/10/01/avviso_udd_pubblicazione_4q2026.pdf"
+      }
+    ],
+    "capacity": [
+      {
+        "from": "2026-01-01",
+        "to": "2026-03-31",
+        "eur_kwh": "0.002996",
+        "source": "Terna, 'Corrispettivi unitari a copertura degli oneri netti di approvvigionamento della capacità 1° trimestre 2026', published 2025-12-15, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-mercato-della-capacita/2026/01/01/2026-corrispettivi-cm--iqtr26_art-14-4-e-14-5-del-98-11.pdf"
+      },
+      {
+        "from": "2026-04-01",
+        "to": "2026-06-30",
+        "eur_kwh": "0.003619",
+        "source": "Terna, 'Corrispettivi unitari a copertura degli oneri netti di approvvigionamento della capacità 2° trimestre 2026', published 2026-03-16, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-mercato-della-capacita/2026/04/01/2026-corrispettivi-cm--iiqtr26_art-14-4-e-14-5-del-98-11.pdf"
+      },
+      {
+        "from": "2026-07-01",
+        "to": "2026-09-30",
+        "eur_kwh": "0.003197",
+        "source": "Terna, 'Corrispettivi unitari a copertura degli oneri netti di approvvigionamento della capacità 3° trimestre 2026', published 2026-06-16, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-mercato-della-capacita/2026/07/01/2026-corrispettivi-cm--iiiqtr26_art-14-4-e-14-5-del-98-11.pdf"
+      },
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "eur_kwh": "0.003423",
+        "source": "Terna, 'Corrispettivi unitari a copertura degli oneri netti di approvvigionamento della capacità 4° trimestre 2026 Terna', published 2026-09-16, https://dati.terna.it/-/media/project/terna/dati/corrispettivi/corrispettivi-mercato-della-capacita/2026/10/01/2026-corrispettivi-cm--ivqtr26_art-14-4-e-14-5-del-98-11.pdf"
+      }
+    ],
+    "cdispd": [
+      {
+        "from": "2026-01-01",
+        "to": "2026-01-31",
+        "eur_kwh": "0.025305",
+        "source": "ARERA, sheet 'gennaio 2026' of https://www.arera.it/fileadmin/area_operatori/prezzi_e_tariffe/Corrispettivi_libero_elettrico_domestico_2026.xlsx"
+      },
+      {
+        "from": "2026-02-01",
+        "to": "2026-02-28",
+        "eur_kwh": "0.023366",
+        "source": "ARERA, sheet 'febbraio 2026' of https://www.arera.it/fileadmin/area_operatori/prezzi_e_tariffe/Corrispettivi_libero_elettrico_domestico_2026.xlsx"
+      },
+      {
+        "from": "2026-03-01",
+        "to": "2026-03-31",
+        "eur_kwh": "0.016509",
+        "source": "ARERA, sheet 'marzo 2026' of https://www.arera.it/fileadmin/area_operatori/prezzi_e_tariffe/Corrispettivi_libero_elettrico_domestico_2026.xlsx"
+      },
+      {
+        "from": "2026-04-01",
+        "to": "2026-04-30",
+        "eur_kwh": "0.015531",
+        "source": "ARERA, sheet 'aprile 2026' of https://www.arera.it/fileadmin/area_operatori/prezzi_e_tariffe/Corrispettivi_libero_elettrico_domestico_2026.xlsx"
+      },
+      {
+        "from": "2026-05-01",
+        "to": "2026-05-31",
+        "eur_kwh": "0.015531",
+        "source": "ARERA, sheet 'maggio 2026' of https://www.arera.it/fileadmin/area_operatori/prezzi_e_tariffe/Corrispettivi_libero_elettrico_domestico_2026.xlsx"
+      },
+      {
+        "from": "2026-06-01",
+        "to": "2026-06-30",
+        "eur_kwh": "0.019902",
+        "source": "ARERA, sheet 'giugno 2026' of https://www.arera.it/fileadmin/area_operatori/prezzi_e_tariffe/Corrispettivi_libero_elettrico_domestico_2026.xlsx"
+      },
+      {
+        "from": "2026-07-01",
+        "to": "2026-07-31",
+        "eur_kwh": "0.038464",
+        "source": "ARERA, sheet 'luglio 2026' of https://www.arera.it/fileadmin/area_operatori/prezzi_e_tariffe/Corrispettivi_libero_elettrico_domestico_2026.xlsx"
+      },
+      {
+        "from": "2026-08-01",
+        "to": "2026-08-31",
+        "eur_kwh": "0.018468",
+        "source": "ARERA, sheet 'agosto 2026' of https://www.arera.it/fileadmin/area_operatori/prezzi_e_tariffe/Corrispettivi_libero_elettrico_domestico_2026.xlsx"
+      },
+      {
+        "from": "2026-09-01",
+        "to": "2026-09-30",
+        "eur_kwh": "0.015068",
+        "source": "ARERA, sheet 'settembre 2026' of https://www.arera.it/fileadmin/area_operatori/prezzi_e_tariffe/Corrispettivi_libero_elettrico_domestico_2026.xlsx"
+      },
+      {
+        "from": "2026-10-01",
+        "to": "2026-10-31",
+        "eur_kwh": "0.014642",
+        "source": "ARERA, sheet 'ottobre 2026' of https://www.arera.it/fileadmin/area_operatori/prezzi_e_tariffe/Corrispettivi_libero_elettrico_domestico_2026.xlsx"
+      }
+    ]
+  }
+}

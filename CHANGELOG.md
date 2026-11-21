@@ -18,6 +18,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - One or more grid import meters in kWh, Wh or MWh: their increases are added together and split into F1, F2 and F3, Italian national holidays included.
 - Regulated values for every quarter of 2026 are built in: transport and metering, UC3 and UC6, ASOS and ARIM, DispBT, regulated service prices, excise and VAT. For a date outside 2026 the sensors become unknown and say why.
 - The bill calculator is tested against real bills: two match to the cent, a third within one cent per section.
+- The PUN by band can be downloaded from the official GME API with your own GME account, added once and shared by every supply: ten sensors with the average PUN of this month and last month, suggested in the config flow.
+- The GME account screens explain that the temporary password GME emails cannot be used as is, link to GME's password portal to change it, and say that it must be renewed every 6 months; a reauthentication prompt is shown whenever GME refuses the saved password.
+- Dispatching, capacity market and CDispD do not need to be typed: when their field is left empty, the values published by Terna (every quarter) and ARERA (every month) are used. A workflow of the repository collects them once a day into `market_values.json` on the `market-data` branch; the integration downloads that file once a day, keeps the last good copy in Home Assistant, and ships a copy of its own. While a month runs, a value not yet published for it is replaced by the last one published, and the figures are marked `estimated`.
+- A repair is shown when the published values cannot be downloaded for three days; it goes away by itself at the first download that works.
+- A month that ends is billed with the market values of that month: sensors that report their month, like those of the GME account, are used once they refer to it and are complete. It waits up to three days for them, or up to 15 days for a published value, since ARERA publishes the CDispD of a month only after it ends; then it is billed with the last values available.
 - English and Italian.
 
 [Unreleased]: https://github.com/giorgioparri/electr-it-ha/compare/v0.1.0...HEAD

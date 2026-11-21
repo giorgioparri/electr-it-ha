@@ -1,6 +1,14 @@
 {
   "config": {
     "step": {
+      "user": {
+        "title": "Cosa aggiungere",
+        "description": "Una fornitura calcola il costo di un contratto. L'account GME scarica il PUN per tutte le forniture, con le tue credenziali GME.",
+        "menu_options": {
+          "contract": "Una fornitura",
+          "gme_account": "L'account GME"
+        }
+      },
       "contract": {
         "title": "Contratto di fornitura",
         "description": "Incolla il contratto in formato JSON. Contiene solo ciò che decide il venditore: prezzi, quote fisse, come viene fatturato il dispacciamento. Il README spiega il formato e come ricavarlo da una bolletta.\n\n{details}",
@@ -24,7 +32,7 @@
       },
       "market": {
         "title": "Valori di mercato",
-        "description": "Il prezzo del tuo contratto dipende dai valori qui sotto, che cambiano ogni mese. Per ciascuno scegli un'entità oppure scrivi un valore fisso in €/kWh, non entrambi. Un'entità può essere in €/kWh o in €/MWh.",
+        "description": "Il prezzo del tuo contratto dipende dai valori qui sotto, che cambiano ogni mese. Per ciascuno scegli un'entità oppure scrivi un valore fisso in €/kWh, non entrambi. Un'entità può essere in €/kWh o in €/MWh. Se hai aggiunto l'account GME, i suoi sensori sono già indicati. Lascia vuoti dispacciamento, capacity market e CDispD per usare i valori pubblicati da Terna e ARERA, scaricati una volta al giorno.",
         "data": {
           "pun_f0_entity": "PUN monorario: entità",
           "pun_f0_value": "PUN monorario: valore fisso",
@@ -43,15 +51,35 @@
           "cdispd_entity": "CDispD: entità",
           "cdispd_value": "CDispD: valore fisso"
         }
+      },
+      "gme_account": {
+        "title": "Account GME",
+        "description": "Il PUN viene scaricato dalle API ufficiali del GME con le tue credenziali, che il GME rilascia a ogni utente che si registra su {url}. La password che il GME invia per email non si può usare direttamente: cambiala prima su {password_url}, poi inserisci qui la nuova. Il GME richiede di cambiarla di nuovo ogni 6 mesi; quando rifiuta la password salvata, Home Assistant ti chiederà di accedere di nuovo qui. Fonte dei dati: Gestore dei Mercati Energetici S.p.A.",
+        "data": {
+          "username": "Nome utente",
+          "password": "Password"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Account GME",
+        "description": "Il GME ha rifiutato le credenziali salvate: molto probabilmente la password è scaduta (il GME la richiede ogni 6 mesi) oppure è stata cambiata volontariamente. Cambiala su {password_url} se non l'hai già fatto, poi inseriscila di nuovo. Se l'hai persa, recuperala dalla stessa pagina, oppure chiedi al GME (registrazione su {url}).",
+        "data": {
+          "username": "Nome utente",
+          "password": "Password"
+        }
       }
     },
     "error": {
       "invalid_contract": "Il contratto non è valido. I problemi sono elencati qui sopra.",
       "no_meters": "Scegli almeno un contatore.",
-      "entity_or_value": "Compila l'entità oppure il valore fisso, non entrambi."
+      "entity_or_value": "Compila l'entità oppure il valore fisso, non entrambi.",
+      "invalid_auth": "Il GME ha rifiutato queste credenziali.",
+      "cannot_connect": "Le API del GME non rispondono. Riprova più tardi."
     },
     "abort": {
-      "reconfigure_successful": "Configurazione aggiornata."
+      "reconfigure_successful": "Configurazione aggiornata.",
+      "already_configured": "L'account GME è già configurato.",
+      "reauth_successful": "Credenziali aggiornate."
     }
   },
   "entity": {
@@ -78,7 +106,43 @@
           "f2": "F2",
           "f3": "F3"
         }
+      },
+      "pun_f0_current": {
+        "name": "PUN monorario, mese in corso"
+      },
+      "pun_f1_current": {
+        "name": "PUN F1, mese in corso"
+      },
+      "pun_f2_current": {
+        "name": "PUN F2, mese in corso"
+      },
+      "pun_f3_current": {
+        "name": "PUN F3, mese in corso"
+      },
+      "pun_f23_current": {
+        "name": "PUN F23, mese in corso"
+      },
+      "pun_f0_previous": {
+        "name": "PUN monorario, mese precedente"
+      },
+      "pun_f1_previous": {
+        "name": "PUN F1, mese precedente"
+      },
+      "pun_f2_previous": {
+        "name": "PUN F2, mese precedente"
+      },
+      "pun_f3_previous": {
+        "name": "PUN F3, mese precedente"
+      },
+      "pun_f23_previous": {
+        "name": "PUN F23, mese precedente"
       }
+    }
+  },
+  "issues": {
+    "published_download_failed": {
+      "title": "electrITHA non riesce a scaricare i valori di mercato ufficiali",
+      "description": "Dal {since} electrITHA non riesce a scaricare da {url} i valori di dispacciamento, capacity market e CDispD pubblicati da Terna e ARERA. I costi sono calcolati con gli ultimi valori disponibili, aggiornati al {updated}: per un mese di cui mancano i valori si usano gli ultimi pubblicati. Verifica che Home Assistant raggiunga GitHub. Questo avviso sparisce da solo al primo download riuscito."
     }
   }
 }
