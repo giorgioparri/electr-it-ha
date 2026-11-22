@@ -94,8 +94,12 @@ def file_name(day: date) -> str:
 
 
 def file_url(day: date) -> str:
-    """The address of the daily file of `day`."""
-    return f"{PORTALE}/{day:%Y_%m}/{file_name(day)}"
+    """The address of the daily file of `day`.
+
+    The folder of a month does not pad it (2026_3), the file name does
+    (20260305): a padded folder answers 404.
+    """
+    return f"{PORTALE}/{day.year}_{day.month}/{file_name(day)}"
 
 
 # --- Conversion -----------------------------------------------------------------
