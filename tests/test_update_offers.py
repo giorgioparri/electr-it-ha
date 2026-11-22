@@ -251,6 +251,11 @@ def test_refusals(folder: Path) -> None:
     status, out, err = run(output, broken, "--today", "2026-11-22")
     check("broken XML: status", status, 1)
     check("broken XML: said", "not valid XML" in err, True)
+    check(
+        "broken XML: the file named",
+        "PO_Offerte_E_MLIBERO_20261122.xml" in err,
+        True,
+    )
     check("broken XML: nothing on stdout", out, "")
     check("broken XML: untouched", output.read_bytes(), before)
 
@@ -299,6 +304,30 @@ def test_backfill(folder: Path) -> None:
         ("2026-11-19", "2026-11-19"),
     )
     check("older day: Ajo untouched", data["offers"][AJO]["first_seen"], "2026-11-21")
+
+    # The Portale serves some past days as an empty file: the day is
+    # listed and skipped, the others are read.
+    output = folder / "gaps.json"
+    portale = Portale(
+        {
+            date(2026, 11, 20): b"",
+            date(2026, 11, 21): DAY_1,
+            date(2026, 11, 22): DAY_2,
+        }
+    )
+    status, out, err = run(output, portale, "--backfill", "2026-11-20:2026-11-22")
+    check("empty day: status", status, 0)
+    check("empty day: listed", "Unreadable: 2026-11-20 (" in err, True)
+    check("empty day: the other days read", load(output)["updated"], "2026-11-22")
+
+    status, _, err = run(
+        folder / "empty.json",
+        Portale({date(2026, 11, 20): b""}),
+        "--backfill",
+        "2026-11-20:2026-11-20",
+    )
+    check("only empty days: status", status, 1)
+    check("only empty days: nothing written", (folder / "empty.json").exists(), False)
 
     status, _, _ = run(
         folder / "none.json", Portale({}), "--backfill", "2026-11-01:2026-11-02"
