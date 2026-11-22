@@ -40,7 +40,11 @@ env:
 
 jobs:
   update:
-    runs-on: ubuntu-latest
+    # The Portale refuses GitHub's hosted runners (HTTP 403 from their data
+    # centre addresses): the job runs on a self-hosted runner labelled
+    # "portale". It starts only from the schedule and by hand, never from a
+    # pull request, so code from a fork never reaches that machine.
+    runs-on: [self-hosted, linux, portale]
     timeout-minutes: 300
     steps:
       - name: Checkout
