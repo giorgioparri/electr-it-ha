@@ -57,12 +57,18 @@ jobs:
 
       # The data branch is checked out next to the code, with its history so
       # that a rebase is possible. The first time it does not exist yet: it
-      # starts as a branch with no history of its own.
+      # starts as a branch with no history of its own. The runner keeps its
+      # workspace between runs: a worktree left behind by a run that stopped
+      # half way is pruned first, and the data branch is checked out detached,
+      # so no local branch is left for the next checkout to trip over.
       - name: Check out the data branch
         run: |
+          git worktree remove --force data 2>/dev/null || true
+          git worktree prune
+          git branch -D "$DATA_BRANCH" 2>/dev/null || true
           if git ls-remote --exit-code --heads origin "$DATA_BRANCH" >/dev/null; then
             git fetch origin "$DATA_BRANCH"
-            git worktree add -B "$DATA_BRANCH" data "origin/$DATA_BRANCH"
+            git worktree add --detach data "origin/$DATA_BRANCH"
           else
             git worktree add --detach data
             git -C data checkout --orphan "$DATA_BRANCH"
@@ -167,3 +173,11 @@ jobs:
       - name: Fail when nothing was updated
         if: steps.update.outputs.status != '0'
         run: exit 1
+
+      # Leave the runner's workspace as the next checkout expects it.
+      - name: Remove the data worktree
+        if: always()
+        run: |
+          git worktree remove --force data 2>/dev/null || true
+          git worktree prune
+          git branch -D "$DATA_BRANCH" 2>/dev/null || true
