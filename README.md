@@ -27,6 +27,7 @@ A [Home Assistant](https://www.home-assistant.io/) integration that tells you wh
 - **Not applied yet:** discounts, optional green energy, time-limited prices, consumption tiers, Peak/Off-Peak bands.
 - The **excise allowance** for residents up to 3 kW follows the law (first 150 kWh per month exempt, reduced above the threshold) but has not been checked against a detailed bill yet.
 - **The PUN can be downloaded from GME with your own account.** GME's official API is free but personal: each user registers and gets their own credentials, which must not be shared. Without an account you can take the PUN from any entity you already have, or type it in.
+- **Your contract can be found by the offer code on your bill**, among the offers published on the ARERA Portale Offerte. The Portale does not say everything a bill does: always check the result against your bill. See [Finding the contract by offer code](#finding-the-contract-by-offer-code).
 - **Dispatching, capacity market and CDispD are downloaded for you**, with no account: Terna publishes the first two every quarter, ARERA the CDispD every month. See [Market values](#market-values).
 - Unofficial project, not affiliated with ARERA, GME, Acquirente Unico, Terna or any supplier.
 
@@ -41,7 +42,7 @@ A [Home Assistant](https://www.home-assistant.io/) integration that tells you wh
 - **One or more meters**: the increases of several cumulative energy sensors are added together (three-phase supplies, more than one measuring point)
 - **PUN from GME**: with a GME account the monthly average PUN by band is downloaded from the official API, once for every supply, usually once a day
 - **Dispatching, capacity market and CDispD** as Terna and ARERA publish them, downloaded once a day with no account; the last copy is kept in your Home Assistant
-- **Any contract** that fits the model, pasted as JSON and validated on the spot; reconfigurable at any time without losing the month's counters
+- **Any contract** that fits the model, found by the offer code printed on the bill or pasted as JSON, and validated on the spot; reconfigurable at any time without losing the month's counters
 - English and Italian
 
 ## Sensors
@@ -86,7 +87,7 @@ Requires Home Assistant 2026.8.0 or later.
 
 A supply takes three screens:
 
-1. **Supply contract** — paste the contract as JSON (see below). It is validated at once and every problem is listed.
+1. **Supply contract** — look up the offer code printed on your bill (see [Finding the contract by offer code](#finding-the-contract-by-offer-code)), or paste the contract as JSON (see [The contract](#the-contract)). Either way you see the JSON before going on: it is validated at once and every problem is listed.
 2. **Supply and meters** — whether you are a resident, the committed power in kW, and one or more cumulative energy sensors that measure what you draw from the grid (kWh, Wh or MWh).
 3. **Market values** — only the ones your contract is priced with. For each, choose an entity or type a fixed number in €/kWh. An entity may report €/kWh or €/MWh. The PUN sensors of the GME account, if you added it, are already filled in. Dispatching, capacity market and CDispD can be left empty: the published values are used. This screen is skipped when the contract needs none.
 
@@ -104,6 +105,22 @@ The first time, the integration downloads the PUN of last month and of this mont
 The terms of use of the GME API allow personal use only, and ask that the source be cited: every sensor of the GME account carries the attribution *Source: Gestore dei Mercati Energetici S.p.A.*
 
 > **A note on registration.** GME's registration asks for a signed terms-of-use document, digitally or on paper with an ID copy, sent to GME's dedicated certified-mail (PEC) address, `gme@pec.mercatoelettrico.org`, or, if you don't have a PEC, to its ordinary email address for this purpose, `posta.gme@mercatoelettrico.org`. A digital signature a PDF reader marks as valid is not necessarily enough: GME can still refuse it if it is not a qualified signature (for example CAdES/PAdES from an accredited certifier, of the kind an Italian electronic ID card, CIE, can produce). If that happens, GME's reply states the reason and offers the alternative: resend with a valid digital signature, or sign on paper with an ID copy, either way to one of the two addresses above. In practice, registration took about a week end to end: the request, one rejected signature, a resubmission, and the credentials arriving a few days later.
+
+### Finding the contract by offer code
+
+Every bill prints the code of the offer it applies, in the box that describes the offer: 32 letters and digits. Choose **Look up the offer code** and type it; spaces and letter case do not matter. If the offer is among those published on the [Portale Offerte](https://www.ilportaleofferte.it) of ARERA and Acquirente Unico, the next screen shows its contract as JSON, ready to check and confirm.
+
+The offers come from the open data of the Portale, which publishes every offer on sale in a file a day. A workflow of this repository converts that file once a day and keeps the result in `offers.json` on the [`market-data`](https://github.com/giorgioparri/electr-it-ha/tree/market-data) branch. Offers that leave the Portale stay in the file, so a bill from a past year can still be found. The integration downloads the file only while you set up a supply, and keeps it in memory for ten minutes.
+
+**Check the contract against your bill.** The Portale holds what suppliers state, not what they bill:
+
+- **Network losses.** The Portale does not say whether losses are billed, nor how. When the offer states no coefficient, the standard 1.10 is assumed, billed in the price (`index.loss_method` `price`). If your bill shows losses as separate kWh lines, set `energy`; if it bills none, set the coefficient to `1.0`.
+- **The same code, other prices.** Suppliers can update an offer under the same code: the file keeps its latest version. If your bill shows different prices, correct them before going on.
+- **Partial offers** are converted to the closest contract the model can hold, and the screen lists what is missing: regulated PCV or PPE components, Peak/Off-Peak bands (one averaged price), consumption tiers (the default price), the regulated PD dispatching (CdispD in its place), fees per kW.
+- **Unsupported offers** — FLAT, mixed fixed and variable, all-inclusive, indexed to something other than the PUN, or to a sum of indices — give no contract: paste it as JSON instead.
+- Prices per kWh and fees per year are summed whatever the Portale files them under, and the `notes` of the contract list the components they come from. Data the supplier sent wrong is passed on as it is.
+
+If the code is not found, the Portale never published that offer, or it left before the archive starts: paste the contract as JSON.
 
 ### The contract
 
@@ -205,7 +222,7 @@ GPL-3.0-or-later — see [LICENSE](https://github.com/giorgioparri/electr-it-ha/
 
 ## Disclaimer
 
-This is an unofficial integration. The figures it shows are estimates meant to help you understand your consumption: the only amount you owe is the one on your supplier's bill. Regulated values are transcribed from ARERA publications; the values approved by the Authority result only from its official acts. PUN data downloaded with a GME account: Source: Gestore dei Mercati Energetici S.p.A. Dispatching, capacity market and CDispD: values published by Terna S.p.A. and by ARERA, the latter reused under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); `market_values.json`, which collects them, is distributed under the same licence.
+This is an unofficial integration. The figures it shows are estimates meant to help you understand your consumption: the only amount you owe is the one on your supplier's bill. Regulated values are transcribed from ARERA publications; the values approved by the Authority result only from its official acts. PUN data downloaded with a GME account: Source: Gestore dei Mercati Energetici S.p.A. Dispatching, capacity market and CDispD: values published by Terna S.p.A. and by ARERA, the latter reused under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); `market_values.json`, which collects them, is distributed under the same licence. Offers: open data of the Portale Offerte (ARERA, Acquirente Unico), made available in open form under Italian Legislative Decree 33/2013 and reused citing the source; `offers.json` holds them as converted by electrITHA, which may differ from what the suppliers bill.
 
 ## Acknowledgments
 

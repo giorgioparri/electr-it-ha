@@ -27,6 +27,7 @@ Un'integrazione per [Home Assistant](https://www.home-assistant.io/) che ti dice
 - **Non ancora applicati:** sconti, energia verde opzionale, prezzi validi per un periodo, scaglioni di consumo, fasce Peak/Off-Peak.
 - La **franchigia delle accise** per i residenti fino a 3 kW segue la legge (primi 150 kWh al mese esenti, ridotti oltre la soglia) ma non è ancora stata verificata su una bolletta con il dettaglio.
 - **Il PUN si può scaricare dal GME con il tuo account.** Le API ufficiali del GME sono gratuite ma personali: ogni utente si registra e riceve le sue credenziali, che non vanno condivise. Senza account puoi prendere il PUN da qualsiasi entità che hai già, oppure scriverlo a mano.
+- **Il contratto si trova con il codice offerta della bolletta**, tra le offerte pubblicate sul Portale Offerte di ARERA. Il Portale non dice tutto quello che dice una bolletta: confronta sempre il risultato con la tua. Vedi [Trovare il contratto con il codice offerta](#trovare-il-contratto-con-il-codice-offerta).
 - **Dispacciamento, capacity market e CDispD vengono scaricati per te**, senza account: Terna pubblica i primi due ogni trimestre, ARERA il CDispD ogni mese. Vedi [Valori di mercato](#valori-di-mercato).
 - Progetto non ufficiale, non affiliato ad ARERA, GME, Acquirente Unico, Terna né ad alcun venditore.
 
@@ -41,7 +42,7 @@ Un'integrazione per [Home Assistant](https://www.home-assistant.io/) che ti dice
 - **Uno o più contatori**: gli incrementi di più sensori di energia cumulativi vengono sommati (forniture trifase, più punti di misura)
 - **PUN dal GME**: con un account GME la media mensile del PUN per fascia viene scaricata dalle API ufficiali, una volta per tutte le forniture, di solito una volta al giorno
 - **Dispacciamento, capacity market e CDispD** come li pubblicano Terna e ARERA, scaricati una volta al giorno senza account; l'ultima copia resta nel tuo Home Assistant
-- **Qualsiasi contratto** che rientri nel modello, incollato in JSON e validato subito; riconfigurabile in ogni momento senza perdere i contatori del mese
+- **Qualsiasi contratto** che rientri nel modello, trovato con il codice offerta stampato in bolletta oppure incollato in JSON, e validato subito; riconfigurabile in ogni momento senza perdere i contatori del mese
 - Italiano e inglese
 
 ## Sensori
@@ -86,7 +87,7 @@ Richiede Home Assistant 2026.8.0 o successivo.
 
 Una fornitura richiede tre schermate:
 
-1. **Contratto di fornitura**: incolla il contratto in JSON (vedi sotto). Viene validato subito e ogni problema è elencato.
+1. **Contratto di fornitura**: cerca il codice offerta stampato in bolletta (vedi [Trovare il contratto con il codice offerta](#trovare-il-contratto-con-il-codice-offerta)), oppure incolla il contratto in JSON (vedi [Il contratto](#il-contratto)). In entrambi i casi vedi il JSON prima di andare avanti: viene validato subito e ogni problema è elencato.
 2. **Fornitura e contatori**: se sei residente, la potenza impegnata in kW, e uno o più sensori di energia cumulativi che misurano il prelievo dalla rete (kWh, Wh o MWh).
 3. **Valori di mercato**: solo quelli da cui dipende il prezzo del tuo contratto. Per ciascuno scegli un'entità oppure scrivi un valore fisso in €/kWh. Un'entità può essere in €/kWh o in €/MWh. Se hai aggiunto l'account GME, i suoi sensori del PUN sono già indicati. Dispacciamento, capacity market e CDispD si possono lasciare vuoti: si usano i valori pubblicati. La schermata viene saltata se il contratto non ne richiede.
 
@@ -104,6 +105,22 @@ La prima volta l'integrazione scarica il PUN del mese precedente e del mese in c
 Le condizioni d'uso delle API del GME consentono solo l'uso personale e chiedono di citare la fonte: ogni sensore dell'account GME riporta l'attribuzione *Source: Gestore dei Mercati Energetici S.p.A.*
 
 > **Una nota sulla registrazione.** La registrazione del GME chiede un documento di condizioni d'uso firmato, digitalmente o a mano con copia di un documento d'identità, inviato alla PEC dedicata del GME, `gme@pec.mercatoelettrico.org`, oppure, per chi non ha una PEC, al suo indirizzo di posta elettronica ordinaria dedicato allo scopo, `posta.gme@mercatoelettrico.org`. Una firma digitale che un lettore PDF segna come valida non è detto che basti: il GME può comunque respingerla se non è una firma qualificata (ad esempio CAdES/PAdES di un certificatore accreditato, del tipo che può produrre una Carta d'Identità Elettronica, CIE). Se succede, la risposta del GME indica il motivo e propone l'alternativa: rimandare con una firma digitale valida, oppure firmare a mano allegando un documento d'identità, in entrambi i casi a uno dei due indirizzi sopra. In pratica, la registrazione ha richiesto circa una settimana in tutto: la richiesta, una firma respinta, un nuovo invio, e le credenziali arrivate pochi giorni dopo.
+
+### Trovare il contratto con il codice offerta
+
+Ogni bolletta riporta il codice dell'offerta applicata, nel riquadro che descrive l'offerta: 32 lettere e cifre. Scegli **Cerca il codice offerta** e scrivilo; spazi, maiuscole e minuscole non contano. Se l'offerta è tra quelle pubblicate sul [Portale Offerte](https://www.ilportaleofferte.it) di ARERA e Acquirente Unico, la schermata successiva mostra il suo contratto in JSON, pronto da controllare e confermare.
+
+Le offerte arrivano dagli open data del Portale, che pubblica ogni giorno un file con tutte le offerte in vendita. Un workflow di questo repository converte quel file una volta al giorno e tiene il risultato in `offers.json` sul branch [`market-data`](https://github.com/giorgioparri/electr-it-ha/tree/market-data). Le offerte che escono dal Portale restano nel file, così si trova anche la bolletta di un anno fa. L'integrazione scarica il file solo mentre configuri una fornitura, e lo tiene in memoria per dieci minuti.
+
+**Confronta il contratto con la bolletta.** Il Portale contiene quello che i venditori dichiarano, non quello che fatturano:
+
+- **Perdite di rete.** Il Portale non dice se e come vengono fatturate. Se l'offerta non indica un coefficiente si ipotizza lo standard 1,10 applicato al prezzo (`index.loss_method` `price`). Se in bolletta le perdite compaiono come righe di kWh a parte, metti `energy`; se non vengono fatturate, metti il coefficiente a `1.0`.
+- **Stesso codice, altri prezzi.** Un venditore può aggiornare un'offerta mantenendo lo stesso codice: il file conserva l'ultima versione. Se in bolletta i prezzi sono diversi, correggili prima di andare avanti.
+- **Le offerte parziali** vengono convertite nel contratto più vicino che il modello può rappresentare, e la schermata elenca cosa manca: componenti regolate PCV o PPE, fasce Peak/Off-Peak (un solo prezzo medio), scaglioni di consumo (il prezzo di default), dispacciamento PD della tutela (al suo posto il CDispD), quote per kW.
+- **Le offerte non supportate** (FLAT, miste fisso e variabile, onnicomprensive, indicizzate a un indice diverso dal PUN o a una somma di indici) non danno un contratto: incollalo in JSON.
+- I prezzi per kWh e le quote annue vengono sommati qualunque sia la voce sotto cui il Portale li riporta, e le `notes` del contratto elencano le componenti da cui vengono. I dati inviati sbagliati dal venditore restano come sono.
+
+Se il codice non si trova, il Portale non ha mai pubblicato quell'offerta, oppure è uscita prima dell'inizio dell'archivio: incolla il contratto in JSON.
 
 ### Il contratto
 
@@ -205,7 +222,7 @@ GPL-3.0-or-later — vedi [LICENSE](https://github.com/giorgioparri/electr-it-ha
 
 ## Avvertenza
 
-Questa è un'integrazione non ufficiale. I valori che mostra sono stime, utili a capire i propri consumi: l'unico importo dovuto è quello della bolletta del venditore. I valori regolati sono trascritti dalle pubblicazioni di ARERA; i corrispettivi approvati dall'Autorità risultano esclusivamente dai suoi provvedimenti. Dati del PUN scaricati con un account GME: fonte Gestore dei Mercati Energetici S.p.A. Dispacciamento, capacity market e CDispD: valori pubblicati da Terna S.p.A. e da ARERA, questi ultimi riutilizzati con licenza [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.it); `market_values.json`, che li raccoglie, è distribuito con la stessa licenza.
+Questa è un'integrazione non ufficiale. I valori che mostra sono stime, utili a capire i propri consumi: l'unico importo dovuto è quello della bolletta del venditore. I valori regolati sono trascritti dalle pubblicazioni di ARERA; i corrispettivi approvati dall'Autorità risultano esclusivamente dai suoi provvedimenti. Dati del PUN scaricati con un account GME: fonte Gestore dei Mercati Energetici S.p.A. Dispacciamento, capacity market e CDispD: valori pubblicati da Terna S.p.A. e da ARERA, questi ultimi riutilizzati con licenza [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.it); `market_values.json`, che li raccoglie, è distribuito con la stessa licenza. Offerte: open data del Portale Offerte (ARERA, Acquirente Unico), resi disponibili in formato aperto ai sensi del D.lgs. 33/2013 e riutilizzati citando la fonte; `offers.json` le contiene come convertite da electrITHA, che può differire da quanto fatturano i venditori.
 
 ## Ringraziamenti
 
