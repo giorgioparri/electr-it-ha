@@ -45,6 +45,8 @@ jobs:
         run: python tests/test_published.py
       - name: Run Portale Offerte tests
         run: python tests/test_offers.py
+      - name: Run offer lookup tests
+        run: python tests/test_catalogue.py
       # The updater reads PDFs with pypdf only in the scheduled workflow: its
       # tests build every document as text and need nothing installed either.
       - name: Run market value updater tests
