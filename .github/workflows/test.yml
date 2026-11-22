@@ -43,10 +43,13 @@ jobs:
         run: python tests/test_gme.py
       - name: Run published value tests
         run: python tests/test_published.py
-      # The updater reads PDFs with pypdf only in the scheduled workflow: its
-      # tests build every document as text and need nothing installed either.
       - name: Run Portale Offerte tests
         run: python tests/test_offers.py
-
+      # The updater reads PDFs with pypdf only in the scheduled workflow: its
+      # tests build every document as text and need nothing installed either.
       - name: Run market value updater tests
         run: python tests/test_update_market_values.py
+      # The offers updater is tested against a fake download, on daily files
+      # built from the real offers in tests/fixtures.
+      - name: Run offers updater tests
+        run: python tests/test_update_offers.py
