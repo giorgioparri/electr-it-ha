@@ -1,0 +1,165 @@
+name: Offers
+
+# Once a day, read the daily file of the Portale Offerte and keep offers.json
+# up to date on the market-data branch, next to market_values.json. The
+# integration downloads it only while a contract is being set up.
+#
+# Run by hand with a "backfill" range (FROM:TO, ISO dates) to read the daily
+# files of past days once, to fill the archive. A month of files is about
+# 600 MB to download: run a few months at a time, oldest first.
+#
+# When the daily update fails, an issue is opened (one at a time); it is
+# closed by the first daily run that goes fine. Backfill runs leave issues
+# alone: their result is in the run summary.
+
+on:
+  schedule:
+    - cron: "41 7 * * *"
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: "Days to read once, FROM:TO (e.g. 2025-12-01:2025-12-31); empty for the daily update"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  issues: write
+
+# One writer at a time on the data branch for this workflow; the market
+# values workflow writes another file there, so a push that loses the race
+# is rebased and retried below.
+concurrency:
+  group: offers
+  cancel-in-progress: false
+
+env:
+  DATA_BRANCH: market-data
+  ISSUE_TITLE: "Offers: the automatic update needs attention"
+  BACKFILL: ${{ github.event.inputs.backfill }}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # The data branch is checked out next to the code, with its history so
+      # that a rebase is possible. The first time it does not exist yet: it
+      # starts as a branch with no history of its own.
+      - name: Check out the data branch
+        run: |
+          if git ls-remote --exit-code --heads origin "$DATA_BRANCH" >/dev/null; then
+            git fetch origin "$DATA_BRANCH"
+            git worktree add -B "$DATA_BRANCH" data "origin/$DATA_BRANCH"
+          else
+            git worktree add --detach data
+            git -C data checkout --orphan "$DATA_BRANCH"
+            git -C data rm -rfq .
+          fi
+
+      - name: Update the offers
+        id: update
+        run: |
+          set +e
+          if [ -n "$BACKFILL" ]; then
+            python tools/update_offers.py --output data/offers.json \
+              --backfill "$BACKFILL" > changes.txt 2> errors.txt
+          else
+            python tools/update_offers.py --output data/offers.json \
+              > changes.txt 2> errors.txt
+          fi
+          status=$?
+          set -e
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          added=$(grep -c '^added ' changes.txt || true)
+          changed=$(grep -c '^changed ' changes.txt || true)
+          withdrawn=$(grep -c '^withdrawn ' changes.txt || true)
+          echo "counts=$added added, $changed changed, $withdrawn withdrawn" >> "$GITHUB_OUTPUT"
+          cat errors.txt
+          {
+            echo "### Offers"
+            echo
+            echo "$added added, $changed changed, $withdrawn withdrawn."
+            echo '```'
+            cat errors.txt changes.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # The commit message carries the counts and the first lines only: a
+      # backfill adds thousands of offers. The full list is in the summary.
+      - name: Publish on the data branch
+        if: steps.update.outputs.status == '0'
+        working-directory: data
+        env:
+          COUNTS: ${{ steps.update.outputs.counts }}
+        run: |
+          git add offers.json
+          if git diff --cached --quiet; then
+            echo "Nothing to publish."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          {
+            echo "Update offers: $COUNTS"
+            echo
+            head -n 50 ../changes.txt
+          } > ../message.txt
+          git commit -q -F ../message.txt
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:refs/heads/$DATA_BRANCH"; then
+              exit 0
+            fi
+            echo "Push refused, rebasing on the branch (attempt $attempt)."
+            git fetch origin "$DATA_BRANCH"
+            git rebase "origin/$DATA_BRANCH"
+          done
+          exit 1
+
+      - name: Open an issue
+        if: steps.update.outputs.status != '0' && env.BACKFILL == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          open=$(gh issue list --state open --search "in:title \"$ISSUE_TITLE\"" \
+            --json number,title --jq "map(select(.title == env.ISSUE_TITLE)) | .[0].number // empty")
+          if [ -n "$open" ]; then
+            echo "Issue #$open is already open."
+            exit 0
+          fi
+          {
+            echo "The daily update of \`offers.json\` on the \`$DATA_BRANCH\` branch reported:"
+            echo
+            echo '```'
+            cat errors.txt
+            echo '```'
+            echo
+            echo "Run: $RUN_URL"
+            echo
+            echo "Nothing was written: the file stays as it was after the last good run."
+          } > body.md
+          gh issue create --title "$ISSUE_TITLE" --body-file body.md
+
+      - name: Close the issue
+        if: steps.update.outputs.status == '0' && env.BACKFILL == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue list --state open --search "in:title \"$ISSUE_TITLE\"" \
+            --json number,title --jq "map(select(.title == env.ISSUE_TITLE)) | .[].number" |
+          while read -r number; do
+            gh issue close "$number" --comment "Fixed: the update runs cleanly again."
+          done
+
+      - name: Fail when nothing was updated
+        if: steps.update.outputs.status != '0'
+        run: exit 1
