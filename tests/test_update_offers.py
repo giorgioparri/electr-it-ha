@@ -120,12 +120,20 @@ def load(path: Path) -> dict:
 
 
 def test_url() -> None:
-    """The daily files live in one folder per month."""
+    """The daily files live in one folder per month, its month not padded."""
     check(
         "URL of a daily file",
         u.file_url(date(2026, 11, 21)),
         "https://www.ilportaleofferte.it/portaleOfferte/resources/opendata/csv/"
         "offerteML/2026_11/PO_Offerte_E_MLIBERO_20261121.xml",
+    )
+    # The folder of March is 2026_3, while the file name pads the month:
+    # 2026_03 answers 404 (checked on the Portale on 22 November 2026).
+    check(
+        "URL of a daily file in a month before October",
+        u.file_url(date(2026, 3, 5)),
+        "https://www.ilportaleofferte.it/portaleOfferte/resources/opendata/csv/"
+        "offerteML/2026_3/PO_Offerte_E_MLIBERO_20260305.xml",
     )
 
 
