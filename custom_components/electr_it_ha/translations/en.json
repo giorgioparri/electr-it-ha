@@ -5,8 +5,30 @@
         "title": "What to add",
         "description": "A supply computes the cost of one contract. The GME account downloads the PUN for every supply, with your own GME credentials.",
         "menu_options": {
-          "contract": "A supply",
+          "contract_source": "A supply",
           "gme_account": "The GME account"
+        }
+      },
+      "contract_source": {
+        "title": "Supply contract",
+        "description": "Look up the offer code printed on your bill among the offers published on the Portale Offerte, or paste the contract as JSON if the offer is not there.",
+        "menu_options": {
+          "offer_code": "Look up the offer code",
+          "contract": "Paste the contract (JSON)"
+        }
+      },
+      "offer_code": {
+        "title": "Offer code",
+        "description": "Type the offer code printed on your bill, in the box describing your offer: 32 letters and digits. Spaces and letter case do not matter. The offers are those published on the Portale Offerte of ARERA and Acquirente Unico, current and past, converted by electrITHA.\n\n{details}",
+        "data": {
+          "offer_code": "Offer code"
+        }
+      },
+      "offer_contract": {
+        "title": "Contract of the offer",
+        "description": "{name} ({supplier}), on the Portale Offerte from {first_seen} to {last_seen}. Check every value against your bill before going on: the Portale does not say everything, and the notes in the JSON say what was assumed. Suppliers may change an offer under the same code: if your bill shows different prices, correct them here.\n\n{problems}\n\n{details}",
+        "data": {
+          "contract_json": "Contract (JSON)"
         }
       },
       "contract": {
@@ -74,7 +96,10 @@
       "no_meters": "Choose at least one meter.",
       "entity_or_value": "Fill in either the entity or the fixed value, not both.",
       "invalid_auth": "GME refused these credentials.",
-      "cannot_connect": "Cannot reach the GME API. Try again later."
+      "cannot_connect": "Cannot reach the GME API. Try again later.",
+      "offers_unavailable": "Cannot download the offers of the Portale Offerte. Try again later, or close this window, start again and choose to paste the contract as JSON.",
+      "offer_not_found": "No offer with this code. Check it on the bill; if it is right, the Portale has not published that offer: close this window, start again and choose to paste the contract as JSON.",
+      "offer_unsupported": "This offer cannot be converted to a contract, for the reasons listed above: close this window, start again and choose to paste the contract as JSON."
     },
     "abort": {
       "reconfigure_successful": "Configuration updated.",

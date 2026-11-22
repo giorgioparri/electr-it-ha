@@ -1,0 +1,1485 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  Offers copied unchanged from the open data of the Portale Offerte
+  (ARERA / Acquirente Unico), PO_Offerte_E_MLIBERO_20261121.xml,
+  https://www.ilportaleofferte.it/portaleOfferte/it/open-data.page
+  One offer per case of tests/test_offers.py, named in the comment before it.
+-->
+<ListaOfferteMercatoLibero xmlns="http://www.acquirenteunico.it/schemas/SII_AU/OffertaRetail/01">
+    <!-- enel_flex -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>06655971007</PIVA_UTENTE>
+            <COD_OFFERTA>000142ESVFL01XXResECAn0000119094</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <TIPO_OFFERTA>02</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>01</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>ENEL FLEX LUCE</NOME_OFFERTA>
+            <DESCRIZIONE>Offerta di Energia Elettrica dedicata ai siti ad uso domestico. L’offerta prevede un prezzo composto da: un corrispettivo di commercializzazione e vendita (denominato anche CCV luce) espresso in €/POD/mese ( per un totale di €/POD/anno). Tale corrispettivo è fisso per 12 mesi decorrenti dalla data di attivazione della fornitura; un prezzo della componente energia, pari al Prezzo Unico Nazionale (PUN) differenziato sulle fasce Orarie (Fascia F1: 8.00-19.00 dal lunedì al venerdì, escluse festività nazionali; Fascia F2: 07.00-8.00 e 19:00-23:00; Fascia F3: 23.00-7.00 dal lunedì al sabato, domenica e festività nazionali), definito con periodicità mensile, che corrisponde ai valori consuntivi medi aritmetici mensili del PUN, espressi in Euro/kWh, così come determinato dal Gestore dei Mercati Energetici (GME) e pubblicato sul sito internet del GME e che sarà maggiorato delle perdite di rete applicate come definite, pubblicate e aggiornate da ARERA; un contributo al consumo (α) differenziato su fasce orarie F1-F2-F3 che si aggiungerà al prezzo della componente energia (pari al PUN) come sopra descritta e che è rappresentativo dei costi per la spesa della materia prima non coperti dal PUN. Tale contributo al consumo è valido per i primi 12 mesi di fornitura ed è espresso in €/kWh perdite di rete incluse.</DESCRIZIONE>
+            <DURATA>12</DURATA>
+            <GARANZIE>depositi cauzionali o domiciliazione</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>02</MODALITA>
+                <DESCRIZIONE>A seconda della modalità di adesione scelta dal cliente, Enel Energia si riserva la facoltà di rendere disponibile la presente offerta per alcuni processi di attivazione, dandone opportuna informazione al cliente. Per informazioni è possibile contattare il Servizio Clienti.</DESCRIZIONE>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>800 900 860</TELEFONO>
+                <URL_SITO_VENDITORE>www.enel.it</URL_SITO_VENDITORE>
+                <URL_OFFERTA>https://www.enel.it/it-it/offerte-luce/enel-flex-luce</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <RiferimentiPrezzoEnergia>
+            <IDX_PREZZO_ENERGIA>12</IDX_PREZZO_ENERGIA>
+        </RiferimentiPrezzoEnergia>
+        <ValiditaOfferta>
+            <DATA_INIZIO>12/11/2026_10:00:00</DATA_INIZIO>
+            <DATA_FINE>03/12/2026_23:59:59</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>02</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>04</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>03</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <NOME>CdispD</NOME>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>ComponenteImpresa</NOME>
+            <DESCRIZIONE>Contributo al consumo</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>06</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.020</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>02</FASCIA_COMPONENTE>
+                <PREZZO>0.020</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>03</FASCIA_COMPONENTE>
+                <PREZZO>0.020</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>CCV luce</NOME>
+            <DESCRIZIONE>Canone definito da Enel Energia come corrispettivo di commercializzazione e vendita</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>144</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>Attivazione</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- ajo_leggerissima -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>03839870924</PIVA_UTENTE>
+            <COD_OFFERTA>030205ESVFL10XXXLEGGERXULTRA1026</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <DOMESTICO_RESIDENTE>03</DOMESTICO_RESIDENTE>
+            <TIPO_OFFERTA>02</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>99</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>AJO LEGGERISSIMA ULTRA</NOME_OFFERTA>
+            <DESCRIZIONE>Offerta indicizzata per il mercato libero dedicata ai clienti finali titolari di punti di prelievo per Energia Elettrica alimentati in bassa tensione per usi domestici. Il prezzo è pari al PUN + spread di 0.050 €/kWh. Oneri commerciali pari a 72 €/anno.</DESCRIZIONE>
+            <DURATA>12</DURATA>
+            <GARANZIE>Offerta attivabile esclusivamente attraverso la domiciliazione Bancaria - RID</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>01</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>800036800</TELEFONO>
+                <URL_SITO_VENDITORE>https://ajoenergia.it/</URL_SITO_VENDITORE>
+                <URL_OFFERTA>https://ajoenergia.it/leggerissima-ultra/</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <RiferimentiPrezzoEnergia>
+            <IDX_PREZZO_ENERGIA>12</IDX_PREZZO_ENERGIA>
+        </RiferimentiPrezzoEnergia>
+        <ValiditaOfferta>
+            <DATA_INIZIO>26/10/2026_00:00:01</DATA_INIZIO>
+            <DATA_FINE>22/11/2026_23:59:59</DATA_FINE>
+        </ValiditaOfferta>
+        <CaratteristicheOfferta>
+            <POTENZA_MIN>1.5</POTENZA_MIN>
+            <POTENZA_MAX>6</POTENZA_MAX>
+        </CaratteristicheOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+            <DESCRIZIONE>Domiciliazione bancaria</DESCRIZIONE>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>03</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <NOME>CdispD</NOME>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>SPREAD</NOME>
+            <DESCRIZIONE>SPREAD</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>04</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.050</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>02</FASCIA_COMPONENTE>
+                <PREZZO>0.050</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>03</FASCIA_COMPONENTE>
+                <PREZZO>0.050</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>ONERI COMMERCIALI</NOME>
+            <DESCRIZIONE>Ajò Energia fatturerà un corrispettivo pari a 72,00 euro/pod/anno a copertura degli oneri commerciali.</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>72</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>La data di attivazione della fornitura verrà indicata sulla lettera di benvenuto (welcome letter) che vi verrà inviata ed è condizionata all’attivazione da parte dei soggetti competenti dei servizi di trasporto e dispacciamento dell’Energia Elettrica e/o di trasporto e di distribuzione del Gas Naturale.</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- coefficient -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>16762421002</PIVA_UTENTE>
+            <COD_OFFERTA>038226ESVFL01XXOKCASAENERGIA0000</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <DOMESTICO_RESIDENTE>03</DOMESTICO_RESIDENTE>
+            <TIPO_OFFERTA>02</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>01</TIPOLOGIA_ATT_CONTR>
+            <TIPOLOGIA_ATT_CONTR>02</TIPOLOGIA_ATT_CONTR>
+            <TIPOLOGIA_ATT_CONTR>03</TIPOLOGIA_ATT_CONTR>
+            <TIPOLOGIA_ATT_CONTR>04</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>OK CASA ENERGIA</NOME_OFFERTA>
+            <DESCRIZIONE>OK CASA ENERGIA è l'offerta di energia elettrica a prezzo variabile di OK Energia per le famiglie, residenti e non residenti. Prezzo dell'energia: ogni mese si paga il PUN Index GME del mese per ciascuna fascia oraria (F1, F2, F3), aumentato del 10% per le perdite di rete in bassa tensione, più 0,01 €/kWh. Quota fissa: 120 € all'anno, divisa nelle bollette mensili. Si aggiungono il corrispettivo di dispacciamento fissato dall'ARERA, le spese per il trasporto e la gestione del contatore, gli oneri di sistema e le imposte. Prezzi senza IVA e imposte. Le condizioni economiche non hanno scadenza: valgono per tutta la durata del contratto, senza rinnovi. OK Energia può cambiarle solo per giustificato motivo, avvisando almeno 3 mesi prima, e in quel caso si può recedere senza costi. Bolletta ogni mese, in PDF per email o per posta. Pagamento con addebito sul conto corrente (SEPA). Nessun deposito cauzionale.</DESCRIZIONE>
+            <DURATA>-1</DURATA>
+            <GARANZIE>NO</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>05</MODALITA>
+                <MODALITA>99</MODALITA>
+                <DESCRIZIONE>Online sul sito www.okenergia.it</DESCRIZIONE>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>0686357136</TELEFONO>
+                <URL_SITO_VENDITORE>www.okenergia.it</URL_SITO_VENDITORE>
+                <URL_OFFERTA>https://www.okenergia.it/offerte/ok-casa-energia/</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <RiferimentiPrezzoEnergia>
+            <IDX_PREZZO_ENERGIA>12</IDX_PREZZO_ENERGIA>
+            <COEFFICIENTE>1.1</COEFFICIENTE>
+        </RiferimentiPrezzoEnergia>
+        <ValiditaOfferta>
+            <DATA_INIZIO>28/10/2026_00:00:00</DATA_INIZIO>
+            <DATA_FINE>30/06/2027_23:59:59</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>03</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <NOME>Dispacciamento</NOME>
+            <DESCRIZIONE>Corrispettivo di dispacciamento CdispD fissato dall'ARERA</DESCRIZIONE>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>CCV</NOME>
+            <DESCRIZIONE>Quota fissa di commercializzazione, divisa nelle bollette</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>120</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>SPREAD</NOME>
+            <DESCRIZIONE>Spread sul PUN di ciascuna fascia</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>04</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.01</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>02</FASCIA_COMPONENTE>
+                <PREZZO>0.01</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>03</FASCIA_COMPONENTE>
+                <PREZZO>0.01</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>Si attiva per cambio di fornitore, voltura, subentro o nuovo allaccio, con firma online sul sito okenergia.it o con un consulente di OK Energia. Per voltura, subentro e nuovo allaccio si pagano solo i costi del distributore, senza maggiorazioni.</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>03</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>Si può recedere in qualsiasi momento, senza penali né spese. Per cambiare venditore basta firmare con il nuovo, che invia il recesso al posto del cliente.</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- fixed_mono -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>03111940924</PIVA_UTENTE>
+            <COD_OFFERTA>020536ESFML01XXOTT2026FSEPAD1026</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <DOMESTICO_RESIDENTE>03</DOMESTICO_RESIDENTE>
+            <TIPO_OFFERTA>01</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>99</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>FISSA SMART</NOME_OFFERTA>
+            <DESCRIZIONE>Bonus Porta un Amico, ottieni 20€ per ogni amico che porti.</DESCRIZIONE>
+            <DURATA>12</DURATA>
+            <GARANZIE>Nessuna</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>02</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>800616008</TELEFONO>
+                <URL_SITO_VENDITORE>https://enermed.it/</URL_SITO_VENDITORE>
+                <URL_OFFERTA>https://enermed.it/offerta</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <ValiditaOfferta>
+            <DATA_INIZIO>09/10/2026_00:00:00</DATA_INIZIO>
+            <DATA_FINE>30/09/2027_00:00:00</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>01</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <NOME>CdispD</NOME>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>Quota commercializzazione e vendita</NOME>
+            <DESCRIZIONE>Quota commercializzazione e vendita</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>144</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>Prezzo energia (fisso)</NOME>
+            <DESCRIZIONE>Prezzo energia (fisso)</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>04</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.181</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>Per switch da altro operatore, nuove attivazioni, subentri e volture</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- fixed_discount -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>09471721218</PIVA_UTENTE>
+            <COD_OFFERTA>035372ESFFL04XXLMEGAFIXASMARTWEB</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <DOMESTICO_RESIDENTE>03</DOMESTICO_RESIDENTE>
+            <TIPO_OFFERTA>01</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>99</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>Mega Fixa Smart Web Luce</NOME_OFFERTA>
+            <DESCRIZIONE>Offerta a prezzo fisso</DESCRIZIONE>
+            <DURATA>24</DURATA>
+            <GARANZIE>NO</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>02</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>0221103005</TELEFONO>
+                <URL_SITO_VENDITORE>https://megawattlucegas.it</URL_SITO_VENDITORE>
+                <URL_OFFERTA>https://www.megawattlucegas.it/</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <ValiditaOfferta>
+            <DATA_INIZIO>16/10/2026_00:00:00</DATA_INIZIO>
+            <DATA_FINE>30/09/2027_23:59:59</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>02</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>01</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <NOME>Cdispd</NOME>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>QUOTA COMMERCIALIZZAZIONE FISSA ENERGIA2</NOME>
+            <DESCRIZIONE>QUOTA COMMERCIALIZZAZIONE FISSA ENERGIA2</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>144</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>Prezzo energia</NOME>
+            <DESCRIZIONE>Prezzo energia</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>02</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.1351</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>L'attivazione della fornitura è condizionata all’esito positivo delle verifiche sull’assenza di precedenti morosità e alla valutazione sull’affidabilità creditizia del Cliente.</DESCRIZIONE>
+            <LIMITANTE>01</LIMITANTE>
+        </CondizioniContrattuali>
+        <Sconto>
+            <NOME>Sconto Invio Email</NOME>
+            <DESCRIZIONE>Sconto Invio Email pari a 0,5 €Mese  </DESCRIZIONE>
+            <VALIDITA>01</VALIDITA>
+            <IVA_SCONTO>01</IVA_SCONTO>
+            <Condizione>
+                <CONDIZIONE_APPLICAZIONE>01</CONDIZIONE_APPLICAZIONE>
+            </Condizione>
+            <PrezziSconto>
+                <TIPOLOGIA>01</TIPOLOGIA>
+                <UNITA_MISURA>01</UNITA_MISURA>
+                <PREZZO>6</PREZZO>
+            </PrezziSconto>
+        </Sconto>
+    </offerta>
+    <!-- f1_f23 -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>02616630022</PIVA_UTENTE>
+            <COD_OFFERTA>025434ESFFL15XX00000001054940126</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <DOMESTICO_RESIDENTE>03</DOMESTICO_RESIDENTE>
+            <TIPO_OFFERTA>01</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>01</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>ENERWEB ENERGIA SENZA SORPRESE - bioraria</NOME_OFFERTA>
+            <DESCRIZIONE>Offerta LUCE bioraria a prezzo fisso ed energia verde</DESCRIZIONE>
+            <DURATA>24</DURATA>
+            <GARANZIE>NO</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>01</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>0161271898</TELEFONO>
+                <URL_SITO_VENDITORE>www.novaaeg.it</URL_SITO_VENDITORE>
+                <URL_OFFERTA>www.enerwebcoop.it/offerte/luce-senza-sorprese-web-bioraria</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <ValiditaOfferta>
+            <DATA_INIZIO>09/11/2026_00:00:00</DATA_INIZIO>
+            <DATA_FINE>26/11/2026_23:59:00</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>91</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <NOME>CdispD</NOME>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>Corrispettivo per il consumo</NOME>
+            <DESCRIZIONE>Corrispettivo per il consumo</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>06</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.22497</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>91</FASCIA_COMPONENTE>
+                <PREZZO>0.21276</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>Corrispettivo annuo</NOME>
+            <DESCRIZIONE>Corrispettivo annuo</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>48</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>Offerta sottoscrivibile dalla generalità dei clienti per utenze attive con altri fornitori</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- quarterly -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>04313920656</PIVA_UTENTE>
+            <COD_OFFERTA>023034ESVFL03XXCONZEROSPREAD0126</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <DOMESTICO_RESIDENTE>03</DOMESTICO_RESIDENTE>
+            <TIPO_OFFERTA>02</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>99</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>ConZeroSpread26</NOME_OFFERTA>
+            <DESCRIZIONE>ConZeroSpread26</DESCRIZIONE>
+            <DURATA>12</DURATA>
+            <GARANZIE>n/a</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>02</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>800987787</TELEFONO>
+                <URL_SITO_VENDITORE>https://convergenze.it</URL_SITO_VENDITORE>
+                <URL_OFFERTA>https://convergenze.it/it/servizi/energia/luce</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <RiferimentiPrezzoEnergia>
+            <IDX_PREZZO_ENERGIA>01</IDX_PREZZO_ENERGIA>
+        </RiferimentiPrezzoEnergia>
+        <ValiditaOfferta>
+            <DATA_INIZIO>17/04/2026_20:00:00</DATA_INIZIO>
+            <DATA_FINE>15/04/2027_13:00:00</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>99</MODALITA_PAGAMENTO>
+            <DESCRIZIONE>altro</DESCRIZIONE>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>91</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <NOME>CdispD</NOME>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>SPREAD</NOME>
+            <DESCRIZIONE>materia prima</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>04</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.000000</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>91</FASCIA_COMPONENTE>
+                <PREZZO>0.000000</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>QCV fissa</NOME>
+            <DESCRIZIONE>Commercializzazione quota fissa </DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>216.000000</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>nuove attivazioni</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- bimonthly -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>10580800018</PIVA_UTENTE>
+            <COD_OFFERTA>004319ESVFL03XXPEPUNSTDO01012026</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <DOMESTICO_RESIDENTE>03</DOMESTICO_RESIDENTE>
+            <TIPO_OFFERTA>02</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>01</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>PE PUN DOMESTICI 2026</NOME_OFFERTA>
+            <DESCRIZIONE>Prezzo PUN per clienti Domestici</DESCRIZIONE>
+            <DURATA>12</DURATA>
+            <GARANZIE>NO</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>03</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>0141437364</TELEFONO>
+                <URL_SITO_VENDITORE>http://www.piemonteenergy.it</URL_SITO_VENDITORE>
+                <URL_OFFERTA>http://www.piemonteenergy.it</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <RiferimentiPrezzoEnergia>
+            <IDX_PREZZO_ENERGIA>08</IDX_PREZZO_ENERGIA>
+        </RiferimentiPrezzoEnergia>
+        <ValiditaOfferta>
+            <DATA_INIZIO>18/04/2026_00:00:00</DATA_INIZIO>
+            <DATA_FINE>31/12/2026_23:59:59</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>02</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>04</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>91</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <NOME>CdispD</NOME>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>Quota fissa</NOME>
+            <DESCRIZIONE>Componente commercializzazione fissa</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>120</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>F1-F2F3</NOME>
+            <DESCRIZIONE>Spread materia prima</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>04</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.0253</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>91</FASCIA_COMPONENTE>
+                <PREZZO>0.0253</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>Switch</DESCRIZIONE>
+            <LIMITANTE>01</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- peak -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>05679530872</PIVA_UTENTE>
+            <COD_OFFERTA>029878ESVFL03XX000000DOM8VAR8BIO</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <TIPO_OFFERTA>02</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>99</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>DOMESTICO VARIABILE BIOM</NOME_OFFERTA>
+            <DESCRIZIONE>OFFERTA RISERVATA AI CLIENTI DOMESTICO</DESCRIZIONE>
+            <DURATA>99</DURATA>
+            <GARANZIE>NO</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>02</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>095983523</TELEFONO>
+                <URL_SITO_VENDITORE>https://www.noienergetic.it/</URL_SITO_VENDITORE>
+                <URL_OFFERTA>https://noienergetic.it/domestico-variabile-luce/</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <RiferimentiPrezzoEnergia>
+            <IDX_PREZZO_ENERGIA>12</IDX_PREZZO_ENERGIA>
+        </RiferimentiPrezzoEnergia>
+        <ValiditaOfferta>
+            <DATA_INIZIO>19/05/2026_11:43:56</DATA_INIZIO>
+            <DATA_FINE>31/12/2099_23:59:59</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>04</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>03</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>99</MODALITA_PAGAMENTO>
+            <DESCRIZIONE>BONIFICO BANCARIO</DESCRIZIONE>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>07</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <NOME>CdispD</NOME>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>SPREAD</NOME>
+            <DESCRIZIONE>SPREAD</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>04</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>07</FASCIA_COMPONENTE>
+                <PREZZO>0.024200</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>08</FASCIA_COMPONENTE>
+                <PREZZO>0.024200</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>Corrispettivo Commerciale Vendita</NOME>
+            <DESCRIZIONE>componente di costo a copertura dei costi di commercializzazione (€/mese o €/anno)</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>192.000000</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>ATTIVAZIONE</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- tiers -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>01178580997</PIVA_UTENTE>
+            <COD_OFFERTA>000208ESFML04XX000IEDOSTPN261130</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <TIPO_OFFERTA>01</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>01</TIPOLOGIA_ATT_CONTR>
+            <TIPOLOGIA_ATT_CONTR>02</TIPOLOGIA_ATT_CONTR>
+            <TIPOLOGIA_ATT_CONTR>03</TIPOLOGIA_ATT_CONTR>
+            <TIPOLOGIA_ATT_CONTR>04</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>IREN SOTTOCASA LUCE NEW</NOME_OFFERTA>
+            <DESCRIZIONE>Tale offerta è valida a decorrere dalla data di attivazione della fornitura e fino al 31/12/2028</DESCRIZIONE>
+            <DURATA>27</DURATA>
+            <GARANZIE>NO</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>03</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>800969696</TELEFONO>
+                <URL_SITO_VENDITORE>www.irenlucegas.it</URL_SITO_VENDITORE>
+                <URL_OFFERTA>https://www.irenlucegas.it/casa/pacchetti-offerte-luce-e-gas/altre-offerte</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <ValiditaOfferta>
+            <DATA_INIZIO>17/11/2026_00:00:00</DATA_INIZIO>
+            <DATA_FINE>30/11/2026_23:59:59</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>02</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>99</MODALITA_PAGAMENTO>
+            <DESCRIZIONE>PagoPA,App,Sportello,Uffi</DESCRIZIONE>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>01</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <NOME>CdispD</NOME>
+            <DESCRIZIONE>CdispD</DESCRIZIONE>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>Prezzo</NOME>
+            <DESCRIZIONE>Valido da 4001 kWh/anno</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>04</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.179300</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <CONSUMO_DA>0</CONSUMO_DA>
+                <CONSUMO_A>4000</CONSUMO_A>
+                <PREZZO>0.179300</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <CONSUMO_DA>4001</CONSUMO_DA>
+                <PREZZO>0.212300</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>Quota fissa</NOME>
+            <DESCRIZIONE>Importo, definito in bolletta “Componente CCOM”, fissato in € 159 per POD/anno</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>159.000000</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>In caso di Switch-in (cambio fornitore) la fornitura verrà attivata entro 3 mesi dalla conclusione del contratto. Per  altre richieste di fornitura (ad esempio subentro, voltura, attivazione) le tempistiche di  conclusione del Contratto sono indicate all'art. 2 delle Condizioni Generali di Fornitura. Eventuali corrispettivi previsti dal Fornitore per l’attivazione del Contratto sono dettagliati all’art. 20 delle Condizioni Generali di Fornitura e nelle Condizioni Economiche; in ogni caso, sono fatti salvi i tempi richiesti per le attività del Distributore e la fatturazione di eventuali oneri previsti dal Distributore stesso.</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- timed -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>10879560968</PIVA_UTENTE>
+            <COD_OFFERTA>029748ESFML01XX261119LD10X000000</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <TIPO_OFFERTA>01</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>01</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>NeN Dieci Luce</NOME_OFFERTA>
+            <DESCRIZIONE>Con NeN paghi una rata fissa mensile calcolata sui tuoi consumi e sul prezzo della materia prima, che l'offerta NeN Dieci ti permette di bloccare per 10 anni. La rata comprende anche tasse e altre imposte, così sai in anticipo quanto spenderai per un anno. Dopo 12 mesi, ricalcoleremo la tua rata in base in basi ai tuoi consumi dell'ultimo anno. L'energia elettrica che compriamo per questa offerta è prodotta da impianti eolici e fotovoltaici di A2A. Se la cosa ti interessa, fatti un giro sul nostro sito.</DESCRIZIONE>
+            <DURATA>-1</DURATA>
+            <GARANZIE>Per accettare l'offerta non c'è bisogno di lasciare depositi cauzionali. È possibile pagare con domiciliazione bancaria, carta di credito o carta di debito. La bolletta sarà solo e sempre digitale, e potrai leggerla sulla nostra app o nella tua area riservata sul nostro sito.</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>01</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>800188525</TELEFONO>
+                <URL_SITO_VENDITORE>https://nen.it</URL_SITO_VENDITORE>
+                <URL_OFFERTA>https://nen.it/attiva-nen</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <ValiditaOfferta>
+            <DATA_INIZIO>19/11/2026_00:00:00</DATA_INIZIO>
+            <DATA_FINE>30/11/2026_23:59:59</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>03</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>01</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <NOME>CdispD</NOME>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>Prezzo luce</NOME>
+            <DESCRIZIONE>Prezzo luce</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>06</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.129000</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+                <PeriodoValidita>
+                    <DURATA>12</DURATA>
+                </PeriodoValidita>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.129000</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>Quota fissa di vendita Luce</NOME>
+            <DESCRIZIONE>Quota fissa di vendita Luce</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>108.000000</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>05</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>Per quest'offerta e' previsto un onere di recesso anticipato</DESCRIZIONE>
+            <LIMITANTE>01</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- tutela_pcv -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>03115420782</PIVA_UTENTE>
+            <COD_OFFERTA>028284ESVML01XX000MERPOWERDOMDIG</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <TIPO_OFFERTA>02</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>99</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>MERPOWERDOMDIG</NOME_OFFERTA>
+            <DESCRIZIONE>OFFERTA RISERVATA AI CLIENTI DOMESTICO</DESCRIZIONE>
+            <DURATA>12</DURATA>
+            <GARANZIE>NO</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>02</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>0984406435</TELEFONO>
+                <URL_SITO_VENDITORE>http://www.meridionalegas.it/</URL_SITO_VENDITORE>
+                <URL_OFFERTA>https://www.meridionalegas.it/index.html#</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <RiferimentiPrezzoEnergia>
+            <IDX_PREZZO_ENERGIA>12</IDX_PREZZO_ENERGIA>
+        </RiferimentiPrezzoEnergia>
+        <ValiditaOfferta>
+            <DATA_INIZIO>11/11/2026_11:40:52</DATA_INIZIO>
+            <DATA_FINE>31/12/2099_23:59:59</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>04</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>99</MODALITA_PAGAMENTO>
+            <DESCRIZIONE>BONIFICO BANCARIO</DESCRIZIONE>
+        </MetodoPagamento>
+        <ComponentiRegolate>
+            <CODICE>01</CODICE>
+            <CODICE>02</CODICE>
+        </ComponentiRegolate>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>01</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <NOME>CdispD</NOME>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>SPREAD</NOME>
+            <DESCRIZIONE>SPREAD</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>04</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.022000</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>Vendita Reseller</NOME>
+            <DESCRIZIONE>Vendita Reseller</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>72.000000</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>ATTIVAZIONE</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+        <ZoneOfferta>
+            <REGIONE>18</REGIONE>
+            <REGIONE>16</REGIONE>
+        </ZoneOfferta>
+    </offerta>
+    <!-- regulated_nocode -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>04362490403</PIVA_UTENTE>
+            <COD_OFFERTA>027184ESFML01XXB2611DOE0FFIXCANA</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <DOMESTICO_RESIDENTE>03</DOMESTICO_RESIDENTE>
+            <TIPO_OFFERTA>01</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>01</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>LA STESSA ENERGIA ELETTRICA 24 MESI</NOME_OFFERTA>
+            <DESCRIZIONE>LA STESSA ENERGIA ELETTRICA 24 MESI</DESCRIZIONE>
+            <DURATA>12</DURATA>
+            <GARANZIE>Nessuna.</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>01</MODALITA>
+                <MODALITA>05</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>+39 0547483848</TELEFONO>
+                <URL_SITO_VENDITORE>www.greenius.it</URL_SITO_VENDITORE>
+                <URL_OFFERTA>https://www.normenergia.it/8fbd06be-9f7b-4b45-9893-d0fcccd891ef/offerte</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <ValiditaOfferta>
+            <DATA_INIZIO>18/11/2026_00:00:00</DATA_INIZIO>
+            <DATA_FINE>30/11/2026_23:59:59</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>02</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <ComponentiRegolate/>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>01</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <NOME>CdispD</NOME>
+            <DESCRIZIONE>CdispD</DESCRIZIONE>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>Totale Corrispettivi Fissi Annui (CCV)</NOME>
+            <DESCRIZIONE>Totale Corrispettivi Fissi Annui (CCV)</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>144.0</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>Prezzo Energia</NOME>
+            <DESCRIZIONE>Prezzo Energia</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>04</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.193</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>Attivazione del servizio</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- disp_regulated -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>04212220711</PIVA_UTENTE>
+            <COD_OFFERTA>041498ESVFL04XX0000LUCEPUNVLDOM1</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <TIPO_OFFERTA>02</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>99</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>LUCEPUNVLDOM1</NOME_OFFERTA>
+            <DESCRIZIONE>OFFERTA RISERVATA AI CLIENTI DOMESTICO</DESCRIZIONE>
+            <DURATA>12</DURATA>
+            <GARANZIE>NO</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>02</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>0882213842</TELEFONO>
+                <URL_SITO_VENDITORE>http://www.astracomm.it</URL_SITO_VENDITORE>
+            </Contatti>
+        </DettaglioOfferta>
+        <RiferimentiPrezzoEnergia>
+            <IDX_PREZZO_ENERGIA>12</IDX_PREZZO_ENERGIA>
+        </RiferimentiPrezzoEnergia>
+        <ValiditaOfferta>
+            <DATA_INIZIO>26/03/2026_11:48:15</DATA_INIZIO>
+            <DATA_FINE>31/03/2029_23:59:59</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>04</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>03</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>99</MODALITA_PAGAMENTO>
+            <DESCRIZIONE>BONIFICO BANCARIO,PAGOPA</DESCRIZIONE>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>03</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>09</TIPO_DISPACCIAMENTO>
+            <NOME>Capacity Market</NOME>
+        </Dispacciamento>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>01</TIPO_DISPACCIAMENTO>
+            <NOME>Corrispettivo unitario de</NOME>
+        </Dispacciamento>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>13</TIPO_DISPACCIAMENTO>
+            <NOME>Disp BT</NOME>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>SPREAD</NOME>
+            <DESCRIZIONE>SPREAD</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>04</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.044000</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>02</FASCIA_COMPONENTE>
+                <PREZZO>0.044000</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>03</FASCIA_COMPONENTE>
+                <PREZZO>0.044000</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>Corrispettivo di Commercializzazione e Vendita</NOME>
+            <DESCRIZIONE>Corrispettivo di Commercializzazione e Vendita</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>168.000000</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>ATTIVAZIONE</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- disp_99 -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>13433711002</PIVA_UTENTE>
+            <COD_OFFERTA>024492ESVFL03XX000000ALTIENERGIA</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <TIPO_OFFERTA>02</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>99</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>ALTI LUCE LIGHT CASA 2025</NOME_OFFERTA>
+            <DESCRIZIONE>OFFERTA RISERVATA AI CLIENTI DOMESTICO</DESCRIZIONE>
+            <DURATA>12</DURATA>
+            <GARANZIE>NO</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>02</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>0683845764</TELEFONO>
+                <URL_SITO_VENDITORE>https://altienergia.it/</URL_SITO_VENDITORE>
+            </Contatti>
+        </DettaglioOfferta>
+        <RiferimentiPrezzoEnergia>
+            <IDX_PREZZO_ENERGIA>12</IDX_PREZZO_ENERGIA>
+        </RiferimentiPrezzoEnergia>
+        <ValiditaOfferta>
+            <DATA_INIZIO>09/07/2025_15:59:55</DATA_INIZIO>
+            <DATA_FINE>31/12/2099_23:59:59</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>04</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>03</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>09</TIPO_DISPACCIAMENTO>
+            <NOME>Capacity Market</NOME>
+        </Dispacciamento>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>01</TIPO_DISPACCIAMENTO>
+            <NOME>Corrispettivo unitario de</NOME>
+        </Dispacciamento>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>13</TIPO_DISPACCIAMENTO>
+            <NOME>Disp BT</NOME>
+        </Dispacciamento>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>99</TIPO_DISPACCIAMENTO>
+            <VALORE_DISP>0.002000</VALORE_DISP>
+            <NOME>Delta Dispacciamento</NOME>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>SPREAD</NOME>
+            <DESCRIZIONE>SPREAD</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>04</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.018700</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>02</FASCIA_COMPONENTE>
+                <PREZZO>0.018700</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>03</FASCIA_COMPONENTE>
+                <PREZZO>0.187000</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>CCV - componente di commercializzazione e vendita</NOME>
+            <DESCRIZIONE>CCV - componente di commercializzazione e vendita</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>102.000000</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>ATTIVAZIONE</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- disp_02 -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>02534760786</PIVA_UTENTE>
+            <COD_OFFERTA>000184ESVFL11XXGPINDEX02LUCEXPUN</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <DOMESTICO_RESIDENTE>03</DOMESTICO_RESIDENTE>
+            <TIPO_OFFERTA>02</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>99</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>DOMESTICI EE </NOME_OFFERTA>
+            <DESCRIZIONE>L’Offerta prevede l’applicazione per ogni kWh prelevato dal Cliente, per ogni fascia oraria, di un prezzo della materia prima energia indicizzato mensilmente al PUN (Prezzo Unico Nazionale). Il prezzo come sopra descritto andrà applicato ad ogni kwh prelevato dal Cliente e alle perdite di rete per ciascuna fascia oraria. </DESCRIZIONE>
+            <DURATA>24</DURATA>
+            <GARANZIE>NO</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>02</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>098122630</TELEFONO>
+                <URL_SITO_VENDITORE>https://www.gaspollino.it</URL_SITO_VENDITORE>
+            </Contatti>
+        </DettaglioOfferta>
+        <RiferimentiPrezzoEnergia>
+            <IDX_PREZZO_ENERGIA>12</IDX_PREZZO_ENERGIA>
+        </RiferimentiPrezzoEnergia>
+        <ValiditaOfferta>
+            <DATA_INIZIO>23/12/2025_15:30:00</DATA_INIZIO>
+            <DATA_FINE>31/12/2027_23:59:59</DATA_FINE>
+        </ValiditaOfferta>
+        <CaratteristicheOfferta>
+            <CONSUMO_MIN>0</CONSUMO_MIN>
+            <CONSUMO_MAX>0</CONSUMO_MAX>
+        </CaratteristicheOfferta>
+        <OffertaDual/>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>02</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>04</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <ComponentiRegolate/>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>03</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>02</TIPO_DISPACCIAMENTO>
+            <NOME>DISPACCIAMENTO</NOME>
+            <DESCRIZIONE>QUOTA DISPACCIAMENTO</DESCRIZIONE>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>SPREAD</NOME>
+            <DESCRIZIONE>SPREAD</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>02</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.02</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>02</FASCIA_COMPONENTE>
+                <PREZZO>0.02</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>03</FASCIA_COMPONENTE>
+                <PREZZO>0.02</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>QUOTA COMMERCIALE</NOME>
+            <DESCRIZIONE>QUOTA COMMERCIALE</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>108</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>ATTIVAZIONE FORNITURA</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>02</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>DISATTIVAZIONE FORNITURA</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- optional_fee -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>00488490012</PIVA_UTENTE>
+            <COD_OFFERTA>001145ESVML01XXX26LUCEWEBPLUS000</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <DOMESTICO_RESIDENTE>03</DOMESTICO_RESIDENTE>
+            <TIPO_OFFERTA>02</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>01</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>X26LUCEWEBPLUS</NOME_OFFERTA>
+            <DESCRIZIONE>OFFERTA MERCATO LIBERO ENERGIA ELETTRICA CLIENTI DOMESTICI - WEB</DESCRIZIONE>
+            <DURATA>12</DURATA>
+            <GARANZIE>NESSUNA</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>01</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>800213565</TELEFONO>
+                <URL_SITO_VENDITORE>http://www.aegcoop.it</URL_SITO_VENDITORE>
+                <URL_OFFERTA>https://www.aegcoop.it/offerte-e-servizi/per-la-casa/offerta-luce/</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <RiferimentiPrezzoEnergia>
+            <IDX_PREZZO_ENERGIA>12</IDX_PREZZO_ENERGIA>
+        </RiferimentiPrezzoEnergia>
+        <ValiditaOfferta>
+            <DATA_INIZIO>10/06/2026_00:00:00</DATA_INIZIO>
+            <DATA_FINE>31/12/2026_23:59:00</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>01</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <VALORE_DISP>0.000000</VALORE_DISP>
+            <NOME>Dispacciamento Del 386/25</NOME>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>Commercializzazione Quota Fissa</NOME>
+            <DESCRIZIONE>Commercializzazione Quota Fissa</DESCRIZIONE>
+            <TIPOLOGIA>02</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>50.000000</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>Tariffa di vendita</NOME>
+            <DESCRIZIONE>Tariffa di vendita</DESCRIZIONE>
+            <TIPOLOGIA>02</TIPOLOGIA>
+            <MACROAREA>04</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.015400</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>Solo per cambio fornitore</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+    <!-- green -->
+    <offerta>
+        <IdentificativiOfferta>
+            <PIVA_UTENTE>02616630022</PIVA_UTENTE>
+            <COD_OFFERTA>025434ESFML15XX00000001054930126</COD_OFFERTA>
+        </IdentificativiOfferta>
+        <DettaglioOfferta>
+            <TIPO_MERCATO>01</TIPO_MERCATO>
+            <OFFERTA_SINGOLA>SI</OFFERTA_SINGOLA>
+            <TIPO_CLIENTE>01</TIPO_CLIENTE>
+            <DOMESTICO_RESIDENTE>03</DOMESTICO_RESIDENTE>
+            <TIPO_OFFERTA>01</TIPO_OFFERTA>
+            <TIPOLOGIA_ATT_CONTR>01</TIPOLOGIA_ATT_CONTR>
+            <NOME_OFFERTA>ENERWEB ENERGIA SENZA SORPRESE - monoraria</NOME_OFFERTA>
+            <DESCRIZIONE>Offerta LUCE bioraria a prezzo fisso ed energia verde</DESCRIZIONE>
+            <DURATA>24</DURATA>
+            <GARANZIE>NO</GARANZIE>
+            <ModalitaAttivazione>
+                <MODALITA>01</MODALITA>
+            </ModalitaAttivazione>
+            <Contatti>
+                <TELEFONO>0161271898</TELEFONO>
+                <URL_SITO_VENDITORE>www.novaaeg.it</URL_SITO_VENDITORE>
+                <URL_OFFERTA>www.enerwebcoop.it/offerte/luce-senza-sorprese-web-monoraria</URL_OFFERTA>
+            </Contatti>
+        </DettaglioOfferta>
+        <ValiditaOfferta>
+            <DATA_INIZIO>09/11/2026_00:00:00</DATA_INIZIO>
+            <DATA_FINE>26/11/2026_23:59:00</DATA_FINE>
+        </ValiditaOfferta>
+        <MetodoPagamento>
+            <MODALITA_PAGAMENTO>01</MODALITA_PAGAMENTO>
+        </MetodoPagamento>
+        <TipoPrezzo>
+            <TIPOLOGIA_FASCE>01</TIPOLOGIA_FASCE>
+        </TipoPrezzo>
+        <Dispacciamento>
+            <TIPO_DISPACCIAMENTO>14</TIPO_DISPACCIAMENTO>
+            <NOME>CdispD</NOME>
+        </Dispacciamento>
+        <ComponenteImpresa>
+            <NOME>Corrispettivo per il consumo</NOME>
+            <DESCRIZIONE>Corrispettivo per il consumo</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>06</MACROAREA>
+            <IntervalloPrezzi>
+                <FASCIA_COMPONENTE>01</FASCIA_COMPONENTE>
+                <PREZZO>0.21703</PREZZO>
+                <UNITA_MISURA>03</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <ComponenteImpresa>
+            <NOME>Corrispettivo annuo</NOME>
+            <DESCRIZIONE>Corrispettivo annuo</DESCRIZIONE>
+            <TIPOLOGIA>01</TIPOLOGIA>
+            <MACROAREA>01</MACROAREA>
+            <IntervalloPrezzi>
+                <PREZZO>48</PREZZO>
+                <UNITA_MISURA>01</UNITA_MISURA>
+            </IntervalloPrezzi>
+        </ComponenteImpresa>
+        <CondizioniContrattuali>
+            <TIPOLOGIA_CONDIZIONE>01</TIPOLOGIA_CONDIZIONE>
+            <DESCRIZIONE>Offerta sottoscrivibile dalla generalità dei clienti per utenze attive con altri fornitori</DESCRIZIONE>
+            <LIMITANTE>02</LIMITANTE>
+        </CondizioniContrattuali>
+    </offerta>
+</ListaOfferteMercatoLibero>
