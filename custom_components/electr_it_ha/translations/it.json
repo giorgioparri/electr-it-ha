@@ -5,8 +5,30 @@
         "title": "Cosa aggiungere",
         "description": "Una fornitura calcola il costo di un contratto. L'account GME scarica il PUN per tutte le forniture, con le tue credenziali GME.",
         "menu_options": {
-          "contract": "Una fornitura",
+          "contract_source": "Una fornitura",
           "gme_account": "L'account GME"
+        }
+      },
+      "contract_source": {
+        "title": "Contratto di fornitura",
+        "description": "Cerca il codice offerta stampato in bolletta tra le offerte pubblicate sul Portale Offerte, oppure incolla il contratto in JSON se l'offerta non c'è.",
+        "menu_options": {
+          "offer_code": "Cerca il codice offerta",
+          "contract": "Incolla il contratto (JSON)"
+        }
+      },
+      "offer_code": {
+        "title": "Codice offerta",
+        "description": "Scrivi il codice offerta stampato in bolletta, nel riquadro che descrive la tua offerta: 32 lettere e cifre. Spazi, maiuscole e minuscole non contano. Le offerte sono quelle pubblicate sul Portale Offerte di ARERA e Acquirente Unico, attuali e passate, convertite da electrITHA.\n\n{details}",
+        "data": {
+          "offer_code": "Codice offerta"
+        }
+      },
+      "offer_contract": {
+        "title": "Contratto dell'offerta",
+        "description": "{name} ({supplier}), sul Portale Offerte dal {first_seen} al {last_seen}. Prima di andare avanti confronta ogni valore con la bolletta: il Portale non dice tutto, e le note nel JSON spiegano cosa è stato ipotizzato. Il venditore può cambiare un'offerta mantenendo lo stesso codice: se in bolletta i prezzi sono diversi, correggili qui.\n\n{problems}\n\n{details}",
+        "data": {
+          "contract_json": "Contratto (JSON)"
         }
       },
       "contract": {
@@ -74,7 +96,10 @@
       "no_meters": "Scegli almeno un contatore.",
       "entity_or_value": "Compila l'entità oppure il valore fisso, non entrambi.",
       "invalid_auth": "Il GME ha rifiutato queste credenziali.",
-      "cannot_connect": "Le API del GME non rispondono. Riprova più tardi."
+      "cannot_connect": "Le API del GME non rispondono. Riprova più tardi.",
+      "offers_unavailable": "Non riesco a scaricare le offerte del Portale Offerte. Riprova più tardi, oppure chiudi questa finestra, ricomincia e scegli di incollare il contratto in JSON.",
+      "offer_not_found": "Nessuna offerta con questo codice. Controllalo sulla bolletta; se è giusto, il Portale non ha pubblicato quell'offerta: chiudi questa finestra, ricomincia e scegli di incollare il contratto in JSON.",
+      "offer_unsupported": "Questa offerta non si può convertire in un contratto, per i motivi elencati sopra: chiudi questa finestra, ricomincia e scegli di incollare il contratto in JSON."
     },
     "abort": {
       "reconfigure_successful": "Configurazione aggiornata.",

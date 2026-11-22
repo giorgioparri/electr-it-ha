@@ -53,3 +53,14 @@ ISSUE_PUBLISHED_DOWNLOAD = "published_download_failed"
 # Days after the month change a month waits for an official value of its own,
 # which ARERA publishes only once the month is over.
 PUBLISHED_CLOSE_WAIT_DAYS = 15
+
+# Offers of the Portale Offerte (engine.catalogue), converted by a workflow of
+# the repository and kept on the same branch. Downloaded only while a contract
+# is set up, and kept in memory for a while so a mistyped code costs no second
+# download of the few MB of the file.
+OFFERS_URL = (
+    "https://raw.githubusercontent.com/giorgioparri/electr-it-ha/"
+    "market-data/offers.json"
+)
+OFFERS_TIMEOUT_SECONDS = 60
+OFFERS_CACHE_MINUTES = 10

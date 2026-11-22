@@ -4,7 +4,10 @@
 The first screen asks what to add, until a GME account exists.
 
 A supply takes three screens, the same for first setup and reconfiguration:
-1. the contract, pasted as JSON and validated on the spot;
+1. the contract, validated on the spot. It is either pasted as JSON, or
+   found by the offer code printed on the bill among the offers of the
+   Portale Offerte (engine.catalogue): the converted contract then fills the
+   same JSON form, to be checked against the bill before going on;
 2. the supply (resident, committed power) and the grid import meters;
 3. where each market value the contract needs comes from: an entity or a
    fixed number. Dispatching, capacity market and CDispD can be left empty,
@@ -46,15 +49,19 @@ from .const import (
     ENTRY_TYPE_SUPPLY,
     GME_UNIQUE_ID,
 )
+from .engine.catalogue import CatalogueOffer, normalize_code
 from .engine.contract import Contract, ContractError
 from .engine.gme import GmeAuthError, GmeError
 from .engine.market import PUN_PREFIX, required_market_values
+from .engine.offers import Status
 from .engine.published import NAMES as PUBLISHED_NAMES
 from .gme_client import GmeClient
+from .offer_catalogue import OffersUnavailableError, async_get_catalogue
 
 _LOGGER = logging.getLogger(__name__)
 
 CONF_CONTRACT_JSON = "contract_json"
+CONF_OFFER_CODE = "offer_code"
 ENTITY_SUFFIX = "_entity"
 VALUE_SUFFIX = "_value"
 
@@ -75,6 +82,16 @@ def _contract_schema() -> vol.Schema:
             )
         }
     )
+
+
+def _offer_code_schema() -> vol.Schema:
+    """Return the form of the offer code screen."""
+    return vol.Schema({vol.Required(CONF_OFFER_CODE): selector.TextSelector()})
+
+
+def _bullets(lines: tuple[str, ...] | list[str]) -> str:
+    """A markdown list, or nothing."""
+    return "\n".join(f"- {line}" for line in lines)
 
 
 def _supply_schema() -> vol.Schema:
@@ -157,6 +174,8 @@ class ElectrIthaConfigFlow(ConfigFlow, domain=DOMAIN):
     def __init__(self) -> None:
         """Start with nothing collected."""
         self._contract: Contract | None = None
+        self._offer: CatalogueOffer | None = None
+        self._offer_seen_until: str = ""
         self._data: dict[str, Any] = {}
         self._previous: dict[str, Any] = {}
 
@@ -169,9 +188,17 @@ class ElectrIthaConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         """First setup: a supply, or the GME account if there is none yet."""
         if self._gme_entry() is not None:
-            return await self.async_step_contract(user_input)
+            return await self.async_step_contract_source(user_input)
         return self.async_show_menu(
-            step_id="user", menu_options=["contract", "gme_account"]
+            step_id="user", menu_options=["contract_source", "gme_account"]
+        )
+
+    async def async_step_contract_source(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Find the contract by its offer code, or paste it."""
+        return self.async_show_menu(
+            step_id="contract_source", menu_options=["offer_code", "contract"]
         )
 
     async def async_step_reconfigure(
@@ -181,7 +208,7 @@ class ElectrIthaConfigFlow(ConfigFlow, domain=DOMAIN):
         self._previous = dict(self._get_reconfigure_entry().data)
         if _is_gme(self._get_reconfigure_entry()):
             return await self.async_step_gme_account(user_input)
-        return await self.async_step_contract(user_input)
+        return await self.async_step_contract_source(user_input)
 
     async def async_step_reauth(
         self, entry_data: Mapping[str, Any]
@@ -276,6 +303,83 @@ class ElectrIthaConfigFlow(ConfigFlow, domain=DOMAIN):
                 suggestions[f"{name}{ENTITY_SUFFIX}"] = entity_id
         return suggestions
 
+    async def async_step_offer_code(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Look up the offer code printed on the bill."""
+        errors: dict[str, str] = {}
+        details = ""
+        if user_input is not None:
+            code = normalize_code(user_input[CONF_OFFER_CODE])
+            try:
+                catalogue = await async_get_catalogue(self.hass)
+            except OffersUnavailableError as err:
+                _LOGGER.warning("Cannot look up the offer code: %s", err)
+                errors["base"] = "offers_unavailable"
+            else:
+                offer = catalogue.find(code)
+                if offer is None:
+                    errors[CONF_OFFER_CODE] = "offer_not_found"
+                elif offer.status is Status.UNSUPPORTED:
+                    errors[CONF_OFFER_CODE] = "offer_unsupported"
+                    details = _bullets(offer.problems)
+                else:
+                    self._offer = offer
+                    self._offer_seen_until = offer.seen_until(catalogue).isoformat()
+                    return await self.async_step_offer_contract()
+
+        suggested = user_input
+        if suggested is None:
+            previous = self._previous.get(CONF_CONTRACT, {}).get("offer_code")
+            suggested = {CONF_OFFER_CODE: previous} if previous else None
+        return self.async_show_form(
+            step_id="offer_code",
+            data_schema=self.add_suggested_values_to_schema(
+                _offer_code_schema(), suggested
+            ),
+            errors=errors,
+            description_placeholders={"details": details},
+        )
+
+    async def async_step_offer_contract(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Check the contract converted from the offer, then go on."""
+        assert self._offer is not None
+        offer = self._offer
+        errors, details = {}, ""
+        if user_input is not None:
+            errors, details = self._read_contract(user_input)
+            if not errors:
+                return await self.async_step_supply()
+
+        suggested = user_input or {CONF_CONTRACT_JSON: offer.contract_json()}
+        return self.async_show_form(
+            step_id="offer_contract",
+            data_schema=self.add_suggested_values_to_schema(
+                _contract_schema(), suggested
+            ),
+            errors=errors,
+            description_placeholders={
+                "name": offer.name,
+                "supplier": offer.supplier,
+                "first_seen": offer.first_seen.isoformat(),
+                "last_seen": self._offer_seen_until,
+                "problems": _bullets(offer.problems),
+                "details": details,
+            },
+        )
+
+    def _read_contract(self, user_input: dict[str, Any]) -> tuple[dict[str, str], str]:
+        """Validate the JSON of the form; return the errors and their details."""
+        try:
+            self._contract = Contract.from_json(user_input[CONF_CONTRACT_JSON])
+        except ContractError as err:
+            details = "\n".join(f"- {message}" for message in err.errors)
+            return {CONF_CONTRACT_JSON: "invalid_contract"}, details
+        self._data[CONF_CONTRACT] = self._contract.to_dict()
+        return {}, ""
+
     async def async_step_contract(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
@@ -283,13 +387,8 @@ class ElectrIthaConfigFlow(ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
         details = ""
         if user_input is not None:
-            try:
-                self._contract = Contract.from_json(user_input[CONF_CONTRACT_JSON])
-            except ContractError as err:
-                errors[CONF_CONTRACT_JSON] = "invalid_contract"
-                details = "\n".join(f"- {message}" for message in err.errors)
-            else:
-                self._data[CONF_CONTRACT] = self._contract.to_dict()
+            errors, details = self._read_contract(user_input)
+            if not errors:
                 return await self.async_step_supply()
 
         suggested = user_input
