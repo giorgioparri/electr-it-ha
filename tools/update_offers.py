@@ -15,7 +15,8 @@ the result into offers.json:
 - the content of an offer is the one of the most recent day it was seen.
 
 With --backfill, the daily files of a range of days are read in order, to
-fill the archive once; days with no file are listed and skipped.
+fill the archive once; days with no file, or with a file that cannot be read
+(the Portale serves some past days as an empty file), are listed and skipped.
 
 Exit status: 0 when the file is up to date (written or unchanged); 1 when
 nothing could be read, or what was read cannot be trusted: nothing is written.
@@ -270,7 +271,10 @@ def latest(get: Fetch, today: date) -> tuple[date, bytes]:
 def daily(get: Fetch, old: dict[str, Any] | None, today: date) -> dict[str, Any]:
     """Merge the most recent daily file."""
     day, data = latest(get, today)
-    fresh = read_day(data)
+    try:
+        fresh = read_day(data)
+    except UpdateError as err:
+        raise UpdateError(f"{file_name(day)}: {err}") from err
     check_share(old, fresh)
     return merged(old, day, fresh)
 
@@ -281,6 +285,7 @@ def backfill(
     """Merge every daily file from `first` to `last`, in order."""
     data = old
     missing: list[str] = []
+    unreadable: list[str] = []
     day = first
     while day <= last:
         try:
@@ -288,10 +293,15 @@ def backfill(
         except NotFoundError:
             missing.append(day.isoformat())
         else:
-            data = merged(data, day, read_day(raw))
+            try:
+                data = merged(data, day, read_day(raw))
+            except UpdateError as err:
+                unreadable.append(f"{day} ({err})")
         day += timedelta(days=1)
     if missing:
         print(f"Missing: {', '.join(missing)}", file=sys.stderr)
+    if unreadable:
+        print(f"Unreadable: {', '.join(unreadable)}", file=sys.stderr)
     if data is None:
         raise UpdateError(f"no daily file from {first} to {last}")
     return data
