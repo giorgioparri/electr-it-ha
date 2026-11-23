@@ -165,6 +165,12 @@ jobs:
           # CI checkout only - the repository keeps a single LICENSE at its
           # root.
           cp LICENSE custom_components/electr_it_ha/
+          # The Marketplace of Home Assistant 2026.11 reads hacs.json for
+          # every version it installs. Its documentation does not say whether
+          # from the tag or from the release asset, and installs of assets
+          # without one have been reported to fail: ship a copy in the zip
+          # too. Home Assistant ignores it inside the integration folder.
+          cp hacs.json custom_components/electr_it_ha/
           cd custom_components/electr_it_ha
           zip -r "${GITHUB_WORKSPACE}/electr_it_ha.zip" . \
             -x '*.pyc' -x '__pycache__/*'
@@ -189,6 +195,15 @@ jobs:
           if ! unzip -l electr_it_ha.zip | grep -qE " LICENSE$"; then
             echo "::error::LICENSE is missing from the zip."
             unzip -l electr_it_ha.zip
+            exit 1
+          fi
+          if ! unzip -l electr_it_ha.zip | grep -qE " hacs\.json$"; then
+            echo "::error::hacs.json is missing from the zip."
+            unzip -l electr_it_ha.zip
+            exit 1
+          fi
+          if ! unzip -p electr_it_ha.zip hacs.json | cmp -s - hacs.json; then
+            echo "::error::hacs.json in the zip differs from the repository's."
             exit 1
           fi
           echo "Zip layout OK"
