@@ -33,7 +33,7 @@
       },
       "contract": {
         "title": "Supply contract",
-        "description": "Paste the contract as JSON. It holds only what your supplier decides: prices, fees, how dispatching is billed. The README explains the format and how to get it from a bill.\n\n{details}",
+        "description": "Paste the contract as JSON. It holds only what your supplier decides: prices, fees, how dispatching is billed. The README explains the format and has a prompt to have an AI write it from your bill.\n\n{details}",
         "data": {
           "contract_json": "Contract (JSON)"
         }
@@ -98,7 +98,7 @@
       "invalid_auth": "GME refused these credentials.",
       "cannot_connect": "Cannot reach the GME API. Try again later.",
       "offers_unavailable": "Cannot download the offers of the Portale Offerte. Try again later, or close this window, start again and choose to paste the contract as JSON.",
-      "offer_not_found": "No offer with this code. Check it on the bill; if it is right, the Portale has not published that offer: close this window, start again and choose to paste the contract as JSON.",
+      "offer_not_found": "No offer with this code. Check it on the bill; if it is right, the Portale has not published that offer: close this window, start again and choose to paste the contract as JSON. The README has a prompt to have an AI write it from your bill.",
       "offer_unsupported": "This offer cannot be converted to a contract, for the reasons listed above: close this window, start again and choose to paste the contract as JSON."
     },
     "abort": {
