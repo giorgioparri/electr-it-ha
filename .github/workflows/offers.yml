@@ -6,9 +6,9 @@ name: Offers
 # code. The integration downloads the index and one file only while a
 # contract is being set up. The daily run writes only the files that changed.
 #
-# offers.json, the single file of schema 1 that v0.1.0-beta.6 reads, is no
-# longer written: it stays on the branch as it was on the last run before
-# this one, for the installs that have not updated yet.
+# offers.json, the single file of schema 1 that v0.1.0-beta.6 read, was
+# removed from the branch with the release of v0.1.0. tools/update_offers.py
+# --convert still turns a copy of it into the offers/ folder.
 #
 # Daily runs only. The runner has 1 GB of memory, and a backfill holds the
 # whole archive in memory: past days are read on a desktop with
