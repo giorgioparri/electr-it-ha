@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""The updater of offers.json. Run as a script:
+"""The updater of the offers/ folder. Run as a script:
 
     python3 tests/test_update_offers.py
 
@@ -11,20 +11,24 @@ fake download keyed by URL.
 import contextlib
 import io
 import json
+import os
 import re
 import sys
 import tempfile
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "tools"))
 
 import update_offers as u
 
+from engine.catalogue import INDEX_FILE, shard_key
 from engine.contract import Contract
 
 FIXTURE = Path(__file__).parent / "fixtures" / "portale_offerte_20261121.xml"
 NAMESPACE = "http://www.acquirenteunico.it/schemas/SII_AU/OffertaRetail/01"
+SOURCE = "Portale Offerte (ARERA / Acquirente Unico), open data"
 _failures: list[str] = []
 
 
@@ -111,9 +115,42 @@ def run(output: Path, portale: Portale, *args: str) -> tuple[int, str, str]:
     return status, out.getvalue(), err.getvalue()
 
 
-def load(path: Path) -> dict:
-    """Read offers.json."""
-    return json.loads(path.read_text(encoding="utf-8"))
+# --- The folder -------------------------------------------------------------------
+
+
+def index(folder: Path) -> dict[str, Any]:
+    """Read index.json."""
+    return json.loads((folder / INDEX_FILE).read_text(encoding="utf-8"))
+
+
+def offers(folder: Path) -> dict[str, Any]:
+    """Every offer of the folder, by code, read file by file."""
+    found: dict[str, Any] = {}
+    for path in sorted(folder.glob("*.json")):
+        if path.name != INDEX_FILE:
+            found.update(json.loads(path.read_text(encoding="utf-8"))["offers"])
+    return found
+
+
+def shard(code: str) -> str:
+    """The name of the file that holds `code`."""
+    return f"{shard_key(code, 2)}.json"
+
+
+def contents(folder: Path) -> dict[str, bytes]:
+    """Every file of the folder, by name."""
+    return {path.name: path.read_bytes() for path in sorted(folder.iterdir())}
+
+
+def age(folder: Path) -> None:
+    """Set every file of the folder to the epoch, to tell later which are written."""
+    for path in folder.iterdir():
+        os.utime(path, ns=(0, 0))
+
+
+def written(folder: Path) -> set[str]:
+    """The files written since age()."""
+    return {path.name for path in folder.iterdir() if path.stat().st_mtime_ns != 0}
 
 
 # --- Tests ------------------------------------------------------------------------
@@ -137,27 +174,42 @@ def test_url() -> None:
     )
 
 
-def test_daily(folder: Path) -> None:
+def test_daily(root: Path) -> None:
     """Day after day: added, changed and withdrawn offers."""
-    output = folder / "offers.json"
+    folder = root / "offers"
     portale = Portale({date(2026, 11, 21): DAY_1, date(2026, 11, 22): DAY_2})
 
-    status, out, err = run(output, portale, "--today", "2026-11-21")
+    # A daily run never starts an archive on its own: with the index lost it
+    # would keep the offers of one day only.
+    status, out, err = run(folder, portale, "--today", "2026-11-21")
+    check("no archive: status", status, 1)
+    check("no archive: said", INDEX_FILE in err and "--init" in err, True)
+    check("no archive: nothing created", folder.exists(), False)
+
+    status, out, err = run(folder, portale, "--today", "2026-11-21", "--init")
     check("first day: status", status, 0)
-    data = load(output)
     check(
-        "first day: header",
-        {k: data[k] for k in data if k != "offers"},
+        "first day: index",
+        index(folder),
         {
-            "schema_version": 1,
-            "source": "Portale Offerte (ARERA / Acquirente Unico), open data",
+            "schema_version": 2,
+            "source": SOURCE,
             "updated": "2026-11-21",
             "file": "PO_Offerte_E_MLIBERO_20261121.xml",
+            "shards": {"hash": "sha256", "digits": 2},
+            "offers": 18,
+            "on_sale": 18,
         },
     )
-    check("first day: domestic offers", len(data["offers"]), 18)
+    data = offers(folder)
+    check("first day: domestic offers", len(data), 18)
     check("first day: one line per offer", out.count("added "), 18)
-    entry = data["offers"][AJO]
+    check(
+        "first day: one file per hash, only where there are offers",
+        set(contents(folder)) - {INDEX_FILE},
+        {shard(code) for code in data},
+    )
+    entry = data[AJO]
     check("first day: first seen", entry["first_seen"], "2026-11-21")
     check("first day: on sale", entry["last_seen"], None)
     check("first day: converter", entry["converter"], u.CONVERTER)
@@ -167,22 +219,27 @@ def test_daily(folder: Path) -> None:
     check("first day: valid to", entry["info"]["valid_to"], "2026-11-22T23:59:59")
     check("first day: spread", entry["contract"]["energy_price"]["f1"], 0.05)
 
-    status, out, err = run(output, portale, "--today", "2026-11-22")
+    age(folder)
+    status, out, err = run(folder, portale, "--today", "2026-11-22")
     check("second day: status", status, 0)
-    data = load(output)
-    check("second day: updated", data["updated"], "2026-11-22")
-    check("second day: file", data["file"], "PO_Offerte_E_MLIBERO_20261122.xml")
-    check("second day: offers kept", len(data["offers"]), 19)
-    check("second day: other uses left out", BUSINESS in data["offers"], False)
-    check("withdrawn: last seen", data["offers"][TIERS]["last_seen"], "2026-11-21")
-    check("withdrawn: kept as it was", data["offers"][TIERS]["status"], "partial")
+    head = index(folder)
+    check("second day: updated", head["updated"], "2026-11-22")
+    check("second day: file", head["file"], "PO_Offerte_E_MLIBERO_20261122.xml")
+    check("second day: offers counted", head["offers"], 19)
+    check("second day: on sale counted", head["on_sale"], 18)
+    data = offers(folder)
+    check("second day: offers kept", len(data), 19)
+    check("second day: other uses left out", BUSINESS in data, False)
     check(
-        "changed: new spread",
-        data["offers"][AJO]["contract"]["energy_price"]["f1"],
-        0.06,
+        "second day: only the index and the files that changed are written",
+        written(folder),
+        {INDEX_FILE, shard(AJO), shard(TIERS), shard(NEW)},
     )
-    check("changed: first seen kept", data["offers"][AJO]["first_seen"], "2026-11-21")
-    check("added: first seen", data["offers"][NEW]["first_seen"], "2026-11-22")
+    check("withdrawn: last seen", data[TIERS]["last_seen"], "2026-11-21")
+    check("withdrawn: kept as it was", data[TIERS]["status"], "partial")
+    check("changed: new spread", data[AJO]["contract"]["energy_price"]["f1"], 0.06)
+    check("changed: first seen kept", data[AJO]["first_seen"], "2026-11-21")
+    check("added: first seen", data[NEW]["first_seen"], "2026-11-22")
     check(
         "reported",
         sorted(out.split("\n")[:-1]),
@@ -195,14 +252,14 @@ def test_daily(folder: Path) -> None:
         ),
     )
 
-    before = output.read_bytes()
-    status, out, err = run(output, portale, "--today", "2026-11-22")
+    age(folder)
+    status, out, err = run(folder, portale, "--today", "2026-11-22")
     check("same day again: status", status, 0)
     check("same day again: no change", out, "No change.\n")
     check("same day again: nothing on stderr", err, "")
-    check("same day again: file untouched", output.read_bytes(), before)
+    check("same day again: nothing written", written(folder), set())
 
-    status, out, _ = run(output, portale, "--today", "2026-11-24")
+    status, out, _ = run(folder, portale, "--today", "2026-11-24")
     check("no file today: the latest of the days before", status, 0)
     check("no file today: no change", out, "No change.\n")
     check(
@@ -211,44 +268,57 @@ def test_daily(folder: Path) -> None:
         [u.file_url(date(2026, 11, day)) for day in (24, 23, 22)],
     )
 
-    for item in data["offers"].values():
+    for item in data.values():
         if item["contract"] is not None:
             Contract.from_dict(item["contract"])
-    print(f"PASS  every stored contract validates ({len(data['offers'])})")
+    print(f"PASS  every stored contract validates ({len(data)})")
 
 
-def test_format(folder: Path) -> None:
+def test_format(root: Path) -> None:
     """One line per offer, so a daily commit touches only what changed."""
-    output = folder / "offers.json"
-    portale = Portale({date(2026, 11, 21): DAY_1})
-    run(output, portale, "--today", "2026-11-21")
-    text = output.read_text(encoding="utf-8")
+    folder = root / "offers"
+    run(folder, Portale({date(2026, 11, 21): DAY_1}), "--today", "2026-11-21", "--init")
+    text = (folder / shard(AJO)).read_text(encoding="utf-8")
     lines = text.split("\n")
-    data = load(output)
+    data = json.loads(text)
+    check("shard: header", lines[:2], ["{", '  "schema_version": 2,'])
     check(
-        "lines: 6 of header, one per offer, 2 closing, final newline",
+        "shard: 3 of header, one per offer, 2 closing, final newline",
         len(lines),
-        6 + len(data["offers"]) + 2 + 1,
+        3 + len(data["offers"]) + 2 + 1,
     )
     codes = [line.split('"')[1] for line in lines if line.startswith('    "')]
-    check("offers sorted by code", codes, sorted(data["offers"]))
-    check("ends with a newline", text.endswith("}\n"), True)
-    check("UTF-8, not escaped", "\\u" in text, False)
+    check("shard: offers sorted by code", codes, sorted(data["offers"]))
+    check("shard: ends with a newline", text.endswith("}\n"), True)
+    for name, raw in contents(folder).items():
+        check(f"{name}: UTF-8, not escaped", b"\\u" in raw, False)
+    head = (folder / INDEX_FILE).read_text(encoding="utf-8")
+    check("index: ends with a newline", head.endswith("}\n"), True)
+    check("index: one key per line", head.count("\n") > 7, True)
+
+    check(
+        "the folder is what files() returns",
+        {name: raw.decode() for name, raw in contents(folder).items()},
+        u.files(u.merged(None, date(2026, 11, 21), u.read_day(DAY_1))),
+    )
 
 
-def test_refusals(folder: Path) -> None:
+def test_refusals(root: Path) -> None:
     """Nothing is written when the file is missing, broken or too short."""
-    output = folder / "offers.json"
-    run(output, Portale({date(2026, 11, 21): DAY_1}), "--today", "2026-11-21")
-    before = output.read_bytes()
+    folder = root / "offers"
+    run(folder, Portale({date(2026, 11, 21): DAY_1}), "--today", "2026-11-21", "--init")
+    before = contents(folder)
 
-    status, out, err = run(output, Portale({}), "--today", "2026-11-23")
+    def untouched(what: str) -> None:
+        check(f"{what}: untouched", contents(folder), before)
+
+    status, out, err = run(folder, Portale({}), "--today", "2026-11-23")
     check("no file in 4 days: status", status, 1)
     check("no file in 4 days: said", "Not updated" in err, True)
-    check("no file in 4 days: untouched", output.read_bytes(), before)
+    untouched("no file in 4 days")
 
     broken = Portale({date(2026, 11, 22): b"<html>Service unavailable</html"})
-    status, out, err = run(output, broken, "--today", "2026-11-22")
+    status, out, err = run(folder, broken, "--today", "2026-11-22")
     check("broken XML: status", status, 1)
     check("broken XML: said", "not valid XML" in err, True)
     check(
@@ -257,18 +327,29 @@ def test_refusals(folder: Path) -> None:
         True,
     )
     check("broken XML: nothing on stdout", out, "")
-    check("broken XML: untouched", output.read_bytes(), before)
+    untouched("broken XML")
 
     short = Portale({date(2026, 11, 22): TRUNCATED})
-    status, _, err = run(output, short, "--today", "2026-11-22")
+    status, _, err = run(folder, short, "--today", "2026-11-22")
     check("half the offers gone: status", status, 1)
     check("half the offers gone: said", "2 of 18" in err, True)
-    check("half the offers gone: untouched", output.read_bytes(), before)
+    untouched("half the offers gone")
+
+    head = index(folder)
+    head["schema_version"] = 1
+    (folder / INDEX_FILE).write_text(json.dumps(head), encoding="utf-8")
+    before = contents(folder)
+    status, _, err = run(
+        folder, Portale({date(2026, 11, 22): DAY_2}), "--today", "2026-11-22"
+    )
+    check("another schema: status", status, 1)
+    check("another schema: said", "unsupported schema" in err, True)
+    untouched("another schema")
 
 
-def test_backfill(folder: Path) -> None:
+def test_backfill(root: Path) -> None:
     """Past days fill the archive; the newest content wins."""
-    output = folder / "offers.json"
+    folder = root / "offers"
     portale = Portale(
         {
             date(2026, 11, 19): DAY_0,
@@ -276,38 +357,46 @@ def test_backfill(folder: Path) -> None:
             date(2026, 11, 22): DAY_2,
         }
     )
-    status, out, err = run(output, portale, "--backfill", "2026-11-20:2026-11-22")
+    status, out, err = run(
+        folder, portale, "--backfill", "2026-11-20:2026-11-22", "--init"
+    )
     check("backfill: status", status, 0)
     check("backfill: missing days listed", "Missing: 2026-11-20" in err, True)
-    data = load(output)
-    check("backfill: updated to the last day", data["updated"], "2026-11-22")
-    check("backfill: withdrawn", data["offers"][TIERS]["last_seen"], "2026-11-21")
-    check(
-        "backfill: changed", data["offers"][AJO]["contract"]["energy_price"]["f1"], 0.06
-    )
+    check("backfill: updated to the last day", index(folder)["updated"], "2026-11-22")
+    data = offers(folder)
+    check("backfill: withdrawn", data[TIERS]["last_seen"], "2026-11-21")
+    check("backfill: changed", data[AJO]["contract"]["energy_price"]["f1"], 0.06)
 
-    status, out, err = run(output, portale, "--backfill", "2026-11-19:2026-11-19")
+    status, out, err = run(folder, portale, "--backfill", "2026-11-19:2026-11-19")
     check("older day: status", status, 0)
     check("older day: gone offer reported", f"added {OLD} FISSA SMART" in out, True)
-    data = load(output)
-    check("older day: updated unchanged", data["updated"], "2026-11-22")
-    tiers = data["offers"][TIERS]
+    head = index(folder)
+    check("older day: updated unchanged", head["updated"], "2026-11-22")
+    check("older day: offers counted", head["offers"], 20)
+    check("older day: on sale unchanged", head["on_sale"], 18)
+    data = offers(folder)
+    tiers = data[TIERS]
     check("older day: first seen moves back", tiers["first_seen"], "2026-11-19")
     check("older day: last seen unchanged", tiers["last_seen"], "2026-11-21")
     check(
         "older day: newer content kept", tiers["contract"]["energy_price"]["f0"], 0.1793
     )
-    old = data["offers"][OLD]
+    old = data[OLD]
     check(
         "older day: gone offer archived",
         (old["first_seen"], old["last_seen"]),
         ("2026-11-19", "2026-11-19"),
     )
-    check("older day: Ajo untouched", data["offers"][AJO]["first_seen"], "2026-11-21")
+    check("older day: Ajo untouched", data[AJO]["first_seen"], "2026-11-21")
+
+    status, _, err = run(root / "fresh", portale, "--backfill", "2026-11-21:2026-11-22")
+    check("backfill with no archive: status", status, 1)
+    check("backfill with no archive: said", "--init" in err, True)
+    check("backfill with no archive: nothing created", (root / "fresh").exists(), False)
 
     # The Portale serves some past days as an empty file: the day is
     # listed and skipped, the others are read.
-    output = folder / "gaps.json"
+    gaps = root / "gaps"
     portale = Portale(
         {
             date(2026, 11, 20): b"",
@@ -315,35 +404,70 @@ def test_backfill(folder: Path) -> None:
             date(2026, 11, 22): DAY_2,
         }
     )
-    status, out, err = run(output, portale, "--backfill", "2026-11-20:2026-11-22")
+    status, out, err = run(
+        gaps, portale, "--backfill", "2026-11-20:2026-11-22", "--init"
+    )
     check("empty day: status", status, 0)
     check("empty day: listed", "Unreadable: 2026-11-20 (" in err, True)
-    check("empty day: the other days read", load(output)["updated"], "2026-11-22")
+    check("empty day: the other days read", index(gaps)["updated"], "2026-11-22")
 
     status, _, err = run(
-        folder / "empty.json",
+        root / "empty",
         Portale({date(2026, 11, 20): b""}),
         "--backfill",
         "2026-11-20:2026-11-20",
+        "--init",
     )
     check("only empty days: status", status, 1)
-    check("only empty days: nothing written", (folder / "empty.json").exists(), False)
+    check("only empty days: nothing written", (root / "empty").exists(), False)
 
     status, _, _ = run(
-        folder / "none.json", Portale({}), "--backfill", "2026-11-01:2026-11-02"
+        root / "none", Portale({}), "--backfill", "2026-11-01:2026-11-02", "--init"
     )
     check("backfill with no file at all: status", status, 1)
     check(
-        "backfill with no file at all: nothing written",
-        (folder / "none.json").exists(),
-        False,
+        "backfill with no file at all: nothing written", (root / "none").exists(), False
     )
+
+
+def test_convert(root: Path) -> None:
+    """The offers.json of schema 1 becomes the folder a daily run would write."""
+    model = u.merged(None, date(2026, 11, 21), u.read_day(DAY_1))
+    model = u.merged(model, date(2026, 11, 22), u.read_day(DAY_2))
+    old = root / "offers.json"
+    old.write_text(
+        json.dumps({**model, "schema_version": 1}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    folder = root / "offers"
+    status, out, err = run(folder, Portale({}), "--convert", str(old))
+    check("convert: status", status, 0)
+    check("convert: said", "19 offers" in out, True)
+    check(
+        "convert: same files as the daily runs",
+        {name: raw.decode() for name, raw in contents(folder).items()},
+        u.files(model),
+    )
+
+    before = contents(folder)
+    status, _, err = run(folder, Portale({}), "--convert", str(old))
+    check("convert over an archive: status", status, 1)
+    check("convert over an archive: said", INDEX_FILE in err, True)
+    check("convert over an archive: untouched", contents(folder), before)
+
+    newer = root / "newer.json"
+    newer.write_text(json.dumps({**model, "schema_version": 2}), encoding="utf-8")
+    status, _, err = run(root / "other", Portale({}), "--convert", str(newer))
+    check("convert another schema: status", status, 1)
+    check("convert another schema: said", "unsupported schema" in err, True)
+    check("convert another schema: nothing created", (root / "other").exists(), False)
 
 
 def main() -> int:
     """Run every test and report."""
     test_url()
-    for test in (test_daily, test_format, test_refusals, test_backfill):
+    for test in (test_daily, test_format, test_refusals, test_backfill, test_convert):
         with tempfile.TemporaryDirectory() as folder:
             try:
                 test(Path(folder))

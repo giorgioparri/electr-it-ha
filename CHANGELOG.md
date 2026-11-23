@@ -26,7 +26,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - A supply can be set up from the offer code printed on the bill: the integration looks it up among the offers of the ARERA Portale Offerte and fills the contract screen with it, to be checked against the bill before going on. The first screen of a supply now asks whether to look up the code or paste the JSON; reconfiguring a supply starts from the same choice.
 - Offers that cannot be converted fully are imported as the closest contract, with the list of what is missing; offers the contract model cannot hold say why, and the JSON can still be pasted by hand.
 - The Portale does not say how network losses are billed: when an offer states no coefficient, the standard 1.10 in the price is assumed and the contract says so in its notes. Check it against your bill.
-- A workflow of the repository converts the daily file of the Portale into `offers.json` on the `market-data` branch, keeping the offers that leave the Portale; the integration downloads it only while a supply is set up.
+- A workflow of the repository converts the daily file of the Portale into the `offers/` folder on the `market-data` branch, keeping the offers that leave the Portale, back to 1 January 2022. The folder is split into 256 files by the hash of the offer code: a lookup downloads only the file that can hold the code typed, a few hundred KB, so it is quick and light on memory even on a small Raspberry Pi.
+- A few offers were republished with only the letter case of their code changed: the lookup picks the code exactly as typed, otherwise the one still on sale, otherwise the one seen last.
+- If you installed v0.1.0-beta.6, update: it downloads the whole archive as one `offers.json` (over 70 MB, several hundred MB of memory while you set up a supply), which is no longer updated since v0.1.0-beta.7 and will be removed with this release.
 - English and Italian.
 
 [Unreleased]: https://github.com/giorgioparri/electr-it-ha/compare/v0.1.0...HEAD

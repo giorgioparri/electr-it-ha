@@ -55,12 +55,12 @@ ISSUE_PUBLISHED_DOWNLOAD = "published_download_failed"
 PUBLISHED_CLOSE_WAIT_DAYS = 15
 
 # Offers of the Portale Offerte (engine.catalogue), converted by a workflow of
-# the repository and kept on the same branch. Downloaded only while a contract
-# is set up, and kept in memory for a while so a mistyped code costs no second
-# download of the few MB of the file.
-OFFERS_URL = (
-    "https://raw.githubusercontent.com/giorgioparri/electr-it-ha/"
-    "market-data/offers.json"
+# the repository and kept in the offers/ folder of the same branch, split by
+# the hash of the offer code. Downloaded only while a contract is set up: the
+# index, then the one file of the code looked up (a few hundred KB). Both are
+# kept in memory for a while, so a second lookup downloads nothing it has.
+OFFERS_BASE_URL = (
+    "https://raw.githubusercontent.com/giorgioparri/electr-it-ha/market-data/offers/"
 )
-OFFERS_TIMEOUT_SECONDS = 60
+OFFERS_TIMEOUT_SECONDS = 30
 OFFERS_CACHE_MINUTES = 10

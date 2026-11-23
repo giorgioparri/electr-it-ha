@@ -1,26 +1,28 @@
 name: Offers
 
-# Once a day, read the daily file of the Portale Offerte and keep offers.json
-# up to date on the market-data branch, next to market_values.json. The
-# integration downloads it only while a contract is being set up.
+# Once a day, read the daily file of the Portale Offerte and keep the offers/
+# folder up to date on the market-data branch, next to market_values.json:
+# index.json plus one file per first two hex digits of the hash of the offer
+# code. The integration downloads the index and one file only while a
+# contract is being set up. The daily run writes only the files that changed.
 #
-# Run by hand with a "backfill" range (FROM:TO, ISO dates) to read the daily
-# files of past days once, to fill the archive. A month of files is about
-# 600 MB to download: run a few months at a time, oldest first.
+# offers.json, the single file of schema 1 that v0.1.0-beta.6 reads, is no
+# longer written: it stays on the branch as it was on the last run before
+# this one, for the installs that have not updated yet.
+#
+# Daily runs only. The runner has 1 GB of memory, and a backfill holds the
+# whole archive in memory: past days are read on a desktop with
+# tools/update_offers.py --backfill, and the folder is pushed from there.
+# The runner never starts an archive: with offers/index.json missing the run
+# fails, rather than keep the offers of one day only.
 #
 # When the daily update fails, an issue is opened (one at a time); it is
-# closed by the first daily run that goes fine. Backfill runs leave issues
-# alone: their result is in the run summary.
+# closed by the first daily run that goes fine.
 
 on:
   schedule:
     - cron: "41 7 * * *"
   workflow_dispatch:
-    inputs:
-      backfill:
-        description: "Days to read once, FROM:TO (e.g. 2025-12-01:2025-12-31); empty for the daily update"
-        required: false
-        default: ""
 
 permissions:
   contents: write
@@ -36,7 +38,6 @@ concurrency:
 env:
   DATA_BRANCH: market-data
   ISSUE_TITLE: "Offers: the automatic update needs attention"
-  BACKFILL: ${{ github.event.inputs.backfill }}
 
 jobs:
   update:
@@ -45,7 +46,7 @@ jobs:
     # "portale". It starts only from the schedule and by hand, never from a
     # pull request, so code from a fork never reaches that machine.
     runs-on: [self-hosted, linux, portale]
-    timeout-minutes: 300
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -79,13 +80,8 @@ jobs:
         id: update
         run: |
           set +e
-          if [ -n "$BACKFILL" ]; then
-            python tools/update_offers.py --output data/offers.json \
-              --backfill "$BACKFILL" > changes.txt 2> errors.txt
-          else
-            python tools/update_offers.py --output data/offers.json \
-              > changes.txt 2> errors.txt
-          fi
+          python tools/update_offers.py --output data/offers \
+            > changes.txt 2> errors.txt
           status=$?
           set -e
           echo "status=$status" >> "$GITHUB_OUTPUT"
@@ -103,15 +99,15 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # The commit message carries the counts and the first lines only: a
-      # backfill adds thousands of offers. The full list is in the summary.
+      # The commit message carries the counts and the first lines only; the
+      # full list is in the summary.
       - name: Publish on the data branch
         if: steps.update.outputs.status == '0'
         working-directory: data
         env:
           COUNTS: ${{ steps.update.outputs.counts }}
         run: |
-          git add offers.json
+          git add offers
           if git diff --cached --quiet; then
             echo "Nothing to publish."
             exit 0
@@ -135,7 +131,7 @@ jobs:
           exit 1
 
       - name: Open an issue
-        if: steps.update.outputs.status != '0' && env.BACKFILL == ''
+        if: steps.update.outputs.status != '0'
         env:
           GH_TOKEN: ${{ github.token }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
@@ -147,7 +143,7 @@ jobs:
             exit 0
           fi
           {
-            echo "The daily update of \`offers.json\` on the \`$DATA_BRANCH\` branch reported:"
+            echo "The daily update of \`offers/\` on the \`$DATA_BRANCH\` branch reported:"
             echo
             echo '```'
             cat errors.txt
@@ -155,12 +151,12 @@ jobs:
             echo
             echo "Run: $RUN_URL"
             echo
-            echo "Nothing was written: the file stays as it was after the last good run."
+            echo "Nothing was written: the folder stays as it was after the last good run."
           } > body.md
           gh issue create --title "$ISSUE_TITLE" --body-file body.md
 
       - name: Close the issue
-        if: steps.update.outputs.status == '0' && env.BACKFILL == ''
+        if: steps.update.outputs.status == '0'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

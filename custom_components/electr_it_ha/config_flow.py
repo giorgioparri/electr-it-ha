@@ -49,7 +49,7 @@ from .const import (
     ENTRY_TYPE_SUPPLY,
     GME_UNIQUE_ID,
 )
-from .engine.catalogue import CatalogueOffer, normalize_code
+from .engine.catalogue import CatalogueOffer
 from .engine.contract import Contract, ContractError
 from .engine.gme import GmeAuthError, GmeError
 from .engine.market import PUN_PREFIX, required_market_values
@@ -310,9 +310,11 @@ class ElectrIthaConfigFlow(ConfigFlow, domain=DOMAIN):
         errors: dict[str, str] = {}
         details = ""
         if user_input is not None:
-            code = normalize_code(user_input[CONF_OFFER_CODE])
+            # As typed: find() prefers the code in its own letter case, since
+            # the Portale has codes that differ in letter case only.
+            code = user_input[CONF_OFFER_CODE]
             try:
-                catalogue = await async_get_catalogue(self.hass)
+                catalogue = await async_get_catalogue(self.hass, code)
             except OffersUnavailableError as err:
                 _LOGGER.warning("Cannot look up the offer code: %s", err)
                 errors["base"] = "offers_unavailable"
