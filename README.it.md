@@ -27,7 +27,7 @@ Un'integrazione per [Home Assistant](https://www.home-assistant.io/) che ti dice
 - **Non ancora applicati:** sconti, energia verde opzionale, prezzi validi per un periodo, scaglioni di consumo, fasce Peak/Off-Peak.
 - La **franchigia delle accise** per i residenti fino a 3 kW segue la legge (primi 150 kWh al mese esenti, ridotti oltre la soglia) ma non è ancora stata verificata su una bolletta con il dettaglio.
 - **Il PUN si può scaricare dal GME con il tuo account.** Le API ufficiali del GME sono gratuite ma personali: ogni utente si registra e riceve le sue credenziali, che non vanno condivise. Senza account puoi prendere il PUN da qualsiasi entità che hai già, oppure scriverlo a mano.
-- **Il contratto si trova con il codice offerta della bolletta**, tra le offerte pubblicate sul Portale Offerte di ARERA. Il Portale non dice tutto quello che dice una bolletta: confronta sempre il risultato con la tua. Vedi [Trovare il contratto con il codice offerta](#trovare-il-contratto-con-il-codice-offerta).
+- **Il contratto si trova con il codice offerta della bolletta**, tra le offerte pubblicate sul Portale Offerte di ARERA. Il Portale non dice tutto quello che dice una bolletta: confronta sempre il risultato con la tua. Vedi [Trovare il contratto con il codice offerta](#trovare-il-contratto-con-il-codice-offerta). Se non c'è, può scriverlo un'AI a partire dalla bolletta: vedi [Scrivere il contratto con un'AI](#scrivere-il-contratto-con-unai).
 - **Dispacciamento, capacity market e CDispD vengono scaricati per te**, senza account: Terna pubblica i primi due ogni trimestre, ARERA il CDispD ogni mese. Vedi [Valori di mercato](#valori-di-mercato).
 - Progetto non ufficiale, non affiliato ad ARERA, GME, Acquirente Unico, Terna né ad alcun venditore.
 
@@ -66,7 +66,14 @@ L'account GME è un dispositivo con dieci sensori: il PUN medio di F0 (monorario
 
 ## Installazione
 
-### Con HACS (consigliata)
+### Dal Marketplace (Home Assistant 2026.11 o successivo)
+
+Da Home Assistant 2026.11 HACS è integrato, come Marketplace.
+
+1. Premi il pulsante **Apri la tua istanza di Home Assistant** qui sopra. Oppure apri **Impostazioni → Marketplace**, scegli **Aggiungi da link** e incolla `https://github.com/giorgioparri/electr-it-ha`
+2. Nella pagina di **electrITHA** scegli **Installa**. Se Home Assistant deve essere riavviato, lo dice una riparazione.
+
+### Con HACS (Home Assistant da 2026.8 a 2026.10)
 
 1. In HACS apri il menu, scegli **Repository personalizzati**, aggiungi `https://github.com/giorgioparri/electr-it-ha` con tipo **Integrazione**
 2. Cerca **electrITHA**, installa, poi riavvia Home Assistant
@@ -87,7 +94,7 @@ Richiede Home Assistant 2026.8.0 o successivo.
 
 Una fornitura richiede tre schermate:
 
-1. **Contratto di fornitura**: cerca il codice offerta stampato in bolletta (vedi [Trovare il contratto con il codice offerta](#trovare-il-contratto-con-il-codice-offerta)), oppure incolla il contratto in JSON (vedi [Il contratto](#il-contratto)). In entrambi i casi vedi il JSON prima di andare avanti: viene validato subito e ogni problema è elencato.
+1. **Contratto di fornitura**: cerca il codice offerta stampato in bolletta (vedi [Trovare il contratto con il codice offerta](#trovare-il-contratto-con-il-codice-offerta)), oppure incolla il contratto in JSON (vedi [Il contratto](#il-contratto), e [Scrivere il contratto con un'AI](#scrivere-il-contratto-con-unai) per ricavarlo dalla bolletta). In entrambi i casi vedi il JSON prima di andare avanti: viene validato subito e ogni problema è elencato.
 2. **Fornitura e contatori**: se sei residente, la potenza impegnata in kW, e uno o più sensori di energia cumulativi che misurano il prelievo dalla rete (kWh, Wh o MWh).
 3. **Valori di mercato**: solo quelli da cui dipende il prezzo del tuo contratto. Per ciascuno scegli un'entità oppure scrivi un valore fisso in €/kWh. Un'entità può essere in €/kWh o in €/MWh. Se hai aggiunto l'account GME, i suoi sensori del PUN sono già indicati. Dispacciamento, capacity market e CDispD si possono lasciare vuoti: si usano i valori pubblicati. La schermata viene saltata se il contratto non ne richiede.
 
@@ -120,7 +127,7 @@ Le offerte arrivano dagli open data del Portale, che pubblica ogni giorno un fil
 - **Le offerte non supportate** (FLAT, miste fisso e variabile, onnicomprensive, indicizzate a un indice diverso dal PUN o a una somma di indici) non danno un contratto: incollalo in JSON.
 - I prezzi per kWh e le quote annue vengono sommati qualunque sia la voce sotto cui il Portale li riporta, e le `notes` del contratto elencano le componenti da cui vengono. I dati inviati sbagliati dal venditore restano come sono.
 
-Se il codice non si trova, il Portale non ha mai pubblicato quell'offerta, oppure è uscita prima dell'inizio dell'archivio: incolla il contratto in JSON.
+Se il codice non si trova, il Portale non ha mai pubblicato quell'offerta, oppure è uscita prima dell'inizio dell'archivio: incolla il contratto in JSON, oppure fallo scrivere a un'AI (vedi [Scrivere il contratto con un'AI](#scrivere-il-contratto-con-unai)).
 
 ### Il contratto
 
@@ -162,6 +169,53 @@ Il contratto contiene solo ciò che decide il venditore. Tutto ciò che è regol
 | `discounts`, `notes` | Conservati e mostrati; gli sconti non sono ancora applicati |
 
 Il modello ricalca il tracciato con cui i venditori pubblicano le offerte sul Portale Offerte di ARERA, quindi qualsiasi offerta in vendita si può descrivere così.
+
+### Scrivere il contratto con un'AI
+
+Se il codice offerta non si trova, una chat con un'AI (Claude, ChatGPT, Gemini e simili) può scrivere il contratto a partire dai tuoi documenti. In una chat nuova allega l'ultima bolletta e, se li hai, il contratto o la scheda sintetica dell'offerta **nella versione che hai firmato**: quella pubblicata oggi sul sito del venditore può avere altri prezzi. Poi incolla il prompt qui sotto. La bolletta riporta nome, indirizzo e POD, che all'AI non servono: puoi oscurarli prima.
+
+<!-- ai-prompt:start -->
+```text
+Leggi i documenti della fornitura di energia elettrica che ti allego (una bolletta, e se ci sono il contratto o la scheda sintetica dell'offerta) e compila il contratto qui sotto per l'integrazione electrITHA di Home Assistant. Rispondi solo con il JSON, senza commenti.
+
+{
+  "schema_version": 1,
+  "supplier": "Nome del venditore",
+  "offer_name": "Nome dell'offerta",
+  "offer_code": null,
+  "price_type": "indexed",
+  "time_bands": "f1_f2_f3",
+  "index": {"name": "pun_index_gme", "period": "monthly", "coefficient": 1.1, "loss_method": "price"},
+  "energy_price": {"f1": 0.015, "f2": 0.015, "f3": 0.015},
+  "dispatching": {"mode": "cdispd", "fixed_value": null, "capacity_market": false},
+  "disp_bt": true,
+  "fixed_fee_eur_year": 120,
+  "energy_fee_eur_kwh": null,
+  "green_energy": null,
+  "discounts": [],
+  "notes": []
+}
+
+Regole:
+- Usa solo quello che c'è nei documenti. Se un dato manca non inventarlo: usa il valore predefinito indicato qui sotto e scrivi in "notes" che cosa hai supposto. Scrivi in "notes" anche ogni dubbio.
+- Prezzi in €/kWh, IVA esclusa, numeri con il punto decimale: i €/MWh vanno divisi per 1000, i c€/kWh per 100.
+- Riporta solo quello che decide il venditore. Lascia fuori tutto il regolato: il PUN, trasporto e gestione del contatore, oneri di sistema (ASOS, ARIM), accise, IVA, i valori del dispacciamento e del mercato della capacità.
+- "supplier": il nome del venditore. "offer_name" e "offer_code": come sono stampati, null se mancano. Il codice offerta è di 32 lettere e cifre, nel riquadro che descrive l'offerta.
+- "price_type": "indexed" se il prezzo dell'energia segue il PUN (PUN Index GME) più uno spread; "fixed" se è un prezzo fisso al kWh; "regulated" solo per il servizio di maggior tutela o di tutela della vulnerabilità, con i prezzi fissati da ARERA.
+- "time_bands" dice come cambia il prezzo dell'energia, non come è misurato il consumo: "mono" un solo prezzo (F0), "f1_f23" due prezzi (F1 e F23, cioè F2 più F3), "f1_f2_f3" tre prezzi. Se il PUN è applicato fascia per fascia è "f1_f2_f3", anche quando lo spread è uguale in tutte le fasce.
+- "index", solo per "indexed", altrimenti null. "name" è sempre "pun_index_gme". "period" è "monthly" con la media del mese, "bimonthly" o "quarterly" con la media di due o tre mesi. "coefficient" è 1.1 se il PUN è aumentato delle perdite di rete (λ = 10%), 1.0 se le perdite non sono fatturate. "loss_method" è "energy" se la bolletta fattura le perdite come kWh in più al prezzo del PUN (righe di perdite, o kWh fatturati più dei consumati), "price" se il PUN in bolletta è già moltiplicato per il coefficiente (più alto della media GME, o scritto come PUN × 1,1). Se non si capisce, "price" e una nota.
+- "energy_price": le chiavi seguono "time_bands": "f0" per "mono"; "f1" e "f23" per "f1_f23"; "f1", "f2" e "f3" per "f1_f2_f3". Per "indexed" è lo spread aggiunto al PUN, così come è stampato (0 se non c'è); per "fixed" il prezzo intero; null per "regulated".
+- "dispatching": "mode" è "cdispd" se il dispacciamento è un solo corrispettivo al kWh pari al CDispD (prezzo di dispacciamento) del mese; "regulated" se sono i corrispettivi di dispacciamento fissati da Terna e ARERA (TIDE, delibera 111/06), di solito fatturati sui kWh consumati più le perdite; "fixed" se è un valore fisso deciso dal venditore, da scrivere in "fixed_value" (null in tutti gli altri casi); "included" se il contratto dice che è compreso nel prezzo dell'energia; "tutela" con "regulated" e solo con quello. "capacity_market" è true solo se tra gli importi della bolletta c'è una riga per il mercato della capacità, con un suo prezzo e un suo importo, altrimenti false. Non bastano gli avvisi su aggiornamenti o delibere ARERA.
+- "disp_bt": false solo se il contratto esclude la componente DispBT; in tutti gli altri casi true, e se i documenti non la nominano mai scrivi una nota.
+- "fixed_fee_eur_year": la quota fissa del venditore (commercializzazione o vendita, nella spesa per la materia energia) in € all'anno, come la dichiara l'offerta (riquadro dell'offerta, scheda sintetica o condizioni economiche): se è mensile moltiplicala per 12. Non ricavarla dalla bolletta: il prezzo al mese della spesa per la vendita stampato in bolletta è una media del periodo che comprende anche altre componenti, e non coincide con la quota del venditore. Se hai solo la bolletta, usa quel prezzo al mese moltiplicato per 12 e scrivi una nota che va verificato sull'offerta. Non la quota fissa del trasporto, che è regolata. null se non c'è.
+- "energy_fee_eur_kwh": un corrispettivo del venditore al kWh su una riga a parte, oltre al prezzo dell'energia e allo spread; null se non c'è.
+- "green_energy": null, oppure {"eur_kwh": numero o null, "eur_year": numero o null, "optional": true o false} se c'è un'opzione di energia verde a pagamento.
+- "discounts": [] oppure l'elenco degli sconti, ognuno {"name": testo, "kind": "per_kwh", "per_year", "percent" o "one_off", "value": numero, "condition": testo o null, "valid_months": numero di mesi o null}.
+- "notes": un elenco di frasi brevi, [] se non ce ne sono.
+```
+<!-- ai-prompt:end -->
+
+Incolla la risposta in **Incolla il contratto (JSON)** e confrontala con la bolletta, a partire dalle `notes`, dove l'AI scrive che cosa ha supposto. La quota fissa è il valore che la bolletta dice peggio: il prezzo al mese della spesa per la vendita stampato in bolletta è una media del periodo, quindi con la sola bolletta la quota può risultare leggermente diversa, e le note lo dicono. Il prompt è stato provato su due delle bollette su cui è verificato il calcolo: con la prima ogni valore è risultato uguale alla bolletta; con la seconda ogni valore tranne la quota fissa, che quella bolletta non riporta.
 
 ### Valori di mercato
 

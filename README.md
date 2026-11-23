@@ -27,7 +27,7 @@ A [Home Assistant](https://www.home-assistant.io/) integration that tells you wh
 - **Not applied yet:** discounts, optional green energy, time-limited prices, consumption tiers, Peak/Off-Peak bands.
 - The **excise allowance** for residents up to 3 kW follows the law (first 150 kWh per month exempt, reduced above the threshold) but has not been checked against a detailed bill yet.
 - **The PUN can be downloaded from GME with your own account.** GME's official API is free but personal: each user registers and gets their own credentials, which must not be shared. Without an account you can take the PUN from any entity you already have, or type it in.
-- **Your contract can be found by the offer code on your bill**, among the offers published on the ARERA Portale Offerte. The Portale does not say everything a bill does: always check the result against your bill. See [Finding the contract by offer code](#finding-the-contract-by-offer-code).
+- **Your contract can be found by the offer code on your bill**, among the offers published on the ARERA Portale Offerte. The Portale does not say everything a bill does: always check the result against your bill. See [Finding the contract by offer code](#finding-the-contract-by-offer-code). If it is not there, an AI chat can write it from your bill: see [Writing the contract with an AI](#writing-the-contract-with-an-ai).
 - **Dispatching, capacity market and CDispD are downloaded for you**, with no account: Terna publishes the first two every quarter, ARERA the CDispD every month. See [Market values](#market-values).
 - Unofficial project, not affiliated with ARERA, GME, Acquirente Unico, Terna or any supplier.
 
@@ -66,7 +66,14 @@ The GME account is a device with ten sensors: the average PUN of F0 (single band
 
 ## Installation
 
-### Via HACS (recommended)
+### From the Marketplace (Home Assistant 2026.11 or later)
+
+Since Home Assistant 2026.11 HACS is built in, as the Marketplace.
+
+1. Select the **Open your Home Assistant instance** button above. Or open **Settings → Marketplace**, choose **Add from link** and paste `https://github.com/giorgioparri/electr-it-ha`
+2. On the page of **electrITHA** choose **Install**. If Home Assistant needs a restart, a repair says so.
+
+### With HACS (Home Assistant 2026.8 to 2026.10)
 
 1. In HACS open the menu, choose **Custom repositories**, add `https://github.com/giorgioparri/electr-it-ha` with type **Integration**
 2. Search for **electrITHA**, install, then restart Home Assistant
@@ -87,7 +94,7 @@ Requires Home Assistant 2026.8.0 or later.
 
 A supply takes three screens:
 
-1. **Supply contract** — look up the offer code printed on your bill (see [Finding the contract by offer code](#finding-the-contract-by-offer-code)), or paste the contract as JSON (see [The contract](#the-contract)). Either way you see the JSON before going on: it is validated at once and every problem is listed.
+1. **Supply contract** — look up the offer code printed on your bill (see [Finding the contract by offer code](#finding-the-contract-by-offer-code)), or paste the contract as JSON (see [The contract](#the-contract), and [Writing the contract with an AI](#writing-the-contract-with-an-ai) to get it from your bill). Either way you see the JSON before going on: it is validated at once and every problem is listed.
 2. **Supply and meters** — whether you are a resident, the committed power in kW, and one or more cumulative energy sensors that measure what you draw from the grid (kWh, Wh or MWh).
 3. **Market values** — only the ones your contract is priced with. For each, choose an entity or type a fixed number in €/kWh. An entity may report €/kWh or €/MWh. The PUN sensors of the GME account, if you added it, are already filled in. Dispatching, capacity market and CDispD can be left empty: the published values are used. This screen is skipped when the contract needs none.
 
@@ -120,7 +127,7 @@ The offers come from the open data of the Portale, which publishes every offer o
 - **Unsupported offers** — FLAT, mixed fixed and variable, all-inclusive, indexed to something other than the PUN, or to a sum of indices — give no contract: paste it as JSON instead.
 - Prices per kWh and fees per year are summed whatever the Portale files them under, and the `notes` of the contract list the components they come from. Data the supplier sent wrong is passed on as it is.
 
-If the code is not found, the Portale never published that offer, or it left before the archive starts: paste the contract as JSON.
+If the code is not found, the Portale never published that offer, or it left before the archive starts: paste the contract as JSON, or have an AI write it (see [Writing the contract with an AI](#writing-the-contract-with-an-ai)).
 
 ### The contract
 
@@ -162,6 +169,53 @@ The contract holds only what the supplier decides. Everything regulated comes fr
 | `discounts`, `notes` | Stored and shown; discounts are not applied yet |
 
 The model follows the layout that suppliers use to publish their offers on the ARERA Portale Offerte, so any offer on sale can be described with it.
+
+### Writing the contract with an AI
+
+When the offer code is not found, an AI chat (Claude, ChatGPT, Gemini and the like) can write the contract from your documents. In a new chat attach your latest bill and, if you have them, the contract or the scheda sintetica of the offer **in the version you signed**: the one on the supplier's website today may carry other prices. Then paste the prompt below. A bill carries your name, address and POD, which the AI does not need: you can black them out first.
+
+<!-- ai-prompt:start -->
+```text
+Read the documents of the electricity supply I attach (a bill, and if available the contract or the scheda sintetica of the offer) and fill in the contract below for the electrITHA integration of Home Assistant. Answer with the JSON only, no comments.
+
+{
+  "schema_version": 1,
+  "supplier": "Supplier name",
+  "offer_name": "Offer name",
+  "offer_code": null,
+  "price_type": "indexed",
+  "time_bands": "f1_f2_f3",
+  "index": {"name": "pun_index_gme", "period": "monthly", "coefficient": 1.1, "loss_method": "price"},
+  "energy_price": {"f1": 0.015, "f2": 0.015, "f3": 0.015},
+  "dispatching": {"mode": "cdispd", "fixed_value": null, "capacity_market": false},
+  "disp_bt": true,
+  "fixed_fee_eur_year": 120,
+  "energy_fee_eur_kwh": null,
+  "green_energy": null,
+  "discounts": [],
+  "notes": []
+}
+
+Rules:
+- Use only what the documents say. If something is missing, do not make it up: use the default given below and write in "notes" what you assumed. Write any doubt in "notes" too.
+- Prices in €/kWh, VAT excluded, numbers with a decimal point: divide €/MWh by 1000 and c€/kWh by 100.
+- Report only what the supplier decides. Leave out everything regulated: the PUN, transport and meter, system charges (ASOS, ARIM), excise, VAT, the dispatching and capacity market values.
+- "supplier": the supplier's name. "offer_name" and "offer_code": as printed, null if missing. The offer code has 32 letters and digits, in the box that describes the offer.
+- "price_type": "indexed" if the energy price follows the PUN (PUN Index GME) plus a spread; "fixed" if it is a fixed price per kWh; "regulated" only for the servizio di maggior tutela or di tutela della vulnerabilità, with prices set by ARERA.
+- "time_bands" says how the energy price changes, not how consumption is metered: "mono" one price (F0), "f1_f23" two prices (F1 and F23, that is F2 plus F3), "f1_f2_f3" three prices. If the PUN is applied band by band it is "f1_f2_f3", even when the spread is the same in every band.
+- "index", only for "indexed", otherwise null. "name" is always "pun_index_gme". "period" is "monthly" with the average of the month, "bimonthly" or "quarterly" with the average of two or three months. "coefficient" is 1.1 if the PUN is increased by network losses (λ = 10%), 1.0 if losses are not billed. "loss_method" is "energy" if the bill charges losses as extra kWh at the PUN price (loss lines, or more kWh billed than consumed), "price" if the PUN on the bill is already multiplied by the coefficient (higher than the GME average, or written as PUN × 1.1). If you cannot tell, "price" and a note.
+- "energy_price": the keys follow "time_bands": "f0" for "mono"; "f1" and "f23" for "f1_f23"; "f1", "f2" and "f3" for "f1_f2_f3". For "indexed" it is the spread added to the PUN, as printed (0 if there is none); for "fixed" the whole price; null for "regulated".
+- "dispatching": "mode" is "cdispd" if dispatching is a single charge per kWh equal to the month's CDispD (prezzo di dispacciamento); "regulated" if it is the dispatching charges set by Terna and ARERA (TIDE, delibera 111/06), usually billed on the kWh consumed plus losses; "fixed" if it is a fixed value set by the supplier, written in "fixed_value" (null in every other case); "included" if the contract says it is included in the energy price; "tutela" with "regulated" and only with it. "capacity_market" is true only if the amounts on the bill include a line for the capacity market (mercato della capacità), with its own price and amount, otherwise false. Notices about ARERA updates or resolutions are not enough.
+- "disp_bt": false only if the contract excludes the DispBT component; true in every other case, and if the documents never mention it write a note.
+- "fixed_fee_eur_year": the supplier's fixed fee (commercializzazione or vendita, in the spesa per la materia energia) in € per year, as the offer states it (offer box, scheda sintetica or economic conditions): if it is monthly multiply it by 12. Do not work it out from the bill: the monthly price of the spesa per la vendita printed on the bill is an average over the period that includes other components too, and is not the supplier's fee. If you only have the bill, use that monthly price multiplied by 12 and write a note that it must be checked against the offer. Not the fixed fee of transport, which is regulated. null if there is none.
+- "energy_fee_eur_kwh": a supplier charge per kWh on a separate line, on top of the energy price and the spread; null if there is none.
+- "green_energy": null, or {"eur_kwh": number or null, "eur_year": number or null, "optional": true or false} if there is a paid green energy option.
+- "discounts": [] or the list of discounts, each {"name": text, "kind": "per_kwh", "per_year", "percent" or "one_off", "value": number, "condition": text or null, "valid_months": number of months or null}.
+- "notes": a list of short sentences, [] if there are none.
+```
+<!-- ai-prompt:end -->
+
+Paste the answer in **Paste the contract (JSON)** and check it against your bill, starting from the `notes`, where the AI writes what it assumed. The fixed fee is the value a bill tells least well: the monthly price of the spesa per la vendita printed on it is an average of the period, so with the bill alone the fee can be slightly off, and the notes say so. The prompt was tried on two of the bills the calculator is tested against: on the first every value came out as on the bill; on the second every value but the fixed fee, which that bill does not print.
 
 ### Market values
 

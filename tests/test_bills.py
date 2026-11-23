@@ -35,33 +35,70 @@ def check(
         _failures.append(f"{case}: {what}")
 
 
+# The contracts of the bills below, as dicts: tests/test_prompt.py compares
+# the contracts an AI writes from the same bills against these.
+AJO_CONTRACT = {
+    "schema_version": 1,
+    "supplier": "Ajo Energia",
+    "offer_name": "AJO_WEB_FASCE_0123",
+    "price_type": "indexed",
+    "time_bands": "f1_f2_f3",
+    "index": {
+        "name": "pun_index_gme",
+        "period": "monthly",
+        "coefficient": D("1.10"),
+    },
+    "energy_price": {"f1": 0, "f2": 0, "f3": 0},
+    "dispatching": {
+        "mode": "regulated",
+        "fixed_value": None,
+        "capacity_market": True,
+    },
+    "disp_bt": True,
+    "fixed_fee_eur_year": 144,
+}
+
+ENEL_CONTRACT = {
+    "schema_version": 1,
+    "supplier": "Enel Energia",
+    "offer_name": "Enel Flex",
+    "price_type": "indexed",
+    "time_bands": "f1_f2_f3",
+    "index": {
+        "name": "pun_index_gme",
+        "period": "monthly",
+        "coefficient": D("1.10"),
+        "loss_method": "price",
+    },
+    "energy_price": {"f1": D("0.0286"), "f2": D("0.0286"), "f3": D("0.011")},
+    "dispatching": {
+        "mode": "cdispd",
+        "fixed_value": None,
+        "capacity_market": False,
+    },
+    "disp_bt": True,
+    "fixed_fee_eur_year": 144,
+}
+
+SEN_CONTRACT = {
+    "schema_version": 1,
+    "supplier": "Servizio Elettrico Nazionale",
+    "price_type": "regulated",
+    "time_bands": "f1_f23",
+    "dispatching": {
+        "mode": "tutela",
+        "fixed_value": None,
+        "capacity_market": False,
+    },
+}
+
+
 def ajo_september_2026() -> Bill:
     """Ajo Energia: PUN Index GME by band, 10% losses, zero spread, 6 kW, resident.
 
     Losses are billed as extra kWh, rounded to the kWh in each band: the default.
     """
-    contract = Contract.from_dict(
-        {
-            "schema_version": 1,
-            "supplier": "Ajo Energia",
-            "offer_name": "AJO_WEB_FASCE_0123",
-            "price_type": "indexed",
-            "time_bands": "f1_f2_f3",
-            "index": {
-                "name": "pun_index_gme",
-                "period": "monthly",
-                "coefficient": D("1.10"),
-            },
-            "energy_price": {"f1": 0, "f2": 0, "f3": 0},
-            "dispatching": {
-                "mode": "regulated",
-                "fixed_value": None,
-                "capacity_market": True,
-            },
-            "disp_bt": True,
-            "fixed_fee_eur_year": 144,
-        }
-    )
+    contract = Contract.from_dict(AJO_CONTRACT)
     september = Period(
         start=date(2026, 9, 1),
         end=date(2026, 9, 30),
@@ -93,29 +130,7 @@ def enel_june_july_2026() -> Bill:
     multiplied by 1.10 for losses (0.138340 for June F1): Enel bills losses in
     the price, not as extra kWh.
     """
-    contract = Contract.from_dict(
-        {
-            "schema_version": 1,
-            "supplier": "Enel Energia",
-            "offer_name": "Enel Flex",
-            "price_type": "indexed",
-            "time_bands": "f1_f2_f3",
-            "index": {
-                "name": "pun_index_gme",
-                "period": "monthly",
-                "coefficient": D("1.10"),
-                "loss_method": "price",
-            },
-            "energy_price": {"f1": D("0.0286"), "f2": D("0.0286"), "f3": D("0.011")},
-            "dispatching": {
-                "mode": "cdispd",
-                "fixed_value": None,
-                "capacity_market": False,
-            },
-            "disp_bt": True,
-            "fixed_fee_eur_year": 144,
-        }
-    )
+    contract = Contract.from_dict(ENEL_CONTRACT)
     june = Period(
         start=date(2026, 6, 1),
         end=date(2026, 6, 30),
@@ -152,19 +167,7 @@ def test_enel() -> None:
 
 def sen_july_september_2026() -> Bill:
     """Servizio Elettrico Nazionale, regulated service, two bands, 3 kW, resident."""
-    contract = Contract.from_dict(
-        {
-            "schema_version": 1,
-            "supplier": "Servizio Elettrico Nazionale",
-            "price_type": "regulated",
-            "time_bands": "f1_f23",
-            "dispatching": {
-                "mode": "tutela",
-                "fixed_value": None,
-                "capacity_market": False,
-            },
-        }
-    )
+    contract = Contract.from_dict(SEN_CONTRACT)
     period = Period(
         start=date(2026, 7, 6), end=date(2026, 9, 5), kwh={"f1": 94, "f23": 184}
     )

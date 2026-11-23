@@ -33,7 +33,7 @@
       },
       "contract": {
         "title": "Contratto di fornitura",
-        "description": "Incolla il contratto in formato JSON. Contiene solo ciò che decide il venditore: prezzi, quote fisse, come viene fatturato il dispacciamento. Il README spiega il formato e come ricavarlo da una bolletta.\n\n{details}",
+        "description": "Incolla il contratto in formato JSON. Contiene solo ciò che decide il venditore: prezzi, quote fisse, come viene fatturato il dispacciamento. Il README spiega il formato e ha un prompt per farlo scrivere a un'AI a partire dalla bolletta.\n\n{details}",
         "data": {
           "contract_json": "Contratto (JSON)"
         }
@@ -98,7 +98,7 @@
       "invalid_auth": "Il GME ha rifiutato queste credenziali.",
       "cannot_connect": "Le API del GME non rispondono. Riprova più tardi.",
       "offers_unavailable": "Non riesco a scaricare le offerte del Portale Offerte. Riprova più tardi, oppure chiudi questa finestra, ricomincia e scegli di incollare il contratto in JSON.",
-      "offer_not_found": "Nessuna offerta con questo codice. Controllalo sulla bolletta; se è giusto, il Portale non ha pubblicato quell'offerta: chiudi questa finestra, ricomincia e scegli di incollare il contratto in JSON.",
+      "offer_not_found": "Nessuna offerta con questo codice. Controllalo sulla bolletta; se è giusto, il Portale non ha pubblicato quell'offerta: chiudi questa finestra, ricomincia e scegli di incollare il contratto in JSON. Il README ha un prompt per farlo scrivere a un'AI a partire dalla bolletta.",
       "offer_unsupported": "Questa offerta non si può convertire in un contratto, per i motivi elencati sopra: chiudi questa finestra, ricomincia e scegli di incollare il contratto in JSON."
     },
     "abort": {

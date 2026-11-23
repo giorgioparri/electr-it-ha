@@ -29,6 +29,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - A workflow of the repository converts the daily file of the Portale into the `offers/` folder on the `market-data` branch, keeping the offers that leave the Portale, back to 1 January 2022. The folder is split into 256 files by the hash of the offer code: a lookup downloads only the file that can hold the code typed, a few hundred KB, so it is quick and light on memory even on a small Raspberry Pi.
 - A few offers were republished with only the letter case of their code changed: the lookup picks the code exactly as typed, otherwise the one still on sale, otherwise the one seen last.
 - If you installed v0.1.0-beta.6, update: it downloads the whole archive as one `offers.json` (over 70 MB, several hundred MB of memory while you set up a supply), which is no longer updated since v0.1.0-beta.7 and will be removed with this release.
+- If the offer code is not found, the README has a prompt for an AI chat that writes the contract from your bill and, if you have them, the offer documents: paste its answer in the contract screen and check it against the bill, starting from the notes the AI writes.
+- The README explains how to install from the Marketplace built into Home Assistant 2026.11, and with HACS on Home Assistant 2026.8 to 2026.10.
 - English and Italian.
 
 [Unreleased]: https://github.com/giorgioparri/electr-it-ha/compare/v0.1.0...HEAD
