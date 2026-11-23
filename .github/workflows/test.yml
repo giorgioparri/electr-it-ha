@@ -47,6 +47,10 @@ jobs:
         run: python tests/test_offers.py
       - name: Run offer lookup tests
         run: python tests/test_catalogue.py
+      # The AI prompt in both READMEs must hold a valid contract model that
+      # names every field and value of the schema.
+      - name: Run AI prompt tests
+        run: python tests/test_prompt.py
       # The updater reads PDFs with pypdf only in the scheduled workflow: its
       # tests build every document as text and need nothing installed either.
       - name: Run market value updater tests
