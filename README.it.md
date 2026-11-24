@@ -6,7 +6,7 @@
 
 # electrITHA — Integrazione personalizzata per Home Assistant
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
 [![GitHub Release](https://img.shields.io/github/release/giorgioparri/electr-it-ha.svg)](https://github.com/giorgioparri/electr-it-ha/releases)
 [![Validate](https://github.com/giorgioparri/electr-it-ha/actions/workflows/validate.yml/badge.svg)](https://github.com/giorgioparri/electr-it-ha/actions/workflows/validate.yml)
 [![License](https://img.shields.io/github/license/giorgioparri/electr-it-ha)](https://github.com/giorgioparri/electr-it-ha/blob/HEAD/LICENSE)
@@ -70,13 +70,15 @@ L'account GME è un dispositivo con dieci sensori: il PUN medio di F0 (monorario
 
 Da Home Assistant 2026.11 HACS è integrato, come Marketplace.
 
-1. Premi il pulsante **Apri la tua istanza di Home Assistant** qui sopra. Oppure apri **Impostazioni → Marketplace**, scegli **Aggiungi da link** e incolla `https://github.com/giorgioparri/electr-it-ha`
-2. Nella pagina di **electrITHA** scegli **Installa**. Se Home Assistant deve essere riavviato, lo dice una riparazione.
+1. Apri **Impostazioni → Marketplace**, cerca **electrITHA** e apri la sua pagina, oppure premi il pulsante **Apri la tua istanza di Home Assistant** qui sopra
+2. Scegli **Installa**. Se Home Assistant deve essere riavviato, lo dice una riparazione.
 
 ### Con HACS (Home Assistant da 2026.8 a 2026.10)
 
-1. In HACS apri il menu, scegli **Repository personalizzati**, aggiungi `https://github.com/giorgioparri/electr-it-ha` con tipo **Integrazione**
-2. Cerca **electrITHA**, installa, poi riavvia Home Assistant
+1. In HACS cerca **electrITHA** e scaricalo
+2. Riavvia Home Assistant
+
+Se la ricerca non lo trova, aggiungi il repository a mano: nel Marketplace scegli **Aggiungi da link** e incolla `https://github.com/giorgioparri/electr-it-ha`; in HACS apri il menu, scegli **Repository personalizzati** e aggiungi lo stesso indirizzo con tipo **Integrazione**.
 
 ### Manuale
 
