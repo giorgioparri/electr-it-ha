@@ -6,7 +6,7 @@
 
 # electrITHA — Home Assistant Custom Integration
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
 [![GitHub Release](https://img.shields.io/github/release/giorgioparri/electr-it-ha.svg)](https://github.com/giorgioparri/electr-it-ha/releases)
 [![Validate](https://github.com/giorgioparri/electr-it-ha/actions/workflows/validate.yml/badge.svg)](https://github.com/giorgioparri/electr-it-ha/actions/workflows/validate.yml)
 [![License](https://img.shields.io/github/license/giorgioparri/electr-it-ha)](https://github.com/giorgioparri/electr-it-ha/blob/HEAD/LICENSE)
@@ -70,13 +70,15 @@ The GME account is a device with ten sensors: the average PUN of F0 (single band
 
 Since Home Assistant 2026.11 HACS is built in, as the Marketplace.
 
-1. Select the **Open your Home Assistant instance** button above. Or open **Settings → Marketplace**, choose **Add from link** and paste `https://github.com/giorgioparri/electr-it-ha`
-2. On the page of **electrITHA** choose **Install**. If Home Assistant needs a restart, a repair says so.
+1. Open **Settings → Marketplace**, search for **electrITHA** and open its page, or select the **Open your Home Assistant instance** button above
+2. Choose **Install**. If Home Assistant needs a restart, a repair says so.
 
 ### With HACS (Home Assistant 2026.8 to 2026.10)
 
-1. In HACS open the menu, choose **Custom repositories**, add `https://github.com/giorgioparri/electr-it-ha` with type **Integration**
-2. Search for **electrITHA**, install, then restart Home Assistant
+1. In HACS search for **electrITHA** and download it
+2. Restart Home Assistant
+
+If the search does not find it, add the repository by hand: in the Marketplace choose **Add from link** and paste `https://github.com/giorgioparri/electr-it-ha`; in HACS open the menu, choose **Custom repositories** and add the same address with type **Integration**.
 
 ### Manual
 

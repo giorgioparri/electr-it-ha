@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- electrITHA is now in the default catalog of the Marketplace and of HACS: search for it by name, no need to add the repository by link any more. If you added it by link, nothing changes for you.
+
 ## [0.1.0] - 2026-11-24
 
 ### Added
