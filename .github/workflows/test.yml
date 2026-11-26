@@ -10,21 +10,17 @@ permissions:
 
 jobs:
   test:
-    name: Run test suite (Python ${{ matrix.python-version }})
+    name: Run test suite
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # 3.13 is the version the conventions target; 3.14 is the one Home
-        # Assistant 2026.8, the minimum in hacs.json, runs on.
-        python-version: ["3.13", "3.14"]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
-          python-version: ${{ matrix.python-version }}
+          # 3.14, the version Home Assistant 2026.3 and later run on
+          # (hacs.json requires 2026.8).
+          python-version-file: .python-version
       # The engine is pure Python: the tests need nothing installed, not even
       # Home Assistant.
       - name: Run bill tests
