@@ -69,7 +69,7 @@ class CatalogueOffer:
         """True while the offer is on the Portale."""
         return self.last_seen is None
 
-    def seen_until(self, catalogue: "Catalogue") -> date:
+    def seen_until(self, catalogue: Catalogue) -> date:
         """The last day the offer was on the Portale, as far as the file knows."""
         return catalogue.updated if self.last_seen is None else self.last_seen
 

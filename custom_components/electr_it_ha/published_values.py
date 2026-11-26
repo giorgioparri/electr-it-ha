@@ -44,11 +44,11 @@ from .engine.published import Published, PublishedDataError, PublishedValue, new
 
 _LOGGER = logging.getLogger(__name__)
 
-_KEY: HassKey["PublishedValues"] = HassKey(f"{DOMAIN}_published")
+_KEY: HassKey[PublishedValues] = HassKey(f"{DOMAIN}_published")
 _LOCK: HassKey[asyncio.Lock] = HassKey(f"{DOMAIN}_published_lock")
 
 
-async def async_get_published(hass: HomeAssistant) -> "PublishedValues":
+async def async_get_published(hass: HomeAssistant) -> PublishedValues:
     """Return the shared published values, setting them up on first use."""
     lock = hass.data.setdefault(_LOCK, asyncio.Lock())
     async with lock:
