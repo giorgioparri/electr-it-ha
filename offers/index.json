@@ -1,12 +1,12 @@
 {
   "schema_version": 2,
   "source": "Portale Offerte (ARERA / Acquirente Unico), open data",
-  "updated": "2026-11-26",
-  "file": "PO_Offerte_E_MLIBERO_20261126.xml",
+  "updated": "2026-11-27",
+  "file": "PO_Offerte_E_MLIBERO_20261127.xml",
   "shards": {
     "hash": "sha256",
     "digits": 2
   },
-  "offers": 40464,
-  "on_sale": 1852
+  "offers": 40534,
+  "on_sale": 1832
 }
