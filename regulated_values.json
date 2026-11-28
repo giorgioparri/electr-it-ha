@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "updated": "2026-11-28",
+  "attribution": "Parameters published by the Portale Offerte of ARERA (Autorità di Regolazione per Energia Reti e Ambiente) in its open data. Collected by electrITHA.",
+  "values": {
+    "arim_eur_kwh": [
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "value": "0.001638",
+        "first_seen": "2026-11-28",
+        "source": "PO_Parametri_Mercato_Libero_E_20261128.csv"
+      }
+    ],
+    "asos_eur_kwh": [
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "value": "0.031515",
+        "first_seen": "2026-11-28",
+        "source": "PO_Parametri_Mercato_Libero_E_20261128.csv"
+      }
+    ],
+    "asos_non_resident_eur_pod_year": [
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "value": "95.0916",
+        "first_seen": "2026-11-28",
+        "source": "PO_Parametri_Mercato_Libero_E_20261128.csv"
+      }
+    ],
+    "disp_bt_eur_pod_year": [
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "value": "1.107",
+        "first_seen": "2026-11-28",
+        "source": "PO_Parametri_Mercato_Libero_E_20261128.csv"
+      }
+    ],
+    "excise_eur_kwh": [
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "value": "0.0227",
+        "first_seen": "2026-11-28",
+        "source": "PO_Parametri_Mercato_Libero_E_20261128.csv"
+      }
+    ],
+    "network_energy_eur_kwh": [
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "value": "0.0119",
+        "first_seen": "2026-11-28",
+        "source": "PO_Parametri_Mercato_Libero_E_20261128.csv"
+      }
+    ],
+    "network_fixed_eur_pod_year": [
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "value": "23.04",
+        "first_seen": "2026-11-28",
+        "source": "PO_Parametri_Mercato_Libero_E_20261128.csv"
+      }
+    ],
+    "network_power_eur_kw_year": [
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "value": "23.52",
+        "first_seen": "2026-11-28",
+        "source": "PO_Parametri_Mercato_Libero_E_20261128.csv"
+      }
+    ],
+    "tutela_pcv_eur_pod_year": [
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "value": "41.18",
+        "first_seen": "2026-11-28",
+        "source": "PO_Parametri_Mercato_Libero_E_20261128.csv"
+      }
+    ],
+    "uc3_eur_kwh": [
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "value": "0.00276",
+        "first_seen": "2026-11-28",
+        "source": "PO_Parametri_Mercato_Libero_E_20261128.csv"
+      }
+    ],
+    "uc6_eur_kwh": [
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "value": "0.00007",
+        "first_seen": "2026-11-28",
+        "source": "PO_Parametri_Mercato_Libero_E_20261128.csv"
+      }
+    ],
+    "uc6_power_eur_kw_year": [
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "value": "0.1988",
+        "first_seen": "2026-11-28",
+        "source": "PO_Parametri_Mercato_Libero_E_20261128.csv"
+      }
+    ],
+    "vat_rate": [
+      {
+        "from": "2026-10-01",
+        "to": "2026-12-31",
+        "value": "0.1",
+        "first_seen": "2026-11-28",
+        "source": "PO_Parametri_Mercato_Libero_E_20261128.csv"
+      }
+    ]
+  }
+}
