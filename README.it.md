@@ -254,6 +254,8 @@ In **Impostazioni → Plance → Energia**, sulla fonte di consumo dalla rete sc
 
 Il calcolatore ricostruisce una bolletta: ogni componente è una riga, ogni riga è arrotondata al centesimo, l'IVA è calcolata riga per riga. Le componenti regolate per kWh sono fatturate in un'unica riga finché la tariffa non cambia; le quote fisse e di potenza a mese; le accise mese per mese, solo sui kWh misurati.
 
+I valori regolati — trasporto e gestione del contatore, oneri di sistema, prezzi del servizio di tutela, accise e IVA — vengono da una tabella interna all'integrazione, un valore per trimestre. Un workflow di questo repository legge inoltre, due volte al giorno, il file dei parametri che il Portale Offerte pubblica per la spesa annua stimata delle offerte, e tiene i valori regolati che contiene in `regulated_values.json` sul branch [`market-data`](https://github.com/giorgioparri/electr-it-ha/tree/market-data), un valore per trimestre. Ogni file originale con un contenuto diverso dal precedente è conservato nella cartella `portale-parameters/` dello stesso branch, perché l'archivio del Portale ha dei buchi.
+
 È verificato su bollette vere:
 
 | Bolletta | Risultato |
@@ -278,7 +280,7 @@ GPL-3.0-or-later — vedi [LICENSE](https://github.com/giorgioparri/electr-it-ha
 
 ## Avvertenza
 
-Questa è un'integrazione non ufficiale. I valori che mostra sono stime, utili a capire i propri consumi: l'unico importo dovuto è quello della bolletta del venditore. I valori regolati sono trascritti dalle pubblicazioni di ARERA; i corrispettivi approvati dall'Autorità risultano esclusivamente dai suoi provvedimenti. Dati del PUN scaricati con un account GME: fonte Gestore dei Mercati Energetici S.p.A. Dispacciamento, capacity market e CDispD: valori pubblicati da Terna S.p.A. e da ARERA, questi ultimi riutilizzati con licenza [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.it); `market_values.json`, che li raccoglie, è distribuito con la stessa licenza. Offerte: open data del Portale Offerte (ARERA, Acquirente Unico), resi disponibili in formato aperto ai sensi del D.lgs. 33/2013 e riutilizzati citando la fonte; la cartella `offers/` le contiene come convertite da electrITHA, che può differire da quanto fatturano i venditori.
+Questa è un'integrazione non ufficiale. I valori che mostra sono stime, utili a capire i propri consumi: l'unico importo dovuto è quello della bolletta del venditore. I valori regolati sono trascritti dalle pubblicazioni di ARERA; i corrispettivi approvati dall'Autorità risultano esclusivamente dai suoi provvedimenti. Dati del PUN scaricati con un account GME: fonte Gestore dei Mercati Energetici S.p.A. Dispacciamento, capacity market e CDispD: valori pubblicati da Terna S.p.A. e da ARERA, questi ultimi riutilizzati con licenza [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.it); `market_values.json`, che li raccoglie, è distribuito con la stessa licenza. Offerte: open data del Portale Offerte (ARERA, Acquirente Unico), resi disponibili in formato aperto ai sensi del D.lgs. 33/2013 e riutilizzati citando la fonte; la cartella `offers/` le contiene come convertite da electrITHA, che può differire da quanto fatturano i venditori. Valori regolati in `regulated_values.json` e file in `portale-parameters/`: open data del Portale Offerte, alle stesse condizioni.
 
 ## Ringraziamenti
 
