@@ -47,7 +47,7 @@
           "meters": "Contatori di prelievo dalla rete"
         },
         "data_description": {
-          "resident": "Decide la franchigia delle accise e la quota fissa degli oneri di sistema.",
+          "resident": "Decide la franchigia delle accise (residenti fino a 3 kW) e la quota fissa degli oneri di sistema (non residenti). È un dato della fornitura, scritto in bolletta, non dell'offerta.",
           "power_kw": "La potenza impegnata del contratto, in kW.",
           "meters": "Uno o più sensori di energia cumulativi che misurano il prelievo dalla rete. I loro incrementi vengono sommati."
         }
@@ -99,7 +99,9 @@
       "cannot_connect": "Le API del GME non rispondono. Riprova più tardi.",
       "offers_unavailable": "Non riesco a scaricare le offerte del Portale Offerte. Riprova più tardi, oppure chiudi questa finestra, ricomincia e scegli di incollare il contratto in JSON.",
       "offer_not_found": "Nessuna offerta con questo codice. Controllalo sulla bolletta; se è giusto, il Portale non ha pubblicato quell'offerta: chiudi questa finestra, ricomincia e scegli di incollare il contratto in JSON. Il README ha un prompt per farlo scrivere a un'AI a partire dalla bolletta.",
-      "offer_unsupported": "Questa offerta non si può convertire in un contratto, per i motivi elencati sopra: chiudi questa finestra, ricomincia e scegli di incollare il contratto in JSON."
+      "offer_unsupported": "Questa offerta non si può convertire in un contratto, per i motivi elencati sopra: chiudi questa finestra, ricomincia e scegli di incollare il contratto in JSON.",
+      "offer_residents_only": "Sul Portale Offerte questa offerta è riservata ai residenti, e questa fornitura non è da residente. Controlla la bolletta: se è giusto così, invia di nuovo per proseguire.",
+      "offer_non_residents_only": "Sul Portale Offerte questa offerta è riservata ai non residenti, e questa fornitura è da residente. Controlla la bolletta: se è giusto così, invia di nuovo per proseguire."
     },
     "abort": {
       "reconfigure_successful": "Configurazione aggiornata.",
