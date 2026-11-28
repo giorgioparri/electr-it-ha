@@ -1,0 +1,162 @@
+name: Portale parameters
+
+# Twice a day, read the parameters file of the Portale Offerte and keep
+# regulated_values.json up to date on the market-data branch, next to
+# market_values.json and offers/. The raw file is kept in
+# portale-parameters/ whenever its content changes, since the Portale's own
+# archive has gaps. The integration downloads regulated_values.json and falls
+# back to its built-in table.
+#
+# The Portale may publish the file of a day late in the day: the morning run
+# reads the day before, the evening run the day itself. A run that finds
+# nothing new writes nothing.
+#
+# When no file can be read, or a file does not fit the contract model, an
+# issue is opened (one at a time); the same happens, after the file is
+# written, when the values of the running quarter look missing or not
+# updated yet. The issue is closed by the first run that finds everything
+# fine.
+
+on:
+  schedule:
+    - cron: "53 6 * * *"
+    - cron: "53 17 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+# The offers and market values workflows write other files on the same
+# branch: a push that loses the race is rebased and retried below.
+concurrency:
+  group: portale-parameters
+  cancel-in-progress: false
+
+env:
+  DATA_BRANCH: market-data
+  ISSUE_TITLE: "Portale parameters: the automatic update needs attention"
+
+jobs:
+  update:
+    # The Portale refuses GitHub's hosted runners (HTTP 403 from their data
+    # centre addresses): the job runs on the self-hosted runner labelled
+    # "portale", like the offers. It starts only from the schedule and by
+    # hand, never from a pull request, so code from a fork never reaches
+    # that machine.
+    runs-on: [self-hosted, linux, portale]
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: .python-version
+
+      # The data branch is checked out next to the code, with its history so
+      # that a rebase is possible. The runner keeps its workspace between
+      # runs: a worktree left behind by a run that stopped half way is pruned
+      # first, and the branch is checked out detached.
+      - name: Check out the data branch
+        run: |
+          git worktree remove --force data 2>/dev/null || true
+          git worktree prune
+          git branch -D "$DATA_BRANCH" 2>/dev/null || true
+          git fetch origin "$DATA_BRANCH"
+          git worktree add --detach data "origin/$DATA_BRANCH"
+
+      - name: Update the values
+        id: update
+        run: |
+          set +e
+          python tools/update_portale_parameters.py \
+            --output data/regulated_values.json \
+            --archive data/portale-parameters \
+            > changes.txt 2> errors.txt
+          status=$?
+          set -e
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          cat changes.txt errors.txt
+          {
+            echo "### Portale parameters"
+            echo '```'
+            cat changes.txt errors.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Status 3 means the file was written but the running quarter needs a
+      # look: what was read is still worth publishing.
+      - name: Publish on the data branch
+        if: steps.update.outputs.status == '0' || steps.update.outputs.status == '3'
+        working-directory: data
+        run: |
+          git add regulated_values.json portale-parameters
+          if git diff --cached --quiet; then
+            echo "Nothing to publish."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          { echo "Update regulated values"; echo; cat ../changes.txt; } > ../message.txt
+          git commit -q -F ../message.txt
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:refs/heads/$DATA_BRANCH"; then
+              exit 0
+            fi
+            echo "Push refused, rebasing on the branch (attempt $attempt)."
+            git fetch origin "$DATA_BRANCH"
+            git rebase "origin/$DATA_BRANCH"
+          done
+          exit 1
+
+      - name: Open an issue
+        if: steps.update.outputs.status != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          open=$(gh issue list --state open --search "in:title \"$ISSUE_TITLE\"" \
+            --json number,title --jq "map(select(.title == env.ISSUE_TITLE)) | .[0].number // empty")
+          if [ -n "$open" ]; then
+            echo "Issue #$open is already open."
+            exit 0
+          fi
+          {
+            echo "The update of \`regulated_values.json\` on the \`$DATA_BRANCH\` branch reported:"
+            echo
+            echo '```'
+            cat errors.txt
+            echo '```'
+            echo
+            echo "Run: $RUN_URL"
+            echo
+            echo "Exit status 1: nothing was written; 3: the file was written, but the values of the running quarter look missing or not updated yet."
+          } > body.md
+          gh issue create --title "$ISSUE_TITLE" --body-file body.md
+
+      - name: Close the issue
+        if: steps.update.outputs.status == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue list --state open --search "in:title \"$ISSUE_TITLE\"" \
+            --json number,title --jq "map(select(.title == env.ISSUE_TITLE)) | .[].number" |
+          while read -r number; do
+            gh issue close "$number" --comment "Fixed: the update runs cleanly again."
+          done
+
+      # A file that cannot be read is a failure worth seeing in Actions too;
+      # a quarter to check is only an issue, the run itself went fine.
+      - name: Fail when nothing was read
+        if: steps.update.outputs.status == '1'
+        run: exit 1
+
+      # Leave the runner's workspace as the next checkout expects it.
+      - name: Remove the data worktree
+        if: always()
+        run: |
+          git worktree remove --force data 2>/dev/null || true
+          git worktree prune
+          git branch -D "$DATA_BRANCH" 2>/dev/null || true

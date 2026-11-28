@@ -39,6 +39,8 @@ jobs:
         run: python tests/test_gme.py
       - name: Run published value tests
         run: python tests/test_published.py
+      - name: Run published rate tests
+        run: python tests/test_published_rates.py
       - name: Run Portale Offerte tests
         run: python tests/test_offers.py
       - name: Run offer lookup tests
@@ -55,3 +57,7 @@ jobs:
       # built from the real offers in tests/fixtures.
       - name: Run offers updater tests
         run: python tests/test_update_offers.py
+      # The parameters updater is tested against a fake download, on the
+      # real parameters file of the Portale in tests/fixtures.
+      - name: Run Portale parameters updater tests
+        run: python tests/test_update_portale_parameters.py
