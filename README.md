@@ -97,7 +97,7 @@ Requires Home Assistant 2026.8.0 or later.
 A supply takes three screens:
 
 1. **Supply contract** — look up the offer code printed on your bill (see [Finding the contract by offer code](#finding-the-contract-by-offer-code)), or paste the contract as JSON (see [The contract](#the-contract), and [Writing the contract with an AI](#writing-the-contract-with-an-ai) to get it from your bill). Either way you see the JSON before going on: it is validated at once and every problem is listed.
-2. **Supply and meters** — whether you are a resident, the committed power in kW, and one or more cumulative energy sensors that measure what you draw from the grid (kWh, Wh or MWh).
+2. **Supply and meters** — whether you are a resident, the committed power in kW, and one or more cumulative energy sensors that measure what you draw from the grid (kWh, Wh or MWh). Residence belongs to the supply, not to the offer: take it from the bill. It decides the excise allowance, which only residents up to 3 kW have (the first 150 kWh a month exempt, fewer above the threshold), and the fixed ASOS system charge, which only non-residents pay. If the offer found by code is for residents only, or for non-residents only, and the supply is of the other kind, the screen warns once: check the bill, and submit again to go on.
 3. **Market values** — only the ones your contract is priced with. For each, choose an entity or type a fixed number in €/kWh. An entity may report €/kWh or €/MWh. The PUN sensors of the GME account, if you added it, are already filled in. Dispatching, capacity market and CDispD can be left empty: the published values are used. This screen is skipped when the contract needs none.
 
 To change anything later use **Reconfigure** on the integration entry: the same screens open with the current values.
@@ -254,8 +254,6 @@ In **Settings → Dashboards → Energy**, on your grid consumption source choos
 
 The calculator rebuilds a bill: every component is a line, each line is rounded to the cent, VAT is computed line by line. Regulated per-kWh components are billed in one line for as long as the tariff does not change; fixed and power charges by the month; excise month by month, on metered kWh only.
 
-Regulated values — transport and metering, system charges, the regulated service prices, excise and VAT — come from a table built into the integration, one value per quarter. A workflow of this repository also reads, twice a day, the file of parameters the Portale Offerte publishes for the yearly cost of the offers, and keeps the regulated values it holds in `regulated_values.json` on the [`market-data`](https://github.com/giorgioparri/electr-it-ha/tree/market-data) branch, one value per quarter. Every raw file whose content changes is kept in the `portale-parameters/` folder of the same branch, since the Portale's own archive has gaps.
-
 It is tested against real bills:
 
 | Bill | Result |
@@ -280,7 +278,7 @@ GPL-3.0-or-later — see [LICENSE](https://github.com/giorgioparri/electr-it-ha/
 
 ## Disclaimer
 
-This is an unofficial integration. The figures it shows are estimates meant to help you understand your consumption: the only amount you owe is the one on your supplier's bill. Regulated values are transcribed from ARERA publications; the values approved by the Authority result only from its official acts. PUN data downloaded with a GME account: Source: Gestore dei Mercati Energetici S.p.A. Dispatching, capacity market and CDispD: values published by Terna S.p.A. and by ARERA, the latter reused under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); `market_values.json`, which collects them, is distributed under the same licence. Offers: open data of the Portale Offerte (ARERA, Acquirente Unico), made available in open form under Italian Legislative Decree 33/2013 and reused citing the source; the `offers/` folder holds them as converted by electrITHA, which may differ from what the suppliers bill. Regulated values in `regulated_values.json` and the files in `portale-parameters/`: open data of the Portale Offerte, under the same terms.
+This is an unofficial integration. The figures it shows are estimates meant to help you understand your consumption: the only amount you owe is the one on your supplier's bill. Regulated values are transcribed from ARERA publications; the values approved by the Authority result only from its official acts. PUN data downloaded with a GME account: Source: Gestore dei Mercati Energetici S.p.A. Dispatching, capacity market and CDispD: values published by Terna S.p.A. and by ARERA, the latter reused under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); `market_values.json`, which collects them, is distributed under the same licence. Offers: open data of the Portale Offerte (ARERA, Acquirente Unico), made available in open form under Italian Legislative Decree 33/2013 and reused citing the source; the `offers/` folder holds them as converted by electrITHA, which may differ from what the suppliers bill.
 
 ## Acknowledgments
 

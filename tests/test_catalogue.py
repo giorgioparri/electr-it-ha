@@ -256,6 +256,57 @@ def test_same_code_other_case() -> None:
     check("typed exactly: the older one", exact.code, TIERS)
 
 
+def test_residence() -> None:
+    """Who can take an offer, as the Portale states it, for the supply screen."""
+    offer = catalogue_of(ENEL).find(ENEL)
+    assert offer is not None
+    check("not stated: all", offer.residence, "all")
+    check("not stated: residents allowed", offer.allows(resident=True), True)
+    check("not stated: non-residents allowed", offer.allows(resident=False), True)
+
+    residents = "000000ESFML01XX0RESIDENTI000001"
+    others = "000000ESFML01XX0NONRESIDENTI001"
+    block = BLOCKS["fixed_mono"]
+    offers = u.read_day(
+        daily(
+            recoded(block.replace(">03<", ">01<"), residents),
+            recoded(block.replace(">03<", ">02<"), others),
+        )
+    )
+    data = u.merged(None, date(2026, 11, 22), offers)
+    files = {name: json.loads(text) for name, text in u.files(data).items()}
+    index = CatalogueIndex.from_dict(files[INDEX_FILE])
+
+    def found(code: str) -> Any:
+        name = index.shard_file(code)
+        assert name is not None
+        return Catalogue.from_shard(index, name, files[name]).find(code)
+
+    only = found(residents)
+    check("residents only", only.residence, "resident")
+    check("residents only: residents allowed", only.allows(resident=True), True)
+    check("residents only: others refused", only.allows(resident=False), False)
+    not_only = found(others)
+    check("non-residents only", not_only.residence, "non_resident")
+    check(
+        "non-residents only: residents refused", not_only.allows(resident=True), False
+    )
+    check("non-residents only: others allowed", not_only.allows(resident=False), True)
+
+    # A file written before the key existed, or with a value from a later
+    # version: no warning rather than a wrong one.
+    name, data = shard_of(ENEL)
+    for value in (None, "students"):
+        changed = copy.deepcopy(data)
+        if value is None:
+            changed["offers"][ENEL]["info"].pop("residence", None)
+        else:
+            changed["offers"][ENEL]["info"]["residence"] = value
+        offer = Catalogue.from_shard(INDEX, name, changed).find(ENEL)
+        assert offer is not None
+        check(f"residence {value!r}: all", offer.residence, "all")
+
+
 def test_contract_text() -> None:
     """The text for the contract screen validates as it is; none without one."""
     offer = catalogue_of(ENEL).find(ENEL)
@@ -366,6 +417,7 @@ def main() -> int:
         test_shards,
         test_lookup,
         test_same_code_other_case,
+        test_residence,
         test_contract_text,
         test_bad_index,
         test_bad_shards,

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- When the offer found by code is for residents only, or for non-residents only, and the supply is of the other kind, the supply screen warns once: check your bill, and submit again to go on. Residence belongs to the supply: the README now explains what it decides (the excise allowance for residents up to 3 kW, the fixed system charge for non-residents).
+
 ### Changed
 
 - electrITHA is now in the default catalog of the Marketplace and of HACS: search for it by name, no need to add the repository by link any more. If you added it by link, nothing changes for you.

@@ -31,6 +31,10 @@ INDEX_FILE = "index.json"
 HASH = "sha256"
 # How many hex digits of the hash name a file: 2 gives 256 files.
 MAX_DIGITS = 4
+# Who can take an offer, as engine.offers writes it in "info".
+RESIDENT = "resident"
+NON_RESIDENT = "non_resident"
+ALL = "all"
 
 
 class CatalogueError(ValueError):
@@ -63,6 +67,16 @@ class CatalogueOffer:
     first_seen: date
     last_seen: date | None
     contract: Mapping[str, Any] | None
+    # "resident", "non_resident" or "all", as the Portale states it.
+    residence: str = ALL
+
+    def allows(self, *, resident: bool) -> bool:
+        """True when a supply of that kind can take the offer."""
+        if self.residence == RESIDENT:
+            return resident
+        if self.residence == NON_RESIDENT:
+            return not resident
+        return True
 
     @property
     def on_sale(self) -> bool:
@@ -88,6 +102,11 @@ def _date(value: Any, what: str) -> date:
         return date.fromisoformat(value)
     except ValueError as err:
         raise CatalogueError(f"{what}: not a date: {value!r}") from err
+
+
+def _residence(value: Any) -> str:
+    """Read who can take an offer; anything else, or nothing, means all."""
+    return value if value in (RESIDENT, NON_RESIDENT) else ALL
 
 
 def _offer(code: str, item: Any) -> CatalogueOffer:
@@ -122,6 +141,7 @@ def _offer(code: str, item: Any) -> CatalogueOffer:
         first_seen=first_seen,
         last_seen=None if raw_last is None else _date(raw_last, f"{code}.last_seen"),
         contract=contract,
+        residence=_residence(info.get("residence")),
     )
 
 

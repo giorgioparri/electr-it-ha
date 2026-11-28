@@ -8,7 +8,11 @@ A supply takes three screens, the same for first setup and reconfiguration:
    found by the offer code printed on the bill among the offers of the
    Portale Offerte (engine.catalogue): the converted contract then fills the
    same JSON form, to be checked against the bill before going on;
-2. the supply (resident, committed power) and the grid import meters;
+2. the supply (resident, committed power) and the grid import meters. When
+   the offer found by code is for residents only, or for non-residents only,
+   and the supply is of the other kind, the screen warns once and goes on
+   at the next submit: residence belongs to the supply, and the Portale may
+   be wrong;
 3. where each market value the contract needs comes from: an entity or a
    fixed number. Dispatching, capacity market and CDispD can be left empty,
    for the values Terna and ARERA publish. Skipped when the contract needs
@@ -176,6 +180,7 @@ class ElectrIthaConfigFlow(ConfigFlow, domain=DOMAIN):
         self._contract: Contract | None = None
         self._offer: CatalogueOffer | None = None
         self._offer_seen_until: str = ""
+        self._residence_warned = False
         self._data: dict[str, Any] = {}
         self._previous: dict[str, Any] = {}
 
@@ -412,10 +417,22 @@ class ElectrIthaConfigFlow(ConfigFlow, domain=DOMAIN):
         """Describe the supply and choose the grid import meters."""
         errors: dict[str, str] = {}
         if user_input is not None:
+            resident = user_input[CONF_RESIDENT]
+            offer = self._offer
             if not user_input[CONF_METERS]:
                 errors[CONF_METERS] = "no_meters"
+            elif (
+                offer is not None
+                and not offer.allows(resident=resident)
+                and not self._residence_warned
+            ):
+                # A warning, not a block: the second submit goes on.
+                self._residence_warned = True
+                errors["base"] = (
+                    "offer_non_residents_only" if resident else "offer_residents_only"
+                )
             else:
-                self._data[CONF_RESIDENT] = user_input[CONF_RESIDENT]
+                self._data[CONF_RESIDENT] = resident
                 self._data[CONF_POWER_KW] = user_input[CONF_POWER_KW]
                 self._data[CONF_METERS] = list(user_input[CONF_METERS])
                 return await self.async_step_market()
